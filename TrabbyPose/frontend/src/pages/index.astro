@@ -4,6 +4,7 @@ import '../styles/landingPage.css';
 import { Image } from 'astro:assets';
 import trabbyImage from '../assets/trabby.png';
 ---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -13,13 +14,18 @@ import trabbyImage from '../assets/trabby.png';
 		<meta name="generator" content={Astro.generator} />
 		<title>Trabbyhadoor</title>
         <link href = /css/landingPage.css rel = "stylesheet">
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	
+		<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&display=swap" rel="stylesheet">
 	</head>
 	<body>
         <div id = "main-container">
             <div id = "app-title">
-                <div>TrabbyHadoor</div>
-                <div>Customizer</div>
-                <div><button>start</button></div>
+                <div id = "trabbyhadoor">TrabbyHadoor</div>
+                <div id = "customizer">Customizer</div>
+                <div id = "landing-button"><button>start</button></div>
             </div>
 
             <div id = "trabby-container">
