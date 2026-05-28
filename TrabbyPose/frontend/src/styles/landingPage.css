@@ -3,17 +3,29 @@ html, body {
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
+    /*overflow-x: hidden;
+    overflow-y: hidden;*/
 }
 
 
 #main-container{
     width: 100vw;
     height: 100vh; 
-    background-color: #f12020;
+    background-color: #FFFF;
     display: flex;
     flex-direction: row;
-    padding: 80px;
+    justify-content: center;
+    align-items: center;
+
+
+    /* 2. Layer the repeating slanted lines on top */
+    background-image: repeating-linear-gradient(
+        -45deg,                /* Controls the slant direction (negative for top-left to bottom-right) */
+        transparent,           /* Line start color */
+        transparent 10px,      /* Width of the empty space between lines */
+        #e2e8f0 10px,          /* Line border color (subtle gray) */
+        #e2e8f0 11px           /* Thickness of the actual line (1px thick here) */
+    );
 }
 
 #main-container button{
@@ -21,9 +33,38 @@ html, body {
     height: 70px;
     font-size: 30px;
     border-radius: 20px;
-    font-family: 'Sora';
+    font-family: 'Sora', sans-serif; 
+    font-weight: bold;
+    box-sizing: border-box;
+    background-color: #1A2B4A;
+    color: #FFFF;
+
+    
+}
+
+#landing-button{
+   height: fit-content ;
 }
 
 #app-title{
-    font-size: 96px;
+    font-size: 75px;
+    font-family: 'Sora', sans-serif; 
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;  
+    justify-content: center;  
+}
+
+img{
+    height: 500px; 
+    width: auto;
+    padding-left: 50px;
+}
+
+#trabbyhadoor{
+    color: #1A2B4A
+}
+
+#customizer{
+    color: #F26B2A
 }
