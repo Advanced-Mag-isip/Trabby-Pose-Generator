@@ -1,11 +1,30 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// src/pages/index.astro
+import '../styles/landingPage.css';
+import { Image } from 'astro:assets';
+import trabbyImage from '../assets/trabby.png';
 ---
+<!doctype html>
+<html lang="en">
+	<head>
+		<link href="https://googleapis.com" rel="stylesheet">
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Trabbyhadoor</title>
+        <link href = /css/landingPage.css rel = "stylesheet">
+	</head>
+	<body>
+        <div id = "main-container">
+            <div id = "app-title">
+                <div>TrabbyHadoor</div>
+                <div>Customizer</div>
+                <div><button>start</button></div>
+            </div>
 
-<Layout>
-	<Welcome />
-</Layout>
+            <div id = "trabby-container">
+                <Image src ={trabbyImage} alt = "Trabby">
+            </div>
+        </div>
+	</body>
+</html>
