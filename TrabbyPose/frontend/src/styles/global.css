@@ -4,6 +4,13 @@
     --white: #FFFF;
     --light-gray: #e2e8f0;
     --black: #000000;
+    --dark-orange: #C85C27; 
+    --darkest-blue: #0B1019; 
+    --darker-blue: #233658;
+    --orange-gradient: linear-gradient(var(--orange),var(--dark-orange)); 
+    --blue-gradient: linear-gradient(var(--darker-blue), var(--darkest-blue)); 
+
+    --default-shadow: box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
 }
 
 body {
@@ -44,4 +51,8 @@ body {
     background-color: var(--orange);
     margin-right: 10px;
     border-radius: 10px;
+}
+
+h2{
+    font-size: 2.5em;
 }
