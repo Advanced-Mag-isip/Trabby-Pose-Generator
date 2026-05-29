@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import trabahadoorLogo from '../assets/trabahadoor-logo.svg?raw';
 import avatarIcon from '../assets/icons/avatar-icon.png';
-
+import '../styles/global.css';
 const currentPath = Astro.url.pathname;
 ---
 
@@ -25,9 +25,9 @@ const currentPath = Astro.url.pathname;
 
 <style>
     #main-navigation {
-        background-color: #ffffff50;
+        background-color: #ffffff10;
         backdrop-filter: blur(10px);
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--light-gray);
         width: 100%;
         position: sticky;
         top: 0;
@@ -44,7 +44,7 @@ const currentPath = Astro.url.pathname;
     }
 
     #nav-links a {
-        color: #1A2B4A;
+        color: var(--blue);
         text-decoration: none;
         font-family: 'Sora', sans-serif;
         font-weight: bold;
@@ -53,19 +53,18 @@ const currentPath = Astro.url.pathname;
         transition: background-color 0.3s, color 0.3s;
     }
     #nav-links a:hover {
-        color: #F26B2A;
-        background-color: #ffe5d5;
+        color: var(--orange);
+        background-color: var(--light-gray);
     }
     #nav-links a.active {
-        color: #FFFFFF;
-        background-color: #1A2B4A;
+        color: var(--white);
+        background-color: var(--blue);
     }
 
     #nav-links {
         display: flex;
         gap: 10px;
         margin: auto 60px 0px 0px;
-        background-color: ;
     }
 
     #nav-logo :global(svg) {
