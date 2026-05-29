@@ -6,6 +6,9 @@ export default defineConfig({
     server: {
         host: '0.0.0.0',
         port: 8312,
-        allowedHosts: ['sandbox1.advancedthinkers.app']
+        allowedHosts: [
+            'sandbox1.advancedthinkers.app',
+            'http://165.22.107.245:8313',
+        ]
     }
 });
