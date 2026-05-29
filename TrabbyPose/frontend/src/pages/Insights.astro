@@ -12,8 +12,317 @@ import Layout from '../layouts/Layout.astro';
     </div>
     <!-- Content Container -->
     <div class="content-container">
-      <h2>Content</h2>
-      <p>This is the content container. Put stuff here hehe</p>
+      <!--Pose Generation Metrics Div -->
+      <div id = "pose-generation-metrics" class = "insights-container">
+        <h2> Pose Generation Metrics</h2>
+        <div id = "outer-pose-generation-container">
+          <div id = inner-pose-generation-container>
+            
+            <div id = "total-poses-generated" class = "metric-card">
+            <span class = "metric">21</span>
+            <span class = "metric-label">Total Poses Generated</span>
+            </div>
+
+            <div id = "predefined-poses" class = "metric-card">
+              <span class = "metric">16</span>
+              <span class = "metric-label">Predefined Poses</span>
+            </div>
+
+            <div id = "customized-poses" class = "metric-card">
+              <span class = "metric">05</span>
+              <span class = "metric-label">Customized Poses</span>
+            </div>
+          </div>
+
+          <div id = "pose-generation-per-week" class = "graph-card">
+             <!--Insert Graph -->
+            <span>Show Graph</span>
+          </div>
+
+        </div>
+        
+
+      </div>
+       <!--Pose Generation Metrics End-->
+
+      <!--Pose Usage Metrics Div -->
+      <div id = "pose-usage-metrics" class = "insights-container">
+        <h2>Pose Usage Metrics</h2>
+        <div id = "inner-pose-usage-metrics" >
+          <div id = poses-selected class = "metric-card">
+          <span class = "metric-label">Poses Selected</span>
+          <span class = "metric">677</span>
+          </div>
+
+        
+          <div id = "selection-per-pose" class = "metric-card">
+            <span>Selection Per Post</span>
+             <!--Insert Graph -->
+            <span>Insert Graph Here</span>
+          </div>
+          <div id = "top-poses" class = "metric-card">
+            <span>Top Poses</span>
+             <!--Insert Graph -->
+            <span>Insert Graph Here</span>
+          </div>
+        </div>
+      </div>
+      <!--Pose Usage Metrics End -->
+
+      <!-- Export Metrics Computations -->
+      <div id = "export-metric-computation-container" class = "insights-container">
+        <h2> Export Metrics Computation</h2>
+        <div id = "outer-export-metric-computation-container">
+            <div id ="inner-export-metric-computation-container">
+            <div id = "total-export" class = "metric-card">
+            <span class = "metric-label" >Total Export</span>
+            <span class = "metric">1367</span>
+            </div>
+
+            <div id = "exports-per-pose" class = "metric-card">
+              <span class = "metric-label">Exports Per Pose</span>
+              <span class = metric>677</span>
+            </div>
+          </div>
+          
+          <div id="exports-per-pose-graph" class = "graph-card">
+            <!--Insert Graph -->
+            <span>Insert Graph Here</span>
+          </div>
+        </div>
+      </div>
+      <!--Export Metrics Computations End -->
     </div>
   </div>
 </Layout>
+
+
+
+<style>
+    .insights-container{
+      border-style: solid;
+      border-color: var(--orange); 
+      margin-bottom: 50px;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .metric{
+      font-family: 'Sora', sans-serif;
+      font-size: 3em; 
+      color: var(--white); 
+      font-weight: bold;
+    }
+
+    .metric-label{
+      font-family: 'Sora', sans-serif;
+      font-size: 1.5em; 
+      color: var(--white); 
+      font-weight: bold;
+    }
+
+    h2{
+        color: var(--blue);
+        font-weight: bold;
+    }
+
+
+    #total-poses-generated{
+      background: var(--orange-gradient);
+      box-shadow: var(--default-shadow);
+    }
+    #predefined-poses{
+      background: var(--blue-gradient);
+    }
+    #customized-poses{
+      background: var(--orange-gradient);
+    }
+
+    #total-export{
+      background: var(--blue-gradient);
+    }
+
+    #exports-per-pose{
+      background: var(--orange-gradient);
+    }
+
+    #poses-selected{
+      background: var(--white);
+    }
+
+    #poses-selected .metric{
+      color: var(--blue);
+    }
+
+    #poses-selected .metric-label{
+      color: var(--orange); 
+    }
+
+    #selection-per-pose{
+      background: var(--orange-gradient);
+      color: var(--white);
+      font-family: 'Sora', sans-serif;
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    #top-poses{
+      background: var(--blue-gradient);
+      color: var(--white);
+      font-family: 'Sora', sans-serif;
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+
+    .insights-container div{
+      border-radius: 20px;
+    }
+
+    #inner-pose-generation-container{
+      display: flex;
+      flex-direction: row;
+
+      
+    }
+
+    #outer-pose-generation-container{
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      gap: 30px; 
+     
+      
+    }
+
+    #inner-pose-generation-container span{
+      display: flex;
+      flex-direction: row;
+      padding: 20px; 
+    }
+
+    #inner-pose-generation-container div{
+      min-width: 250px;
+     
+      border-style: solid;
+      border-color: var(--orange);
+      flex: 1;
+      
+    }
+
+    #pose-generation-per-week{
+      min-height: 300px; 
+      border-style: solid;
+      border-color: var(--orange);
+    }
+
+    #inner-pose-usage-metrics{
+      display: flex;
+      flex-direction: row;
+    }
+
+    #inner-pose-usage-metrics div{
+      display: flex;
+      flex-direction: column;
+      border-style: solid;
+      border-color: var(--orange);
+      padding: 20px;
+    }
+
+    #poses-selected{
+      min-width: 250;
+      min-height: 400px;
+      flex: 1; 
+    }
+
+    #selection-per-pose, #top-poses{
+      min-width: 400px;
+      min-height: 380px;
+      flex: 1.5;
+    }
+
+    
+    #inner-export-metric-computation-container div{
+      border-style: solid;
+      border-color: var(--orange);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      flex: 1;
+    }
+
+     #inner-export-metric-computation-container{
+      display: flex; 
+      flex-direction: column;
+      gap: 20px; 
+    }
+
+     #outer-export-metric-computation-container{
+      display: flex; 
+      flex-direction: row;
+    }
+
+   #exports-per-pose-graph{ 
+      border-style: solid;
+      border-color: var(--orange);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      flex: 2;              
+    min-width: 300px;
+   }
+
+   #inner-pose-generation-container,
+    #inner-pose-usage-metrics,
+    #outer-export-metric-computation-container {
+        display: flex;         
+        flex-direction: row;
+        flex-wrap: wrap; 
+        gap: 20px;
+    }
+
+    .metric-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex: 1;
+        min-width: 200px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+
+    .graph-card {
+        background: #f8fafc;
+        border: 1px dashed var(--border-color);
+        border-radius: 12px;
+        min-height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%; /* Uses percentages instead of exact pixels for viewport safety */
+    }
+
+    .graph-card.compact {
+        flex: 2;
+        min-width: 300px;
+        min-height: 200px;
+    }
+
+    .graph-card.dynamic-fill {
+        flex: 3;
+        min-width: 350px;
+    }
+
+    .graph-placeholder {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+</style>
