@@ -88,7 +88,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
@@ -125,4 +124,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-CORS_ALLOWED_ORIGINS = [os.getenv('CORS_ORIGIN')] # allows requests from our frontend origin
+# CORS_ALLOWED_ORIGINS = [os.getenv('CORS_ORIGIN')] # allows requests from our frontend origin
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
