@@ -66,4 +66,23 @@ cd frontend
 - To generate the secret key, `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`. Then you paste this to backend\env
 - create .gitignore under TrabbyPose and store sensitive files such as the .env
 
+## How to run in terminal
+
+Run the backend and frontend simultaneously in different terminals
+
+- to run the backend:
+
+```bash
+cd backend
+python manage.py runserver 127.0.0.1:8000
+```
+
+- to run the frontend:
+```bash
+cd frontend
+npm run dev
+```
+
+- then you visit: http://localhost:8312
+
 
