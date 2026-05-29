@@ -21,7 +21,8 @@ class Poses(models.Model):
         on_delete=models.CASCADE
     )
     name_of_poses_generated = models.CharField(max_length=225)
-    is_predefined = models.BooleanField(default=False)
+    # is_predefined = models.BooleanField(default=False)
+    configuration = models.JSONField(default=list)
     created_at = models.DateTimeField(null=True, blank=True)
 
 class PoseSelection(models.Model):
