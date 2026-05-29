@@ -1,0 +1,82 @@
+---
+import { Image } from 'astro:assets';
+import trabahadoorLogo from '../assets/trabahadoor-logo.svg?raw';
+import avatarIcon from '../assets/icons/avatar-icon.png';
+
+const currentPath = Astro.url.pathname;
+---
+
+<nav id="main-navigation">
+    <div class="nav-safe-area">
+        <a href="/" id="nav-logo">
+            <Fragment set:html={trabahadoorLogo} />
+        </a>
+        <div id="nav-links">
+            <a href="/Customization" class={currentPath === '/Customization' ? 'active' : ''}>Customization</a>
+            <a href="/Gallery" class={currentPath === '/Gallery' ? 'active' : ''}>Gallery</a>
+            <a href="/Insights" class={currentPath === '/Insights' ? 'active' : ''}>Insights</a>
+            <a href="/UserAccounts" class={currentPath === '/UserAccounts' ? 'active' : ''}>User Accounts</a>
+        </div>
+        <div id="nav-actions">
+            <Image id="avatar-icon" src={avatarIcon} alt="User" />
+        </div>
+    </div>
+</nav>
+
+<style>
+    #main-navigation {
+        background-color: #ffffff50;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #e2e8f0;
+        width: 100%;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .nav-safe-area {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1rem 30px;
+        display: flex;
+        justify-content: space-between;
+        box-sizing: border-box;
+    }
+
+    #nav-links a {
+        color: #1A2B4A;
+        text-decoration: none;
+        font-family: 'Sora', sans-serif;
+        font-weight: bold;
+        padding: 10px 15px;
+        border-radius: 2rem;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    #nav-links a:hover {
+        color: #F26B2A;
+        background-color: #ffe5d5;
+    }
+    #nav-links a.active {
+        color: #FFFFFF;
+        background-color: #1A2B4A;
+    }
+
+    #nav-links {
+        display: flex;
+        gap: 10px;
+        margin: auto 60px 0px 0px;
+        background-color: ;
+    }
+
+    #nav-logo :global(svg) {
+        width: 140px;
+        height: auto;
+    }
+
+    #avatar-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+</style>
