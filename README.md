@@ -1,2 +1,69 @@
 # Trabby-Pose-Generator
 
+## Initial Setup Documentation
+
+## Tech Stack
+
+- Backend: Django
+- Frontend: Astro JS
+- Database: PostgreSQL
+
+## Prerequisites
+
+Install these on your Windows machine before starting:
+
+- Python 3.10+
+- Node.js 18+
+- PostgreSQL
+- Git
+
+## Step 1 - Create the Project Folder
+
+```bash
+mkdir TrabbyPose
+cd TrabbyPose
+```
+
+## Step 2 - Set Up Django Backend
+
+### Create and activate virtual environment
+
+```bash
+python -m venv venv
+venv\Scripts\activate.bat
+```
+
+### Install dependencies
+
+```bash
+pip install django djangorestframework psycopg2-binary python-dotenv django-cors-headers
+```
+
+### Create the Django project and app
+
+```bash
+python -m django startproject backend
+cd backend
+python -m django startapp api
+```
+## Step 3 - Set Up Astro JS Frontend
+
+From the `TrabbyPose` root folder, open a new terminal:
+
+```bash
+cd ..
+npm create astro@latest frontend
+cd frontend
+```
+
+## Notes
+
+- This document is a first setup guide for the project structure.
+- The backend and frontend are set up separately so they can be developed and deployed independently.
+
+- pip install -r backend/requirements.txt //this installs project dependencies
+- in TrabbyPose\backend and TrabbyPose\frontend create a .env file. An env.example is given.
+- To generate the secret key, `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`. Then you paste this to backend\env
+- create .gitignore under TrabbyPose and store sensitive files such as the .env
+
+
