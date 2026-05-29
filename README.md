@@ -17,6 +17,18 @@ Install these on your Windows machine before starting:
 - PostgreSQL
 - Git
 
+## Tools & installers
+
+IThese are the tools used. Visit the link to download.
+
+- **PuTTY (SSH client):** https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
+- **WinSCP:** https://winscp.net/eng/download.php#google_vignette
+- **PostgreSQL:** https://www.postgresql.org/download/
+- **Node.js:** https://nodejs.org/
+- **Python:** https://www.python.org/downloads/
+- **Git:** https://git-scm.com/downloads
+
+
 ## Step 1 - Create the Project Folder
 
 ```bash
