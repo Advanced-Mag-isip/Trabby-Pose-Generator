@@ -10,7 +10,7 @@
     --orange-gradient: linear-gradient(var(--orange),var(--dark-orange)); 
     --blue-gradient: linear-gradient(var(--darker-blue), var(--darkest-blue)); 
 
-    --default-shadow: box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+    --default-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
 }
 
 body {

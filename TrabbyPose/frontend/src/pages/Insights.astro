@@ -100,8 +100,6 @@ import Layout from '../layouts/Layout.astro';
 
 <style>
     .insights-container{
-      border-style: solid;
-      border-color: var(--orange); 
       margin-bottom: 50px;
       font-family: 'Sora', sans-serif;
     }
@@ -147,6 +145,7 @@ import Layout from '../layouts/Layout.astro';
 
     #poses-selected{
       background: var(--white);
+      box-shadow: var(--default-shadow);
     }
 
     #poses-selected .metric{
@@ -163,6 +162,7 @@ import Layout from '../layouts/Layout.astro';
       font-family: 'Sora', sans-serif;
       font-size: 2em;
       font-weight: bold;
+      
     }
 
     #top-poses{
@@ -197,14 +197,11 @@ import Layout from '../layouts/Layout.astro';
     #inner-pose-generation-container span{
       display: flex;
       flex-direction: row;
-      padding: 20px; 
+      padding: 10px; 
     }
 
     #inner-pose-generation-container div{
       min-width: 250px;
-     
-      border-style: solid;
-      border-color: var(--orange);
       flex: 1;
       
     }
@@ -225,7 +222,7 @@ import Layout from '../layouts/Layout.astro';
       flex-direction: column;
       border-style: solid;
       border-color: var(--orange);
-      padding: 20px;
+      padding: 10px;
     }
 
     #poses-selected{
