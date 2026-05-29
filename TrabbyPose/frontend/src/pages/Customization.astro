@@ -1,6 +1,28 @@
 ---
 // src/pages/Customization.astro
+import { Image } from 'astro:assets';
+import IconPencilLine from '../assets/icons/pencil-line.svg?raw';
+import IconTrash from '../assets/icons/trash.svg?raw';
+import IconRandom from '../assets/icons/dices.svg?raw';
+import IconDownload from '../assets/icons/download.svg?raw';
+import IconAccessories from '../assets/icons/hammer.svg?raw';
+import IconLimbs from '../assets/icons/hand.svg?raw';
+import IconShirt from '../assets/icons/shirt.svg?raw';
+import IconLaugh from '../assets/icons/laugh.svg?raw';
+import Trabby from '../assets/trabby/model/trabby.png';
 import Layout from '../layouts/Layout.astro';
+
+import Head1 from '../assets/trabby/sprites/head-1.png';
+import Head2 from '../assets/trabby/sprites/head-2.png';
+import Face1 from '../assets/trabby/sprites/face-1.png';
+import Face2 from '../assets/trabby/sprites/face-2.png';
+import Limbs1 from '../assets/trabby/sprites/limbs-1.png';
+import Limbs2 from '../assets/trabby/sprites/limbs-2.png';
+import Torso1 from '../assets/trabby/sprites/torso-1.png';
+import Torso2 from '../assets/trabby/sprites/torso-2.png';
+import Acc1 from '../assets/trabby/sprites/acc-1.png';
+import Acc2 from '../assets/trabby/sprites/acc-2.png';
+
 ---
 
 <Layout>
@@ -8,12 +30,637 @@ import Layout from '../layouts/Layout.astro';
     <!-- Section Header -->
     <div class="section-header">
       <div class="section-header-line"></div>
-      <h1>Customization</h1>
+      <h1>Trabby Customization</h1>
     </div>
     <!-- Content Container -->
     <div class="content-container">
-      <h2>Content</h2>
-      <p>This is the content container. Put stuff here hehe</p>
+      <!-- LEFT Character Preview Panel -->
+      <div id="panel-customization-preview">
+        <div id="panel-header-preview">Character Preview</div>
+        <div class="character-preview-actions">
+          <div class="input-wrapper">
+            <span class="input-icon" set:html={IconPencilLine}></span>
+            <input type="text" placeholder="Image Name" />
+          </div>
+          <div class="action-buttons">
+            <button set:html={IconTrash} aria-label="Delete"></button>
+            <button set:html={IconRandom} aria-label="Randomize"></button>
+            <button set:html={IconDownload} aria-label="Download"></button>
+          </div>
+        </div>
+        <div class="character-preview-display">
+          <!-- <Image src={Trabby} alt="Character Preview" /> -->
+        </div>
+        <div class="character-preview-selections">
+          <div class="selection-category hover-effect"></div>
+          <div class="selection-category hover-effect"></div>
+          <div class="selection-category hover-effect"></div>
+          <div class="selection-category hover-effect"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT Customization Options Panel -->
+      <div class="spacer">
+        <div id="panel-customization-options">
+          <div id="panel-header-options">Customization</div>
+          <div class="category-scroll-wrapper">
+            <button id="scroll-left" class="scroll-btn scroll-btn-left hidden" aria-label="Scroll left">&#8249;</button>
+            <div id="category-container"></div>
+            <button id="scroll-right" class="scroll-btn scroll-btn-right hidden" aria-label="Scroll right">&#8250;</button>
+          </div>
+          <div class="options-container">
+            <div id="options-contents"></div>
+          </div>
+        </div>
+        <div class="tabs-container">
+          <div class="options-tabs" set:html={IconLaugh}></div>
+          <div class="options-tabs" set:html={IconLimbs}></div>
+          <div class="options-tabs" set:html={IconShirt}></div>
+          <div class="options-tabs" set:html={IconAccessories}></div>
+        </div>
+      </div> 
     </div>
   </div>
 </Layout>
+
+<style>
+  .content-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1em;
+    flex-wrap: wrap;
+  }
+
+  #panel-customization-preview {
+    background-color: var(--white);
+    flex: 1 1 320px;
+    min-width: 280px;
+    max-width: 500px;
+    max-height: 700px;
+    border-radius: 24px;
+    border: 4px solid var(--orange);
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    height: clamp(500px, 80vh, 700px);
+  }
+
+  /* ── RIGHT PANEL ── */
+  #panel-customization-options {
+    z-index: 1;
+    position: relative;
+    margin-left: 90px;
+    background-color: var(--white);
+    flex: 2 1 400px;
+    min-width: 320px;
+    border-radius: 24px;
+    border: 4px solid var(--blue);
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    height: clamp(500px, 80vh, 700px);
+  }
+
+  #panel-header-preview {
+    background-color: var(--orange);
+  }
+  #panel-header-options {
+    background-color: var(--blue);
+  }
+  #panel-header-preview, #panel-header-options {
+    color: var(--white);
+    height: 40px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    padding: 10px 20px;
+    font-family: 'Sora', sans-serif;
+    font-weight: bold;
+    font-size: 1.5em;
+    flex-shrink: 0;
+  }
+
+  .character-preview-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 20px;
+    flex-shrink: 0;
+  }
+  .character-preview-actions button {
+    background-color: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 10px;
+    cursor: pointer;
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+  }
+  .character-preview-actions button:hover {
+    background-color: var(--orange);
+  }
+  .character-preview-actions button :global(svg) {
+    width: 24px;
+    height: 24px;
+    outline: currentColor;
+  }
+  .character-preview-actions input {
+    border: none;
+    background: transparent;
+    color: var(--blue);
+    font-family: 'Sora', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    outline: none;
+    width: 100%;
+    min-width: 0;
+  }
+  .character-preview-actions input::placeholder {
+    color: #94a3b8;
+    font-weight: normal;
+  }
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: transparent;
+    color: var(--blue);
+    border: 3px solid var(--blue);
+    border-radius: 12px;
+    padding: 5px 12px;
+    flex: 1;
+    min-width: 0;
+  }
+  .input-icon :global(svg) {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    flex-shrink: 0;
+  }
+  .action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .character-preview-display {
+    flex: 1;
+    min-height: 200px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .character-preview-display img {
+    max-width: 75%;
+    max-height: 75%;
+    object-fit: contain;
+  }
+
+  .character-preview-selections {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+  }
+  .selection-category {
+    background-color: transparent;
+    border: 4px solid var(--orange);
+    border-radius: 12px;
+    width: 5em;
+    height: 5em;
+    transition: background-color 0.3s ease;
+    flex-shrink: 0;
+  }
+  .selection-category:hover {
+    background-color: color-mix(in srgb, var(--orange) 20%, transparent);
+  }
+
+  .spacer {
+    position: relative;
+    flex: 2 1 400px;
+    min-width: 320px;
+    display: flex;
+  }
+
+  .tabs-container {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .options-tabs {
+    position: relative; 
+    z-index: 0;
+    background-color: var(--blue);
+    color: var(--white);
+    border: 4px solid transparent;
+    border-right: none;
+    padding: 24px 18px;
+    border-radius: 16px 0px 0px 16px;
+    font-family: 'Sora', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .options-tabs:hover {
+    border: 4px solid var(--blue);
+    background-color: var(--white);
+    color: var(--blue);
+    font-weight: bold;
+    cursor: pointer;
+    padding-right: 26px;
+    transform: translateX(-10px);
+  }
+  .options-tabs :global(svg) {
+    width: 32px;
+    height: 32px;
+    outline: currentColor;
+  }
+
+  .options-tabs.tab-active {
+    border: 4px solid var(--blue);
+    background-color: var(--white);
+    color: var(--blue);
+    padding-right: 26px;
+    transform: translateX(-10px);
+  }
+
+  .category-scroll-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 15px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  #category-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    padding: 10px;
+    position: relative;
+  }
+  #category-container::-webkit-scrollbar {
+    display: none;
+  }
+  .scroll-btn {
+    flex-shrink: 0;
+    position: absolute;
+    z-index: 2;
+    background-color: transparent;
+    color: var(--white);
+    border: none;
+    padding: 4px 10px 14px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-shadow: #000000;
+    cursor: pointer;
+    font-size: 64px;
+    line-height: 0.5;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+  .scroll-btn-left  { left: 0px; border-radius: 0px 10px 10px 0px; transition: all 0.3s ease;}
+  .scroll-btn-left:hover  { padding-left: 24px; }
+  .scroll-btn-right { right: 0px; border-radius: 10px 0px 0px 10px; transition: all 0.3s ease;}
+  .scroll-btn-right:hover  { padding-right: 24px; }
+  .scroll-btn:hover {
+    background-color: #F26B2A;
+  }
+  .scroll-btn.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .options-container {
+    padding: 16px;
+    flex-grow: 1; 
+    margin-right: 8px;
+    overflow-y: auto; 
+    overflow-x: hidden;
+  }
+  #options-contents {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+    width: 100%;
+    padding-bottom: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .spacer {
+      width: 100%;
+      padding-left: 60px;
+      box-sizing: border-box;
+    }
+
+    #panel-customization-options {
+      margin-left: 0;
+      width: 100%;
+      max-width: 100%;
+      height: clamp(400px, 60vh, 600px);
+    }
+
+    .tabs-container {
+      left: 0;
+    }
+  }
+</style>
+
+<style is:global>
+  .category-btn {
+    background-color: var(--transparent-blue);
+    padding: 8px 24px;
+    border: 4px solid var(--blue);
+    border-radius: 100px;
+    color: var(--blue);
+    font-family: 'Sora', sans-serif;
+    font-weight: bold;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  .category-btn:hover {
+    background-color: var(--transparent-orange);
+    border: 4px solid var(--orange);
+    color: var(--blue);
+    cursor: pointer;
+  }
+  .category-btn.active {
+    background-color: var(--orange);
+    border: 4px solid transparent;
+    color: var(--white);
+  }
+  .option-item {
+    background-color: var(--transparent-blue);
+    aspect-ratio: 1;
+    border: 4px solid transparent;
+    border-radius: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--blue);
+    font-family: 'Sora', sans-serif;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-align: center;
+    padding: 8px;
+  }
+  .option-item:hover {
+    background-color: var(--transparent-orange);
+    border: 4px solid var(--orange);
+    cursor: pointer;
+  }
+  .option-item.option-selected {
+    background-color: var(--transparent-orange);
+    border: 4px solid var(--orange);
+  }
+</style>
+
+<script define:vars={{
+  spriteMap: {
+    'head-1': Head1.src,
+    'head-2': Head2.src,
+    'face-1': Face1.src,
+    'face-2': Face2.src,
+    'limbs-1': Limbs1.src,
+    'limbs-2': Limbs2.src,
+    'torso-1': Torso1.src,
+    'torso-2': Torso2.src,
+    'acc-1': Acc1.src,
+    'acc-2': Acc2.src,
+  }
+}}>
+  window.__SPRITE_MAP__ = spriteMap;
+</script>
+
+<script is:inline>
+  const TABS = {
+    Head: {
+      subcategories: ["Head Position", "Face", "Eyes", "Mouth", "Ears", "Hair", "Eyebrows"],
+      options: {
+        "Head Position": ["head-1", "head-2", "Tilted Right", "Looking Up", "Looking Down", "Bowed"],
+        "Face": ["face-1", "face-2", "Star Eyes", "Heart Eyes", "Dot Eyes", "Winking"],
+        "Eyes": ["Round Eyes", "Sleepy Eyes", "Star Eyes", "Heart Eyes", "Dot Eyes", "Winking"],
+        "Mouth": ["Smile", "Grin", "Pout", "Open Mouth", "Smirk", "Frown"],
+        "Ears": ["Round Ears", "Pointy Ears", "Floppy Ears", "No Ears", "Cat Ears", "Bear Ears"],
+        "Hair": ["No Hair", "Short Tuft", "Long Tuft", "Spiky", "Wavy", "Bun"],
+        "Eyebrows": ["Normal", "Raised", "Furrowed", "Thin", "Bushy", "Arched"],
+      }
+    },
+    Limbs: {
+      subcategories: [
+        "Limbs",
+        "Left Upper Arm", "Right Upper Arm",
+        "Left Forearm & Hand", "Right Forearm & Hand",
+        "Left Thigh", "Right Thigh",
+        "Left Lower Leg & Foot", "Right Lower Leg & Foot",
+        "Tail"
+      ],
+      options: {
+        "Limbs": ["limbs-1", "limbs-2"],
+        "Left Upper Arm": ["Default", "Raised", "Lowered", "Crossed", "Flexed"],
+        "Right Upper Arm": ["Default", "Raised", "Lowered", "Crossed", "Flexed"],
+        "Left Forearm & Hand": ["Open Hand", "Fist", "Peace Sign", "Pointing", "Wave"],
+        "Right Forearm & Hand": ["Open Hand", "Fist", "Peace Sign", "Pointing", "Wave"],
+        "Left Thigh": ["Default", "Wide Stance", "Narrow Stance", "Crossed"],
+        "Right Thigh": ["Default", "Wide Stance", "Narrow Stance", "Crossed"],
+        "Left Lower Leg & Foot": ["Default", "Tip-toe", "Flat Foot", "Raised"],
+        "Right Lower Leg & Foot": ["Default", "Tip-toe", "Flat Foot", "Raised"],
+        "Tail": ["No Tail", "Short Tail", "Long Tail", "Curly Tail", "Wagging Tail"],
+      }
+    },
+    Torso: {
+      subcategories: ["Torso Shape"],
+      options: {
+        "Torso Shape": ["torso-1", "torso-2", "Chubby", "Slim", "Muscular", "Round", "Tiny"],
+      }
+    },
+    Accessories: {
+      subcategories: ["Wearables", "Holdables"],
+      options: {
+        "Wearables": ["acc-1", "acc-2", "Scarf", "Bowtie", "Necklace", "Cape", "Backpack", "Hat", "Glasses", "Apron", "Hoodie"],
+        "Holdables": ["None", "Sword", "Staff", "Flower", "Lantern", "Book", "Umbrella", "Balloon", "Basket"],
+      }
+    }
+  };
+  const TAB_ORDER = ["Head", "Limbs", "Torso", "Accessories"];
+
+  let activeTab = "Head";
+  let activeSubcategory = TABS["Head"].subcategories[0];
+
+  const categoryContainer = document.getElementById("category-container");
+  const optionsContents = document.getElementById("options-contents");
+
+  function updateScrollButtons() {
+    const leftBtn = document.getElementById("scroll-left");
+    const rightBtn = document.getElementById("scroll-right");
+    if (!leftBtn || !rightBtn) return;
+    leftBtn.classList.toggle("hidden", categoryContainer.scrollLeft <= 0);
+    rightBtn.classList.toggle("hidden",
+      categoryContainer.scrollLeft + categoryContainer.clientWidth >= categoryContainer.scrollWidth - 1
+    );
+  }
+
+  function renderCategories() {
+    const subs = TABS[activeTab].subcategories;
+    categoryContainer.innerHTML = subs.map(sub => `
+      <button 
+        class="category-btn hover-effect${sub === activeSubcategory ? ' active' : ''}" 
+        data-sub="${sub}"
+      >${sub}</button>
+    `).join("");
+
+    categoryContainer.querySelectorAll(".category-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        activeSubcategory = btn.dataset.sub;
+        renderCategories();
+        renderOptions();
+      });
+    });
+
+    categoryContainer.removeEventListener("scroll", updateScrollButtons);
+    categoryContainer.addEventListener("scroll", updateScrollButtons);
+
+    document.getElementById("scroll-left").onclick = () => {
+      categoryContainer.scrollBy({ left: -150, behavior: "smooth" });
+    };
+    document.getElementById("scroll-right").onclick = () => {
+      categoryContainer.scrollBy({ left: 150, behavior: "smooth" });
+    };
+
+    setTimeout(updateScrollButtons, 50);
+  }
+
+  // z-index stacking order
+  const LAYER_Z = { Torso: 1, Head: 2, Limbs: 3, Accessories: 4 };
+
+  // tracks current selection per subcategory: { subcategory: { tab, spriteUrl } }
+  const previewSelections = {};
+
+  function setPreviewLayer(tab, subcategory, spriteUrl) {
+    previewSelections[subcategory] = { tab, spriteUrl };
+    renderPreviewLayers();
+  }
+
+  function renderPreviewLayers() {
+    const display = document.querySelector(".character-preview-display");
+    // remove all dynamic layers (keep nothing, re-render all)
+    display.querySelectorAll(".preview-layer").forEach(el => el.remove());
+
+    Object.entries(previewSelections).forEach(([sub, { tab, spriteUrl }]) => {
+      if (!spriteUrl) return;
+      const img = document.createElement("img");
+      img.src = spriteUrl;
+      img.alt = sub;
+      img.className = "preview-layer";
+      img.style.cssText = `
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        z-index: ${LAYER_Z[tab] ?? 1};
+        pointer-events: none;
+      `;
+      display.appendChild(img);
+    });
+  }
+
+  function renderOptions() {
+    const items = TABS[activeTab].options[activeSubcategory] || [];
+    optionsContents.innerHTML = items.map(item => {
+      const spriteUrl = window.__SPRITE_MAP__?.[item];
+      const content = spriteUrl
+        ? `<img src="${spriteUrl}" alt="${item}" style="width:80%;height:80%;object-fit:contain;" />`
+        : item;
+      return `<div class="option-item hover-effect" data-item="${item}" data-sprite="${spriteUrl || ''}">${content}</div>`;
+    }).join("");
+
+    optionsContents.querySelectorAll(".option-item").forEach(el => {
+      el.addEventListener("click", () => {
+        const sprite = el.dataset.sprite;
+        if (!sprite) return;
+        setPreviewLayer(activeTab, activeSubcategory, sprite);
+
+        // visual selected state within this subcategory
+        optionsContents.querySelectorAll(".option-item").forEach(e => e.classList.remove("option-selected"));
+        el.classList.add("option-selected");
+      });
+    });
+  }
+
+  document.querySelectorAll(".options-tabs").forEach((tab, i) => {
+    tab.addEventListener("click", () => {
+      activeTab = TAB_ORDER[i];
+      activeSubcategory = TABS[activeTab].subcategories[0];
+      renderCategories();
+      renderOptions();
+      // Visual active state on tabs
+      document.querySelectorAll(".options-tabs").forEach(t => t.classList.remove("tab-active"));
+      tab.classList.add("tab-active");
+    });
+  });
+
+  function downloadPreview() {
+    const display = document.querySelector(".character-preview-display");
+    const layers = Array.from(display.querySelectorAll(".preview-layer"))
+      .sort((a, b) => parseInt(a.style.zIndex) - parseInt(b.style.zIndex));
+
+    if (layers.length === 0) return;
+
+    // Get the natural size from the first image (all sprites are same size)
+    const refImg = layers[0];
+    const width = refImg.naturalWidth || 512;
+    const height = refImg.naturalHeight || 512;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+
+    // Draw each layer in z-order onto transparent canvas
+    layers.forEach(img => {
+      ctx.drawImage(img, 0, 0, width, height);
+    });
+
+    // Get name from input field
+    const nameInput = document.querySelector(".character-preview-actions input");
+    const filename = nameInput?.value?.trim() || "trabby";
+
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${filename}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }, "image/png");
+  }
+
+  // Initial render
+  renderCategories();
+  renderOptions();
+  document.querySelector('[aria-label="Download"]').addEventListener("click", downloadPreview);
+</script>
