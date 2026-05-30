@@ -7,6 +7,7 @@ with support for nested relationships and comprehensive validation.
 
 from typing import Any, Dict
 from rest_framework import serializers
+from django.db.models import QuerySet
 from .models import PuppetPart, PosePreset, PartConfiguration
 
 
@@ -14,19 +15,8 @@ class PuppetPartSerializer(serializers.ModelSerializer):
     """
     Serializer for PuppetPart model.
     
-    Provides a simple, flat representation of a puppet asset.
+    Provides a flat representation of a puppet asset option.
     """
-
-    category_display = serializers.CharField(
-        source="get_category_display",
-        read_only=True,
-        help_text="Human-readable display name for the category"
-    )
-    part_type_display = serializers.CharField(
-        source="get_part_type_display",
-        read_only=True,
-        help_text="Human-readable display name for the part type"
-    )
 
     class Meta:
         model = PuppetPart
@@ -35,14 +25,84 @@ class PuppetPartSerializer(serializers.ModelSerializer):
             "name",
             "asset_url",
             "category",
-            "category_display",
-            "part_type",
-            "part_type_display",
+            "subcategory",
             "description",
+            "order",
             "created_at",
             "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class PuppetPartHierarchicalSerializer(serializers.Serializer):
+    """
+    Hierarchical serializer that organizes puppet parts into the structure
+    expected by the frontend (Category → Subcategory → Options).
+    
+    Returns data in the format:
+    {
+        "Head": {
+            "subcategories": ["Head Position", "Face", "Eyes", ...],
+            "options": {
+                "Head Position": [
+                    {"id": 1, "name": "head-1", "asset_url": "...", ...},
+                    ...
+                ],
+                "Face": [...],
+                ...
+            }
+        },
+        "Limbs": {...},
+        "Torso": {...},
+        "Accessories": {...}
+    }
+    """
+
+    def to_representation(self, data: QuerySet) -> Dict[str, Any]:
+        """
+        Transform flat queryset into hierarchical structure organized by
+        category and subcategory.
+        """
+        # Fetch all parts from the queryset
+        all_parts = list(data) if isinstance(data, QuerySet) else data
+        
+        # Build the hierarchical structure
+        hierarchy = {}
+        
+        for part in all_parts:
+            category = part.category
+            subcategory = part.subcategory
+            
+            # Initialize category if not present
+            if category not in hierarchy:
+                hierarchy[category] = {
+                    "subcategories": [],
+                    "options": {}
+                }
+            
+            # Initialize subcategory if not present
+            if subcategory not in hierarchy[category]["options"]:
+                hierarchy[category]["subcategories"].append(subcategory)
+                hierarchy[category]["options"][subcategory] = []
+            
+            # Add the part to the options
+            hierarchy[category]["options"][subcategory].append({
+                "id": part.id,
+                "name": part.name,
+                "asset_url": part.asset_url,
+                "description": part.description,
+                "order": part.order,
+            })
+        
+        # Sort subcategories and options by order
+        for category in hierarchy:
+            hierarchy[category]["subcategories"].sort()
+            for subcategory in hierarchy[category]["options"]:
+                hierarchy[category]["options"][subcategory].sort(
+                    key=lambda x: x["order"]
+                )
+        
+        return hierarchy
 
 
 class PartConfigurationSerializer(serializers.ModelSerializer):
