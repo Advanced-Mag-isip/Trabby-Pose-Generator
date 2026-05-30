@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: trabbydb
+      POSTGRES_USER: trabbypose_user
+      POSTGRES_PASSWORD: post3118
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    command: python manage.py runserver 0.0.0.0:8313
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8313:8313"
+    environment:
+      - DEBUG=True
+      - DB_NAME=trabbydb
+      - DB_USER=trabbypose_user
+      - DB_PASSWORD=post3118
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    command: npm run dev -- --host 0.0.0.0 --port 8312
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "8312:8312"
+    environment:
+      - PUBLIC_API_URL=http://165.22.107.245:8313
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
