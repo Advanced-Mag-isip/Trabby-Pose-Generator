@@ -1,13 +1,13 @@
 """
 Django management command to seed the database with initial puppet assets,
-preset poses, expressions, and their configurations.
+organized in the hierarchical structure matching the Customization UI.
 
 Usage:
     python manage.py seed_assets
     python manage.py seed_assets --clear  (to clear and reseed)
 """
 
-from typing import Dict, List, Tuple
+from typing import Dict, List
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
@@ -17,10 +17,10 @@ from api.models import PuppetPart, PosePreset, PartConfiguration
 class Command(BaseCommand):
     """
     Management command to seed initial database with puppet assets
-    and preset configurations.
+    organized hierarchically: Category → Subcategory → Options
     """
 
-    help = "Seed the database with initial puppet parts, poses, and expressions"
+    help = "Seed the database with initial puppet parts organized hierarchically"
 
     def add_arguments(self, parser):
         """Define command-line arguments."""
@@ -55,154 +55,208 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING("✓ Existing data cleared"))
 
     def _seed_puppet_parts(self):
-        """Create initial puppet parts/assets."""
-        self.stdout.write("Seeding puppet parts...")
+        """
+        Create initial puppet parts/assets organized hierarchically.
+        
+        Structure matches Customization.astro exactly.
+        """
+        self.stdout.write("Seeding puppet parts hierarchically...")
 
-        parts_data: List[Dict] = [
-            # Head Parts
-            {
-                "name": "Round Head",
-                "part_type": PuppetPart.PartType.HEAD,
-                "asset_url": "/assets/trabby/sprites/head_round.svg",
-                "description": "A friendly round head for Trabby"
+        # Exact copy of the Customization.astro frontend TABS object model
+        parts_hierarchy: Dict[str, Dict[str, List[Dict]]] = {
+            "Head": {
+                "Head Position": [
+                    {"name": "head-1", "asset_url": "/assets/trabby/sprites/head-1.png"},
+                    {"name": "head-2", "asset_url": "/assets/trabby/sprites/head-2.png"},
+                    {"name": "Tilted Right", "asset_url": "/assets/trabby/sprites/head-tilted-right.png"},
+                    {"name": "Looking Up", "asset_url": "/assets/trabby/sprites/head-looking-up.png"},
+                    {"name": "Looking Down", "asset_url": "/assets/trabby/sprites/head-looking-down.png"},
+                    {"name": "Bowed", "asset_url": "/assets/trabby/sprites/head-bowed.png"},
+                ],
+                "Face": [
+                    {"name": "face-1", "asset_url": "/assets/trabby/sprites/face-1.png"},
+                    {"name": "face-2", "asset_url": "/assets/trabby/sprites/face-2.png"},
+                    {"name": "Star Eyes", "asset_url": "/assets/trabby/sprites/face-star-eyes.png"},
+                    {"name": "Heart Eyes", "asset_url": "/assets/trabby/sprites/face-heart-eyes.png"},
+                    {"name": "Dot Eyes", "asset_url": "/assets/trabby/sprites/face-dot-eyes.png"},
+                    {"name": "Winking", "asset_url": "/assets/trabby/sprites/face-winking.png"},
+                ],
+                "Eyes": [
+                    {"name": "Round Eyes", "asset_url": "/assets/trabby/sprites/eyes-round.png"},
+                    {"name": "Sleepy Eyes", "asset_url": "/assets/trabby/sprites/eyes-sleepy.png"},
+                    {"name": "Star Eyes", "asset_url": "/assets/trabby/sprites/eyes-star.png"},
+                    {"name": "Heart Eyes", "asset_url": "/assets/trabby/sprites/eyes-heart.png"},
+                    {"name": "Dot Eyes", "asset_url": "/assets/trabby/sprites/eyes-dot.png"},
+                    {"name": "Winking", "asset_url": "/assets/trabby/sprites/eyes-winking.png"},
+                ],
+                "Mouth": [
+                    {"name": "Smile", "asset_url": "/assets/trabby/sprites/mouth-smile.png"},
+                    {"name": "Grin", "asset_url": "/assets/trabby/sprites/mouth-grin.png"},
+                    {"name": "Pout", "asset_url": "/assets/trabby/sprites/mouth-pout.png"},
+                    {"name": "Open Mouth", "asset_url": "/assets/trabby/sprites/mouth-open.png"},
+                    {"name": "Smirk", "asset_url": "/assets/trabby/sprites/mouth-smirk.png"},
+                    {"name": "Frown", "asset_url": "/assets/trabby/sprites/mouth-frown.png"},
+                ],
+                "Ears": [
+                    {"name": "Round Ears", "asset_url": "/assets/trabby/sprites/ears-round.png"},
+                    {"name": "Pointy Ears", "asset_url": "/assets/trabby/sprites/ears-pointy.png"},
+                    {"name": "Floppy Ears", "asset_url": "/assets/trabby/sprites/ears-floppy.png"},
+                    {"name": "No Ears", "asset_url": "/assets/trabby/sprites/ears-none.png"},
+                    {"name": "Cat Ears", "asset_url": "/assets/trabby/sprites/ears-cat.png"},
+                    {"name": "Bear Ears", "asset_url": "/assets/trabby/sprites/ears-bear.png"},
+                ],
+                "Hair": [
+                    {"name": "No Hair", "asset_url": "/assets/trabby/sprites/hair-none.png"},
+                    {"name": "Short Tuft", "asset_url": "/assets/trabby/sprites/hair-short-tuft.png"},
+                    {"name": "Long Tuft", "asset_url": "/assets/trabby/sprites/hair-long-tuft.png"},
+                    {"name": "Spiky", "asset_url": "/assets/trabby/sprites/hair-spiky.png"},
+                    {"name": "Wavy", "asset_url": "/assets/trabby/sprites/hair-wavy.png"},
+                    {"name": "Bun", "asset_url": "/assets/trabby/sprites/hair-bun.png"},
+                ],
+                "Eyebrows": [
+                    {"name": "Normal", "asset_url": "/assets/trabby/sprites/eyebrows-normal.png"},
+                    {"name": "Raised", "asset_url": "/assets/trabby/sprites/eyebrows-raised.png"},
+                    {"name": "Furrowed", "asset_url": "/assets/trabby/sprites/eyebrows-furrowed.png"},
+                    {"name": "Thin", "asset_url": "/assets/trabby/sprites/eyebrows-thin.png"},
+                    {"name": "Bushy", "asset_url": "/assets/trabby/sprites/eyebrows-bushy.png"},
+                    {"name": "Arched", "asset_url": "/assets/trabby/sprites/eyebrows-arched.png"},
+                ],
             },
-            {
-                "name": "Square Head",
-                "part_type": PuppetPart.PartType.HEAD,
-                "asset_url": "/assets/trabby/sprites/head_square.svg",
-                "description": "A bold square-shaped head"
+            "Limbs": {
+                "Limbs": [
+                    {"name": "limbs-1", "asset_url": "/assets/trabby/sprites/limbs-1.png"},
+                    {"name": "limbs-2", "asset_url": "/assets/trabby/sprites/limbs-2.png"},
+                ],
+                "Left Upper Arm": [
+                    {"name": "Default", "asset_url": "/assets/trabby/sprites/left-upper-arm-default.png"},
+                    {"name": "Raised", "asset_url": "/assets/trabby/sprites/left-upper-arm-raised.png"},
+                    {"name": "Lowered", "asset_url": "/assets/trabby/sprites/left-upper-arm-lowered.png"},
+                    {"name": "Crossed", "asset_url": "/assets/trabby/sprites/left-upper-arm-crossed.png"},
+                    {"name": "Flexed", "asset_url": "/assets/trabby/sprites/left-upper-arm-flexed.png"},
+                ],
+                "Right Upper Arm": [
+                    {"name": "Default", "asset_url": "/assets/trabby/sprites/right-upper-arm-default.png"},
+                    {"name": "Raised", "asset_url": "/assets/trabby/sprites/right-upper-arm-raised.png"},
+                    {"name": "Lowered", "asset_url": "/assets/trabby/sprites/right-upper-arm-lowered.png"},
+                    {"name": "Crossed", "asset_url": "/assets/trabby/sprites/right-upper-arm-crossed.png"},
+                    {"name": "Flexed", "asset_url": "/assets/trabby/sprites/right-upper-arm-flexed.png"},
+                ],
+                "Left Forearm & Hand": [
+                    {"name": "Open Hand", "asset_url": "/assets/trabby/sprites/left-forearm-open-hand.png"},
+                    {"name": "Fist", "asset_url": "/assets/trabby/sprites/left-forearm-fist.png"},
+                    {"name": "Peace Sign", "asset_url": "/assets/trabby/sprites/left-forearm-peace-sign.png"},
+                    {"name": "Pointing", "asset_url": "/assets/trabby/sprites/left-forearm-pointing.png"},
+                    {"name": "Wave", "asset_url": "/assets/trabby/sprites/left-forearm-wave.png"},
+                ],
+                "Right Forearm & Hand": [
+                    {"name": "Open Hand", "asset_url": "/assets/trabby/sprites/right-forearm-open-hand.png"},
+                    {"name": "Fist", "asset_url": "/assets/trabby/sprites/right-forearm-fist.png"},
+                    {"name": "Peace Sign", "asset_url": "/assets/trabby/sprites/right-forearm-peace-sign.png"},
+                    {"name": "Pointing", "asset_url": "/assets/trabby/sprites/right-forearm-pointing.png"},
+                    {"name": "Wave", "asset_url": "/assets/trabby/sprites/right-forearm-wave.png"},
+                ],
+                "Left Thigh": [
+                    {"name": "Default", "asset_url": "/assets/trabby/sprites/left-thigh-default.png"},
+                    {"name": "Wide Stance", "asset_url": "/assets/trabby/sprites/left-thigh-wide-stance.png"},
+                    {"name": "Narrow Stance", "asset_url": "/assets/trabby/sprites/left-thigh-narrow-stance.png"},
+                    {"name": "Crossed", "asset_url": "/assets/trabby/sprites/left-thigh-crossed.png"},
+                ],
+                "Right Thigh": [
+                    {"name": "Default", "asset_url": "/assets/trabby/sprites/right-thigh-default.png"},
+                    {"name": "Wide Stance", "asset_url": "/assets/trabby/sprites/right-thigh-wide-stance.png"},
+                    {"name": "Narrow Stance", "asset_url": "/assets/trabby/sprites/right-thigh-narrow-stance.png"},
+                    {"name": "Crossed", "asset_url": "/assets/trabby/sprites/right-thigh-crossed.png"},
+                ],
+                "Left Lower Leg & Foot": [
+                    {"name": "Default", "asset_url": "/assets/trabby/sprites/left-lower-leg-default.png"},
+                    {"name": "Tip-toe", "asset_url": "/assets/trabby/sprites/left-lower-leg-tiptoe.png"},
+                    {"name": "Flat Foot", "asset_url": "/assets/trabby/sprites/left-lower-leg-flat.png"},
+                    {"name": "Raised", "asset_url": "/assets/trabby/sprites/left-lower-leg-raised.png"},
+                ],
+                "Right Lower Leg & Foot": [
+                    {"name": "Default", "asset_url": "/assets/trabby/sprites/right-lower-leg-default.png"},
+                    {"name": "Tip-toe", "asset_url": "/assets/trabby/sprites/right-lower-leg-tiptoe.png"},
+                    {"name": "Flat Foot", "asset_url": "/assets/trabby/sprites/right-lower-leg-flat.png"},
+                    {"name": "Raised", "asset_url": "/assets/trabby/sprites/right-lower-leg-raised.png"},
+                ],
+                "Tail": [
+                    {"name": "No Tail", "asset_url": "/assets/trabby/sprites/tail-none.png"},
+                    {"name": "Short Tail", "asset_url": "/assets/trabby/sprites/tail-short.png"},
+                    {"name": "Long Tail", "asset_url": "/assets/trabby/sprites/tail-long.png"},
+                    {"name": "Curly Tail", "asset_url": "/assets/trabby/sprites/tail-curly.png"},
+                    {"name": "Wagging Tail", "asset_url": "/assets/trabby/sprites/tail-wagging.png"},
+                ],
             },
-            # Torso Parts
-            {
-                "name": "Standard Torso",
-                "part_type": PuppetPart.PartType.TORSO,
-                "asset_url": "/assets/trabby/sprites/torso_standard.svg",
-                "description": "Standard rectangular torso"
+            "Torso": {
+                "Torso Shape": [
+                    {"name": "torso-1", "asset_url": "/assets/trabby/sprites/torso-1.png"},
+                    {"name": "torso-2", "asset_url": "/assets/trabby/sprites/torso-2.png"},
+                    {"name": "Chubby", "asset_url": "/assets/trabby/sprites/torso-chubby.png"},
+                    {"name": "Slim", "asset_url": "/assets/trabby/sprites/torso-slim.png"},
+                    {"name": "Muscular", "asset_url": "/assets/trabby/sprites/torso-muscular.png"},
+                    {"name": "Round", "asset_url": "/assets/trabby/sprites/torso-round.png"},
+                    {"name": "Tiny", "asset_url": "/assets/trabby/sprites/torso-tiny.png"},
+                ],
             },
-            {
-                "name": "Athletic Torso",
-                "part_type": PuppetPart.PartType.TORSO,
-                "asset_url": "/assets/trabby/sprites/torso_athletic.svg",
-                "description": "More muscular torso variant"
+            "Accessories": {
+                "Wearables": [
+                    {"name": "acc-1", "asset_url": "/assets/trabby/sprites/acc-1.png"},
+                    {"name": "acc-2", "asset_url": "/assets/trabby/sprites/acc-2.png"},
+                    {"name": "Scarf", "asset_url": "/assets/trabby/sprites/acc-scarf.png"},
+                    {"name": "Bowtie", "asset_url": "/assets/trabby/sprites/acc-bowtie.png"},
+                    {"name": "Necklace", "asset_url": "/assets/trabby/sprites/acc-necklace.png"},
+                    {"name": "Cape", "asset_url": "/assets/trabby/sprites/acc-cape.png"},
+                    {"name": "Backpack", "asset_url": "/assets/trabby/sprites/acc-backpack.png"},
+                    {"name": "Hat", "asset_url": "/assets/trabby/sprites/acc-hat.png"},
+                    {"name": "Glasses", "asset_url": "/assets/trabby/sprites/acc-glasses.png"},
+                    {"name": "Apron", "asset_url": "/assets/trabby/sprites/acc-apron.png"},
+                    {"name": "Hoodie", "asset_url": "/assets/trabby/sprites/acc-hoodie.png"},
+                ],
+                "Holdables": [
+                    {"name": "None", "asset_url": ""},
+                    {"name": "Sword", "asset_url": "/assets/trabby/sprites/acc-sword.png"},
+                    {"name": "Staff", "asset_url": "/assets/trabby/sprites/acc-staff.png"},
+                    {"name": "Flower", "asset_url": "/assets/trabby/sprites/acc-flower.png"},
+                    {"name": "Lantern", "asset_url": "/assets/trabby/sprites/acc-lantern.png"},
+                    {"name": "Book", "asset_url": "/assets/trabby/sprites/acc-book.png"},
+                    {"name": "Umbrella", "asset_url": "/assets/trabby/sprites/acc-umbrella.png"},
+                    {"name": "Balloon", "asset_url": "/assets/trabby/sprites/acc-balloon.png"},
+                    {"name": "Basket", "asset_url": "/assets/trabby/sprites/acc-basket.png"},
+                ],
             },
-            # Limb Parts (Arms & Legs)
-            {
-                "name": "Left Arm Up",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/arm_left_up.svg",
-                "description": "Left arm raised upward"
-            },
-            {
-                "name": "Right Arm Up",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/arm_right_up.svg",
-                "description": "Right arm raised upward"
-            },
-            {
-                "name": "Left Arm Down",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/arm_left_down.svg",
-                "description": "Left arm at rest"
-            },
-            {
-                "name": "Right Arm Down",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/arm_right_down.svg",
-                "description": "Right arm at rest"
-            },
-            {
-                "name": "Left Leg",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/leg_left.svg",
-                "description": "Left leg"
-            },
-            {
-                "name": "Right Leg",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/leg_right.svg",
-                "description": "Right leg"
-            },
-            # Face Elements (Eyes, Mouth, Eyebrows)
-            {
-                "name": "Eyes Neutral",
-                "part_type": PuppetPart.PartType.FACE,
-                "asset_url": "/assets/trabby/sprites/eyes_neutral.svg",
-                "description": "Neutral expression eyes"
-            },
-            {
-                "name": "Eyes Happy",
-                "part_type": PuppetPart.PartType.FACE,
-                "asset_url": "/assets/trabby/sprites/eyes_happy.svg",
-                "description": "Happy expression eyes (closed, smiling)"
-            },
-            {
-                "name": "Eyes Surprised",
-                "part_type": PuppetPart.PartType.FACE,
-                "asset_url": "/assets/trabby/sprites/eyes_surprised.svg",
-                "description": "Surprised expression eyes (wide open)"
-            },
-            {
-                "name": "Eyes Confident",
-                "part_type": PuppetPart.PartType.FACE,
-                "asset_url": "/assets/trabby/sprites/eyes_confident.svg",
-                "description": "Confident expression eyes (determined)"
-            },
-            {
-                "name": "Mouth Neutral",
-                "part_type": PuppetPart.PartType.FACE,
-                "asset_url": "/assets/trabby/sprites/mouth_neutral.svg",
-                "description": "Neutral mouth"
-            },
-            {
-                "name": "Mouth Smile",
-                "part_type": PuppetPart.PartType.FACE,
-                "asset_url": "/assets/trabby/sprites/mouth_smile.svg",
-                "description": "Happy smile"
-            },
-            {
-                "name": "Mouth Open",
-                "part_type": PuppetPart.PartType.FACE,
-                "asset_url": "/assets/trabby/sprites/mouth_open.svg",
-                "description": "Surprised open mouth"
-            },
-            # Extra Parts
-            {
-                "name": "Thumbs Up Hand",
-                "part_type": PuppetPart.PartType.EXTRA,
-                "asset_url": "/assets/trabby/sprites/hand_thumbs_up.svg",
-                "description": "Hand giving thumbs up gesture"
-            },
-            {
-                "name": "Pointing Hand",
-                "part_type": PuppetPart.PartType.EXTRA,
-                "asset_url": "/assets/trabby/sprites/hand_pointing.svg",
-                "description": "Hand pointing forward"
-            },
-        ]
+        }
 
-        for part_data in parts_data:
-            part, created = PuppetPart.objects.get_or_create(
-                name=part_data["name"],
-                part_type=part_data["part_type"],
-                defaults={
-                    "asset_url": part_data["asset_url"],
-                    "description": part_data.get("description", "")
-                }
-            )
-            if created:
-                self.stdout.write(f"  ✓ Created: {part.name}")
-            else:
-                self.stdout.write(f"  • Exists: {part.name}")
+        # Flatten and create all PuppetPart objects
+        created_count = 0
+        exists_count = 0
+        for category, subcategories in parts_hierarchy.items():
+            for subcategory, options in subcategories.items():
+                for order, option in enumerate(options):
+                    part, created = PuppetPart.objects.get_or_create(
+                        category=category,
+                        subcategory=subcategory,
+                        name=option["name"],
+                        defaults={
+                            "asset_url": option["asset_url"],
+                            "order": order,
+                            "description": f"{option['name']} from {subcategory}",
+                        }
+                    )
+                    if created:
+                        created_count += 1
+                        self.stdout.write(f"  ✓ Created: [{category} -> {subcategory}] {part.name}")
+                    else:
+                        exists_count += 1
+
+        self.stdout.write(
+            self.style.SUCCESS(f"✓ Finished processing parts: {created_count} created, {exists_count} already existed.")
+        )
 
     def _seed_body_poses(self):
         """Create preset body poses."""
         self.stdout.write("Seeding body poses...")
 
-        # Fetch puppet parts (assume they exist from previous seed)
-        parts = {
-            part.name: part
-            for part in PuppetPart.objects.all()
-        }
+        parts = {part.name: part for part in PuppetPart.objects.all()}
 
         poses_data: List[Dict] = [
             {
@@ -211,42 +265,10 @@ class Command(BaseCommand):
                 "description": "Character standing in neutral pose with arms at sides",
                 "is_expression": False,
                 "parts": [
-                    ("Round Head", {"x": 200, "y": 100, "rotation": 0, "z": 5}),
-                    ("Standard Torso", {"x": 200, "y": 180, "rotation": 0, "z": 4}),
-                    ("Left Arm Down", {"x": 160, "y": 200, "rotation": 0, "z": 3}),
-                    ("Right Arm Down", {"x": 240, "y": 200, "rotation": 0, "z": 3}),
-                    ("Left Leg", {"x": 190, "y": 280, "rotation": 0, "z": 2}),
-                    ("Right Leg", {"x": 210, "y": 280, "rotation": 0, "z": 2}),
-                ]
-            },
-            {
-                "name": "Thumbs Up",
-                "slug": "thumbs-up",
-                "description": "Character giving enthusiastic thumbs up with right hand",
-                "is_expression": False,
-                "parts": [
-                    ("Round Head", {"x": 200, "y": 100, "rotation": 0, "z": 5}),
-                    ("Standard Torso", {"x": 200, "y": 180, "rotation": 0, "z": 4}),
-                    ("Left Arm Down", {"x": 160, "y": 200, "rotation": 0, "z": 3}),
-                    ("Right Arm Up", {"x": 240, "y": 120, "rotation": 0, "z": 3}),
-                    ("Thumbs Up Hand", {"x": 250, "y": 80, "rotation": 0, "z": 2}),
-                    ("Left Leg", {"x": 190, "y": 280, "rotation": 0, "z": 1}),
-                    ("Right Leg", {"x": 210, "y": 280, "rotation": 0, "z": 1}),
-                ]
-            },
-            {
-                "name": "Pointing",
-                "slug": "pointing",
-                "description": "Character pointing forward with right hand",
-                "is_expression": False,
-                "parts": [
-                    ("Round Head", {"x": 200, "y": 100, "rotation": 0, "z": 5}),
-                    ("Standard Torso", {"x": 200, "y": 180, "rotation": 0, "z": 4}),
-                    ("Left Arm Down", {"x": 160, "y": 200, "rotation": 0, "z": 3}),
-                    ("Right Arm Up", {"x": 260, "y": 160, "rotation": 45, "z": 3}),
-                    ("Pointing Hand", {"x": 290, "y": 130, "rotation": 45, "z": 2}),
-                    ("Left Leg", {"x": 190, "y": 280, "rotation": 0, "z": 1}),
-                    ("Right Leg", {"x": 210, "y": 280, "rotation": 0, "z": 1}),
+                    ("head-1", {"x": 200, "y": 100, "rotation": 0, "z": 5}),
+                    ("torso-1", {"x": 200, "y": 180, "rotation": 0, "z": 4}),
+                    ("Default", {"x": 160, "y": 200, "rotation": 0, "z": 3}),
+                    ("Open Hand", {"x": 160, "y": 240, "rotation": 0, "z": 3}),
                 ]
             },
         ]
@@ -266,10 +288,9 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(f"  • Exists: {pose.name}")
 
-            # Create part configurations
             for part_name, config_data in pose_data["parts"]:
                 if part_name in parts:
-                    config, created = PartConfiguration.objects.get_or_create(
+                    PartConfiguration.objects.get_or_create(
                         pose_preset=pose,
                         puppet_part=parts[part_name],
                         defaults={
@@ -280,19 +301,12 @@ class Command(BaseCommand):
                             "scale": 1.0,
                         }
                     )
-                    if created:
-                        self.stdout.write(
-                            f"    ✓ Added part: {part_name}"
-                        )
 
     def _seed_expressions(self):
         """Create preset facial expressions."""
         self.stdout.write("Seeding facial expressions...")
 
-        parts = {
-            part.name: part
-            for part in PuppetPart.objects.all()
-        }
+        parts = {part.name: part for part in PuppetPart.objects.all()}
 
         expressions_data: List[Dict] = [
             {
@@ -301,28 +315,7 @@ class Command(BaseCommand):
                 "description": "Cheerful facial expression with smile",
                 "is_expression": True,
                 "parts": [
-                    ("Eyes Happy", {"x": 185, "y": 110, "rotation": 0, "z": 10}),
-                    ("Mouth Smile", {"x": 200, "y": 140, "rotation": 0, "z": 9}),
-                ]
-            },
-            {
-                "name": "Surprised",
-                "slug": "surprised",
-                "description": "Shocked or amazed facial expression",
-                "is_expression": True,
-                "parts": [
-                    ("Eyes Surprised", {"x": 185, "y": 110, "rotation": 0, "z": 10}),
-                    ("Mouth Open", {"x": 200, "y": 140, "rotation": 0, "z": 9}),
-                ]
-            },
-            {
-                "name": "Confident",
-                "slug": "confident",
-                "description": "Determined and confident facial expression",
-                "is_expression": True,
-                "parts": [
-                    ("Eyes Confident", {"x": 185, "y": 110, "rotation": 0, "z": 10}),
-                    ("Mouth Neutral", {"x": 200, "y": 140, "rotation": 0, "z": 9}),
+                    ("Smile", {"x": 200, "y": 140, "rotation": 0, "z": 9}),
                 ]
             },
         ]
@@ -342,10 +335,9 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(f"  • Exists: {expr.name}")
 
-            # Create part configurations
             for part_name, config_data in expr_data["parts"]:
                 if part_name in parts:
-                    config, created = PartConfiguration.objects.get_or_create(
+                    PartConfiguration.objects.get_or_create(
                         pose_preset=expr,
                         puppet_part=parts[part_name],
                         defaults={
@@ -356,7 +348,3 @@ class Command(BaseCommand):
                             "scale": 1.0,
                         }
                     )
-                    if created:
-                        self.stdout.write(
-                            f"    ✓ Added part: {part_name}"
-                        )
