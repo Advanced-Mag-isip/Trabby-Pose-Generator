@@ -1,6 +1,4 @@
 ---
-// src/components/LineChart.astro
-
 interface Props {
   chartId?: string;
   labels: string[];
@@ -15,19 +13,10 @@ const {
   label = "Data Overview"
 } = Astro.props;
 
-const maxVal = values.length > 0 ? Math.max(...values) : 0;
+const colors = "#3b82f6";
 
-// Build points
-const points = values.map((value, index) => {
-  const x = labels.length > 1 ? (index / (labels.length - 1)) * 90 + 5 : 50;
-  const y = maxVal > 0 ? 90 - (value / maxVal) * 80 : 90;
-
-  return { x, y, value, label: labels[index] };
-});
-
-const pathD = points
-  .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
-  .join(" ");
+// compute max value
+const maxVal = Math.max(0, ...values);
 ---
 
 <div class="chart-container" id={chartId}>
@@ -38,7 +27,7 @@ const pathD = points
   ) : (
     <div class="chart-wrapper">
 
-      <!-- Y AXIS LABELS -->
+      <!-- Y AXIS -->
       <div class="y-axis">
         <span>{maxVal}</span>
         <span>{Math.round(maxVal / 2)}</span>
@@ -48,7 +37,7 @@ const pathD = points
       <!-- SVG CHART -->
       <svg viewBox="0 0 100 100" class="line-svg">
 
-        <!-- GRID LINES -->
+        <!-- GRID -->
         <line x1="5" y1="10" x2="95" y2="10" stroke="#eee" />
         <line x1="5" y1="50" x2="95" y2="50" stroke="#eee" />
         <line x1="5" y1="90" x2="95" y2="90" stroke="#eee" />
@@ -57,26 +46,66 @@ const pathD = points
         <line x1="5" y1="10" x2="5" y2="90" stroke="#ccc" />
         <line x1="5" y1="90" x2="95" y2="90" stroke="#ccc" />
 
-        <!-- LINE -->
+        {values.map((value, index) => {
+          const x =
+            labels.length > 1
+              ? (index / (labels.length - 1)) * 90 + 5
+              : 50;
+
+          const y =
+            maxVal > 0
+              ? 90 - (value / maxVal) * 80
+              : 90;
+
+          return null;
+        })}
+
+        <!-- LINE PATH -->
         <path
-          d={pathD}
+          d={values
+            .map((value, index) => {
+              const x =
+                labels.length > 1
+                  ? (index / (labels.length - 1)) * 90 + 5
+                  : 50;
+
+              const y =
+                maxVal > 0
+                  ? 90 - (value / maxVal) * 80
+                  : 90;
+
+              return `${index === 0 ? "M" : "L"} ${x} ${y}`;
+            })
+            .join(" ")}
           fill="none"
-          stroke="#3b82f6"
+          stroke={colors}
           stroke-width="2"
         />
 
         <!-- POINTS -->
-        {points.map((p) => (
-          <circle cx={p.x} cy={p.y} r="2" fill="#3b82f6">
-            <title>{`${p.label}: ${p.value}`}</title>
-          </circle>
-        ))}
+        {values.map((value, index) => {
+          const x =
+            labels.length > 1
+              ? (index / (labels.length - 1)) * 90 + 5
+              : 50;
+
+          const y =
+            maxVal > 0
+              ? 90 - (value / maxVal) * 80
+              : 90;
+
+          return (
+            <circle cx={x} cy={y} r="2" fill={colors}>
+              <title>{`${labels[index] ?? "Point"}: ${value}`}</title>
+            </circle>
+          );
+        })}
 
       </svg>
     </div>
   )}
 
-  <!-- X AXIS LABELS -->
+  <!-- X AXIS -->
   <div class="x-axis">
     {labels.map((l) => (
       <span>{l}</span>
