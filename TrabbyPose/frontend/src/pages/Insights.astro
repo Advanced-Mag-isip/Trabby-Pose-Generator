@@ -1,99 +1,172 @@
 ---
-// src/pages/Insights.astro
 import Layout from '../layouts/Layout.astro';
+import BarChart from "../components/BarChart.astro";
+import PieChart from "../components/PieChart.astro";
+import LineChart from "../components/LineChart.astro";
+
+import {
+  getPoseGenerationRate,
+  getPredefinedPoseCount,
+  getCustomizedPoseCount,
+  getTotalPoseCount,
+  getTotalPoseSelections,
+  getTopPoseRanking,
+  getTotalExports,
+  getExportsPerMonth,
+  getTopExports,
+  getSelectionPerPose
+} from "../services/insightsApi.js";
+
+/* ---------------------------------------
+   FETCH DATA (SSR)
+---------------------------------------- */
+const [
+  poseRate,
+  predefined,
+  customized,
+  totalPoses,
+  selections,
+  topPoses,
+  totalExports,
+  exportMonthly,
+  topExports,
+  usagePerMonth
+] = await Promise.all([
+  getPoseGenerationRate(),
+  getPredefinedPoseCount(),
+  getCustomizedPoseCount(),
+  getTotalPoseCount(),
+  getTotalPoseSelections(),
+  getTopPoseRanking(),
+  getTotalExports(),
+  getExportsPerMonth(),
+  getTopExports(),
+  getSelectionPerPose()
+]);
+
+const monthlyLabels = exportMonthly.labels ?? [];
+const monthlyValues = exportMonthly.values ?? [];
+
+const topPoseLabels = topPoses.labels ?? [];
+const topPoseValues = topPoses.values ?? [];
+
+const poseRateLabels = poseRate.labels ?? [];
+const poseRateValues = poseRate.values ?? [];
+
+const topExportLabels = topExports.labels ?? [];
+const topExportValues = topExports.values ?? [];
+
+const usagePerMonthLabels = usagePerMonth.labels ?? [];
+const usagePerMonthValues = usagePerMonth.values ?? [];
 ---
 
 <Layout>
   <div class="page-container">
-    <!-- Section Header -->
+
+    <!-- HEADER -->
     <div class="section-header">
       <div class="section-header-line"></div>
       <h1>Insights</h1>
     </div>
-    <!-- Content Container -->
+
     <div class="content-container">
-      <!--Pose Generation Metrics Div -->
-      <div id = "pose-generation-metrics" class = "insights-container">
-        <h2> Pose Generation Metrics</h2>
-        <div id = "outer-pose-generation-container">
-          <div id = "inner-pose-generation-container">
-            
-            <div id = "total-poses-generated" class = "metric-card">
-            <span class = "metric">21</span>
-            <span class = "metric-label">Total Poses Generated</span>
+
+      <!-- ===================================
+           POSE GENERATION METRICS
+      =================================== -->
+      <div id="pose-generation-metrics" class="insights-container">
+        <h2>Pose Generation Metrics</h2>
+
+        <div id="outer-pose-generation-container">
+
+          <div id="inner-pose-generation-container">
+
+            <div class="metric-card" id="total-poses-generated">
+              <span class="metric">{totalPoses.total_poses_generated}</span>
+              <span class="metric-label">Total Poses Generated</span>
             </div>
 
-            <div id = "predefined-poses" class = "metric-card">
-              <span class = "metric">16</span>
-              <span class = "metric-label">Predefined Poses</span>
+            <div class="metric-card" id="predefined-poses">
+              <span class="metric">{predefined.number_of_predefined_poses}</span>
+              <span class="metric-label">Predefined Poses</span>
             </div>
 
-            <div id = "customized-poses" class = "metric-card">
-              <span class = "metric">05</span>
-              <span class = "metric-label">Customized Poses</span>
+            <div class="metric-card" id="customized-poses">
+              <span class="metric">{customized.number_of_customized_poses}</span>
+              <span class="metric-label">Customized Poses</span>
             </div>
+
           </div>
 
-          <div id = "pose-generation-per-week-graph" class = "graph-card">
-             <!--Insert Graph -->
-             <span id = "pose-generation-graph-label">Pose generation per week</span>
-            <span>Show Graph</span>
+          <div id="pose-generation-per-month" class="graph-card">
+            <LineChart
+              chartId="pose-generation-chart"
+              labels={poseRateLabels}
+              values={poseRateValues}
+              label="Pose Generation Per Month"
+            />
           </div>
 
         </div>
-        
-
       </div>
-       <!--Pose Generation Metrics End-->
 
-      <!--Pose Usage Metrics Div -->
-      <div id = "pose-usage-metrics" class = "insights-container">
-        <h2>Pose Usage Metrics</h2>
-        <div id = "inner-pose-usage-metrics" >
-          <div id = poses-selected class = "metric-card">
-          <span class = "metric-label">Poses Selected</span>
-          <span class = "metric">677</span>
+      <!-- ===================================
+           POSE USAGE METRICS
+      =================================== -->
+
+
+          <div class="metric-card" id="top-poses">
+            <span>Top Poses Breakdown</span>
+
+            <PieChart
+              chartId="top-poses-distribution-chart"
+              labels={topPoseLabels}
+              values={topPoseValues}
+              label="Popularity Share"
+            />
           </div>
 
-        
-          <div id = "selection-per-pose" class = "metric-card">
-            <span class = "pose-usage-label">Selection Per Post</span>
-             <!--Insert Graph -->
-            <span>Insert Graph Here</span>
-          </div>
-          <div id = "top-poses" class = "metric-card">
-            <span class = "pose-usage-label">Top Poses</span>
-             <!--Insert Graph -->
-            <span>Insert Graph Here</span>
-          </div>
         </div>
       </div>
-      <!--Pose Usage Metrics End -->
 
-      <!-- Export Metrics Computations -->
-      <div id = "export-metric-computation-container" class = "insights-container">
-        <h2> Export Metrics Computation</h2>
-        <div id = "outer-export-metric-computation-container">
-            <div id ="inner-export-metric-computation-container">
-            <div id = "total-export" class = "metric-card">
-           
-            <span class = "metric-label" >Total Exports</span>
-            <span class = "metric">1367</span>
+      <!-- ===================================
+           EXPORT METRICS
+      =================================== -->
+      <div id="export-metric-computation-container" class="insights-container">
+        <h2>Export Metrics Computation</h2>
+
+        <div id="outer-export-metric-computation-container">
+
+          <div id="inner-export-metric-computation-container">
+
+            <div class="metric-card" id="total-export">
+              <span class="metric-label">Total Exports</span>
+              <span class="metric">{totalExports.total_exports}</span>
             </div>
 
-            <div id = "exports-per-pose" class = "metric-card">
-              <span class = "metric-label">Exports Per Pose</span>
-              <span class = metric>677</span>
-            </div>
+          <div class="metric-card" id="exports-per-pose">
+            <PieChart
+              chartId="exports-month-chart"
+              labels={topExportLabels}
+              values={topExportValues}
+              label="Top Pose Exports "
+            />
           </div>
-          
-          <div id="exports-per-pose-graph" class = "graph-card">
-             <span id = "exports-per-pose-graph-container"> Exports per graph</span>
-            <span>Insert Graph Here</span>
+
           </div>
+
+          <div id="exports-per-pose-graph" class="graph-card">
+            <LineChart
+              chartId="exports-month-chart"
+              labels={monthlyLabels}
+              values={monthlyValues}
+              label="Exports Per Month"
+            />
+          </div>
+
         </div>
       </div>
-      <!--Export Metrics Computations End -->
+
     </div>
   </div>
 </Layout>
