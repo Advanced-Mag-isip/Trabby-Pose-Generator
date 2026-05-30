@@ -17,6 +17,11 @@ class PuppetPartSerializer(serializers.ModelSerializer):
     Provides a simple, flat representation of a puppet asset.
     """
 
+    category_display = serializers.CharField(
+        source="get_category_display",
+        read_only=True,
+        help_text="Human-readable display name for the category"
+    )
     part_type_display = serializers.CharField(
         source="get_part_type_display",
         read_only=True,
@@ -29,6 +34,8 @@ class PuppetPartSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "asset_url",
+            "category",
+            "category_display",
             "part_type",
             "part_type_display",
             "description",

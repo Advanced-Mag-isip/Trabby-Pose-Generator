@@ -12,9 +12,16 @@ The Trabby Pose Webapp backend provides a RESTful API for managing puppet assets
 
 ```
 PuppetPart (Asset Layer)
-├── name: string (e.g., "Round Head", "Left Arm Up")
+├── name: string (e.g., "Round Head", "Left Upper Arm")
 ├── asset_url: string (path to SVG/image)
-├── part_type: CHOICES [HEAD, TORSO, LIMB, FACE, EXTRA]
+├── category: CHOICES [HEAD, LIMBS, TORSO, ACCESSORIES]
+├── part_type: CHOICES [
+│   HEAD: FACE, EYES, MOUTH, EARS, HAIR, EYEBROWS
+│   LIMBS: LEFT_UPPER_ARM, RIGHT_UPPER_ARM, LEFT_FOREARM_HAND, RIGHT_FOREARM_HAND,
+│           LEFT_THIGH, RIGHT_THIGH, LEFT_LOWER_LEG_FOOT, RIGHT_LOWER_LEG_FOOT, TAIL
+│   TORSO: TORSO_BODY
+│   ACCESSORIES: WEARABLES, HOLDABLES
+│ ]
 └── description: text
 
 PosePreset (Template Layout)
@@ -256,7 +263,8 @@ http://localhost:8000/api/
 **Endpoint**: `GET /api/puppet-parts/`
 
 **Query Parameters** (optional):
-- `part_type`: Filter by type (HEAD, TORSO, LIMB, FACE, EXTRA)
+- `category`: Filter by category (HEAD, LIMBS, TORSO, ACCESSORIES)
+- `part_type`: Filter by specific type (FACE, EYES, MOUTH, EARS, HAIR, EYEBROWS, LEFT_UPPER_ARM, RIGHT_UPPER_ARM, LEFT_FOREARM_HAND, RIGHT_FOREARM_HAND, LEFT_THIGH, RIGHT_THIGH, LEFT_LOWER_LEG_FOOT, RIGHT_LOWER_LEG_FOOT, TAIL, TORSO_BODY, WEARABLES, HOLDABLES)
 
 **Description**: Retrieve all available puppet parts/assets. Useful for asset inventory and frontend part pickers.
 
@@ -267,21 +275,23 @@ http://localhost:8000/api/
   "data": [
     {
       "id": 1,
-      "name": "Round Head",
-      "asset_url": "/assets/trabby/sprites/head_round.svg",
-      "part_type": "HEAD",
-      "part_type_display": "Head",
-      "description": "A friendly round head for Trabby",
+      "name": "Face Round",
+      "asset_url": "/assets/trabby/sprites/head_face_round.svg",
+      "category": "HEAD",
+      "part_type": "FACE",
+      "part_type_display": "Face",
+      "description": "A friendly round face for Trabby",
       "created_at": "2026-05-29T10:30:00Z",
       "updated_at": "2026-05-29T10:30:00Z"
     },
     {
       "id": 2,
-      "name": "Square Head",
-      "asset_url": "/assets/trabby/sprites/head_square.svg",
-      "part_type": "HEAD",
-      "part_type_display": "Head",
-      "description": "A bold square-shaped head",
+      "name": "Eyes Neutral",
+      "asset_url": "/assets/trabby/sprites/eyes_neutral.svg",
+      "category": "HEAD",
+      "part_type": "EYES",
+      "part_type_display": "Eyes",
+      "description": "Neutral expression eyes",
       "created_at": "2026-05-29T10:30:00Z",
       "updated_at": "2026-05-29T10:30:00Z"
     }
@@ -290,22 +300,33 @@ http://localhost:8000/api/
 }
 ```
 
-**Filtered Response** (`GET /api/puppet-parts/?part_type=FACE`):
+**Filtered Response** (`GET /api/puppet-parts/?category=LIMBS&part_type=LEFT_UPPER_ARM`):
 ```json
 {
-  "count": 7,
+  "count": 2,
   "data": [
     {
-      "id": 11,
-      "name": "Eyes Neutral",
-      "asset_url": "/assets/trabby/sprites/eyes_neutral.svg",
-      "part_type": "FACE",
-      "part_type_display": "Face Element",
-      "description": "Neutral expression eyes",
+      "id": 18,
+      "name": "Left Upper Arm Up",
+      "asset_url": "/assets/trabby/sprites/left_upper_arm_up.svg",
+      "category": "LIMBS",
+      "part_type": "LEFT_UPPER_ARM",
+      "part_type_display": "Left Upper Arm",
+      "description": "Left upper arm raised upward",
       "created_at": "2026-05-29T10:30:00Z",
       "updated_at": "2026-05-29T10:30:00Z"
     },
-    // ... more face elements ...
+    {
+      "id": 19,
+      "name": "Left Upper Arm Down",
+      "asset_url": "/assets/trabby/sprites/left_upper_arm_down.svg",
+      "category": "LIMBS",
+      "part_type": "LEFT_UPPER_ARM",
+      "part_type_display": "Left Upper Arm",
+      "description": "Left upper arm at rest",
+      "created_at": "2026-05-29T10:30:00Z",
+      "updated_at": "2026-05-29T10:30:00Z"
+    }
   ]
 }
 ```

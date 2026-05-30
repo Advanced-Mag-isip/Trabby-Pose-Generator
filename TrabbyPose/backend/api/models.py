@@ -45,13 +45,40 @@ class Export(models.Model):
 class PuppetPart(models.Model):
     """Represents a single puppet asset layer (e.g., head, torso, limb)."""
 
-    class PartType(models.TextChoices):
-        """Enumeration of puppet part types."""
+    class Category(models.TextChoices):
+        """Enumeration of puppet part categories."""
         HEAD = "HEAD", "Head"
+        LIMBS = "LIMBS", "Limbs"
         TORSO = "TORSO", "Torso"
-        LIMB = "LIMB", "Limb"
-        FACE = "FACE", "Face Element"
-        EXTRA = "EXTRA", "Extra"
+        ACCESSORIES = "ACCESSORIES", "Accessories"
+
+    class PartType(models.TextChoices):
+        """Enumeration of specific puppet part types organized by category."""
+        # Head Parts
+        FACE = "FACE", "Face"
+        EYES = "EYES", "Eyes"
+        MOUTH = "MOUTH", "Mouth"
+        EARS = "EARS", "Ears"
+        HAIR = "HAIR", "Hair"
+        EYEBROWS = "EYEBROWS", "Eyebrows"
+        
+        # Limb Parts
+        LEFT_UPPER_ARM = "LEFT_UPPER_ARM", "Left Upper Arm"
+        RIGHT_UPPER_ARM = "RIGHT_UPPER_ARM", "Right Upper Arm"
+        LEFT_FOREARM_HAND = "LEFT_FOREARM_HAND", "Left Forearm & Hand"
+        RIGHT_FOREARM_HAND = "RIGHT_FOREARM_HAND", "Right Forearm & Hand"
+        LEFT_THIGH = "LEFT_THIGH", "Left Thigh"
+        RIGHT_THIGH = "RIGHT_THIGH", "Right Thigh"
+        LEFT_LOWER_LEG_FOOT = "LEFT_LOWER_LEG_FOOT", "Left Lower Leg & Foot"
+        RIGHT_LOWER_LEG_FOOT = "RIGHT_LOWER_LEG_FOOT", "Right Lower Leg & Foot"
+        TAIL = "TAIL", "Tail"
+        
+        # Torso Parts
+        TORSO_BODY = "TORSO_BODY", "Torso"
+        
+        # Accessory Parts
+        WEARABLES = "WEARABLES", "Wearables"
+        HOLDABLES = "HOLDABLES", "Holdables"
 
     id = models.AutoField(primary_key=True)
     name = models.CharField(
@@ -62,10 +89,15 @@ class PuppetPart(models.Model):
         max_length=500,
         help_text="URL or file path to the asset image/SVG"
     )
+    category = models.CharField(
+        max_length=20,
+        choices=Category.choices,
+        help_text="Main category of puppet part"
+    )
     part_type = models.CharField(
-        max_length=10,
+        max_length=30,
         choices=PartType.choices,
-        help_text="Category of puppet part"
+        help_text="Specific type of puppet part"
     )
     description = models.TextField(
         blank=True,
@@ -76,7 +108,7 @@ class PuppetPart(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["part_type", "name"]
+        ordering = ["category", "part_type", "name"]
         verbose_name = "Puppet Part"
         verbose_name_plural = "Puppet Parts"
 

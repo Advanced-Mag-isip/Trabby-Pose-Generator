@@ -29,10 +29,23 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Poses)
 class PosesAdmin(admin.ModelAdmin):
     """Admin interface for Poses model."""
-    list_display = ("name_of_poses_generated", "poses_fid", "is_predefined", "created_at")
-    list_filter = ("is_predefined", "created_at")
+    list_display = ("name_of_poses_generated", "poses_fid", "created_at")
+    list_filter = ("created_at",)
     search_fields = ("name_of_poses_generated",)
     readonly_fields = ("created_at",)
+    fieldsets = (
+        ("Pose Information", {
+            "fields": ("poses_fid", "name_of_poses_generated")
+        }),
+        ("Configuration", {
+            "fields": ("configuration",),
+            "classes": ("collapse",)
+        }),
+        ("Metadata", {
+            "fields": ("created_at",),
+            "classes": ("collapse",)
+        }),
+    )
 
 
 @admin.register(PoseSelection)

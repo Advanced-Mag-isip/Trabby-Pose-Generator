@@ -59,124 +59,302 @@ class Command(BaseCommand):
         self.stdout.write("Seeding puppet parts...")
 
         parts_data: List[Dict] = [
-            # Head Parts
+            # ===== HEAD PARTS =====
+            # Face
             {
-                "name": "Round Head",
-                "part_type": PuppetPart.PartType.HEAD,
-                "asset_url": "/assets/trabby/sprites/head_round.svg",
-                "description": "A friendly round head for Trabby"
+                "name": "Face Round",
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.FACE,
+                "asset_url": "/assets/trabby/sprites/head_face_round.svg",
+                "description": "A friendly round face for Trabby"
             },
             {
-                "name": "Square Head",
-                "part_type": PuppetPart.PartType.HEAD,
-                "asset_url": "/assets/trabby/sprites/head_square.svg",
-                "description": "A bold square-shaped head"
+                "name": "Face Square",
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.FACE,
+                "asset_url": "/assets/trabby/sprites/head_face_square.svg",
+                "description": "A bold square-shaped face"
             },
-            # Torso Parts
-            {
-                "name": "Standard Torso",
-                "part_type": PuppetPart.PartType.TORSO,
-                "asset_url": "/assets/trabby/sprites/torso_standard.svg",
-                "description": "Standard rectangular torso"
-            },
-            {
-                "name": "Athletic Torso",
-                "part_type": PuppetPart.PartType.TORSO,
-                "asset_url": "/assets/trabby/sprites/torso_athletic.svg",
-                "description": "More muscular torso variant"
-            },
-            # Limb Parts (Arms & Legs)
-            {
-                "name": "Left Arm Up",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/arm_left_up.svg",
-                "description": "Left arm raised upward"
-            },
-            {
-                "name": "Right Arm Up",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/arm_right_up.svg",
-                "description": "Right arm raised upward"
-            },
-            {
-                "name": "Left Arm Down",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/arm_left_down.svg",
-                "description": "Left arm at rest"
-            },
-            {
-                "name": "Right Arm Down",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/arm_right_down.svg",
-                "description": "Right arm at rest"
-            },
-            {
-                "name": "Left Leg",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/leg_left.svg",
-                "description": "Left leg"
-            },
-            {
-                "name": "Right Leg",
-                "part_type": PuppetPart.PartType.LIMB,
-                "asset_url": "/assets/trabby/sprites/leg_right.svg",
-                "description": "Right leg"
-            },
-            # Face Elements (Eyes, Mouth, Eyebrows)
+            # Eyes
             {
                 "name": "Eyes Neutral",
-                "part_type": PuppetPart.PartType.FACE,
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.EYES,
                 "asset_url": "/assets/trabby/sprites/eyes_neutral.svg",
                 "description": "Neutral expression eyes"
             },
             {
                 "name": "Eyes Happy",
-                "part_type": PuppetPart.PartType.FACE,
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.EYES,
                 "asset_url": "/assets/trabby/sprites/eyes_happy.svg",
                 "description": "Happy expression eyes (closed, smiling)"
             },
             {
                 "name": "Eyes Surprised",
-                "part_type": PuppetPart.PartType.FACE,
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.EYES,
                 "asset_url": "/assets/trabby/sprites/eyes_surprised.svg",
                 "description": "Surprised expression eyes (wide open)"
             },
             {
                 "name": "Eyes Confident",
-                "part_type": PuppetPart.PartType.FACE,
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.EYES,
                 "asset_url": "/assets/trabby/sprites/eyes_confident.svg",
                 "description": "Confident expression eyes (determined)"
             },
+            # Mouth
             {
                 "name": "Mouth Neutral",
-                "part_type": PuppetPart.PartType.FACE,
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.MOUTH,
                 "asset_url": "/assets/trabby/sprites/mouth_neutral.svg",
                 "description": "Neutral mouth"
             },
             {
                 "name": "Mouth Smile",
-                "part_type": PuppetPart.PartType.FACE,
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.MOUTH,
                 "asset_url": "/assets/trabby/sprites/mouth_smile.svg",
                 "description": "Happy smile"
             },
             {
                 "name": "Mouth Open",
-                "part_type": PuppetPart.PartType.FACE,
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.MOUTH,
                 "asset_url": "/assets/trabby/sprites/mouth_open.svg",
                 "description": "Surprised open mouth"
             },
-            # Extra Parts
+            # Ears
             {
-                "name": "Thumbs Up Hand",
-                "part_type": PuppetPart.PartType.EXTRA,
-                "asset_url": "/assets/trabby/sprites/hand_thumbs_up.svg",
-                "description": "Hand giving thumbs up gesture"
+                "name": "Ears Standard",
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.EARS,
+                "asset_url": "/assets/trabby/sprites/ears_standard.svg",
+                "description": "Standard ears"
             },
             {
-                "name": "Pointing Hand",
-                "part_type": PuppetPart.PartType.EXTRA,
-                "asset_url": "/assets/trabby/sprites/hand_pointing.svg",
-                "description": "Hand pointing forward"
+                "name": "Ears Pointed",
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.EARS,
+                "asset_url": "/assets/trabby/sprites/ears_pointed.svg",
+                "description": "Pointed elf-like ears"
+            },
+            # Hair
+            {
+                "name": "Hair Short",
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.HAIR,
+                "asset_url": "/assets/trabby/sprites/hair_short.svg",
+                "description": "Short hair style"
+            },
+            {
+                "name": "Hair Long",
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.HAIR,
+                "asset_url": "/assets/trabby/sprites/hair_long.svg",
+                "description": "Long hair style"
+            },
+            # Eyebrows
+            {
+                "name": "Eyebrows Normal",
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.EYEBROWS,
+                "asset_url": "/assets/trabby/sprites/eyebrows_normal.svg",
+                "description": "Normal eyebrows"
+            },
+            {
+                "name": "Eyebrows Angry",
+                "category": PuppetPart.Category.HEAD,
+                "part_type": PuppetPart.PartType.EYEBROWS,
+                "asset_url": "/assets/trabby/sprites/eyebrows_angry.svg",
+                "description": "Angry eyebrows"
+            },
+
+            # ===== LIMB PARTS =====
+            # Left Upper Arm
+            {
+                "name": "Left Upper Arm Up",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.LEFT_UPPER_ARM,
+                "asset_url": "/assets/trabby/sprites/left_upper_arm_up.svg",
+                "description": "Left upper arm raised upward"
+            },
+            {
+                "name": "Left Upper Arm Down",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.LEFT_UPPER_ARM,
+                "asset_url": "/assets/trabby/sprites/left_upper_arm_down.svg",
+                "description": "Left upper arm at rest"
+            },
+            # Right Upper Arm
+            {
+                "name": "Right Upper Arm Up",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.RIGHT_UPPER_ARM,
+                "asset_url": "/assets/trabby/sprites/right_upper_arm_up.svg",
+                "description": "Right upper arm raised upward"
+            },
+            {
+                "name": "Right Upper Arm Down",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.RIGHT_UPPER_ARM,
+                "asset_url": "/assets/trabby/sprites/right_upper_arm_down.svg",
+                "description": "Right upper arm at rest"
+            },
+            # Left Forearm & Hand
+            {
+                "name": "Left Forearm & Hand Neutral",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.LEFT_FOREARM_HAND,
+                "asset_url": "/assets/trabby/sprites/left_forearm_hand_neutral.svg",
+                "description": "Left forearm and hand in neutral position"
+            },
+            {
+                "name": "Left Forearm & Hand Pointing",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.LEFT_FOREARM_HAND,
+                "asset_url": "/assets/trabby/sprites/left_forearm_hand_pointing.svg",
+                "description": "Left forearm and hand pointing"
+            },
+            # Right Forearm & Hand
+            {
+                "name": "Right Forearm & Hand Neutral",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.RIGHT_FOREARM_HAND,
+                "asset_url": "/assets/trabby/sprites/right_forearm_hand_neutral.svg",
+                "description": "Right forearm and hand in neutral position"
+            },
+            {
+                "name": "Right Forearm & Hand Thumbs Up",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.RIGHT_FOREARM_HAND,
+                "asset_url": "/assets/trabby/sprites/right_forearm_hand_thumbs_up.svg",
+                "description": "Right forearm and hand giving thumbs up"
+            },
+            # Left Thigh
+            {
+                "name": "Left Thigh Neutral",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.LEFT_THIGH,
+                "asset_url": "/assets/trabby/sprites/left_thigh_neutral.svg",
+                "description": "Left thigh in neutral position"
+            },
+            {
+                "name": "Left Thigh Bent",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.LEFT_THIGH,
+                "asset_url": "/assets/trabby/sprites/left_thigh_bent.svg",
+                "description": "Left thigh bent at knee"
+            },
+            # Right Thigh
+            {
+                "name": "Right Thigh Neutral",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.RIGHT_THIGH,
+                "asset_url": "/assets/trabby/sprites/right_thigh_neutral.svg",
+                "description": "Right thigh in neutral position"
+            },
+            {
+                "name": "Right Thigh Bent",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.RIGHT_THIGH,
+                "asset_url": "/assets/trabby/sprites/right_thigh_bent.svg",
+                "description": "Right thigh bent at knee"
+            },
+            # Left Lower Leg & Foot
+            {
+                "name": "Left Lower Leg & Foot Neutral",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.LEFT_LOWER_LEG_FOOT,
+                "asset_url": "/assets/trabby/sprites/left_lower_leg_foot_neutral.svg",
+                "description": "Left lower leg and foot in neutral position"
+            },
+            {
+                "name": "Left Lower Leg & Foot Extended",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.LEFT_LOWER_LEG_FOOT,
+                "asset_url": "/assets/trabby/sprites/left_lower_leg_foot_extended.svg",
+                "description": "Left lower leg and foot extended"
+            },
+            # Right Lower Leg & Foot
+            {
+                "name": "Right Lower Leg & Foot Neutral",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.RIGHT_LOWER_LEG_FOOT,
+                "asset_url": "/assets/trabby/sprites/right_lower_leg_foot_neutral.svg",
+                "description": "Right lower leg and foot in neutral position"
+            },
+            {
+                "name": "Right Lower Leg & Foot Extended",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.RIGHT_LOWER_LEG_FOOT,
+                "asset_url": "/assets/trabby/sprites/right_lower_leg_foot_extended.svg",
+                "description": "Right lower leg and foot extended"
+            },
+            # Tail
+            {
+                "name": "Tail Down",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.TAIL,
+                "asset_url": "/assets/trabby/sprites/tail_down.svg",
+                "description": "Tail hanging down"
+            },
+            {
+                "name": "Tail Up",
+                "category": PuppetPart.Category.LIMBS,
+                "part_type": PuppetPart.PartType.TAIL,
+                "asset_url": "/assets/trabby/sprites/tail_up.svg",
+                "description": "Tail raised up"
+            },
+
+            # ===== TORSO PARTS =====
+            {
+                "name": "Standard Torso",
+                "category": PuppetPart.Category.TORSO,
+                "part_type": PuppetPart.PartType.TORSO_BODY,
+                "asset_url": "/assets/trabby/sprites/torso_standard.svg",
+                "description": "Standard rectangular torso"
+            },
+            {
+                "name": "Athletic Torso",
+                "category": PuppetPart.Category.TORSO,
+                "part_type": PuppetPart.PartType.TORSO_BODY,
+                "asset_url": "/assets/trabby/sprites/torso_athletic.svg",
+                "description": "More muscular torso variant"
+            },
+
+            # ===== ACCESSORY PARTS =====
+            # Wearables
+            {
+                "name": "Hat Top",
+                "category": PuppetPart.Category.ACCESSORIES,
+                "part_type": PuppetPart.PartType.WEARABLES,
+                "asset_url": "/assets/trabby/sprites/hat_top.svg",
+                "description": "Top hat accessory"
+            },
+            {
+                "name": "Scarf",
+                "category": PuppetPart.Category.ACCESSORIES,
+                "part_type": PuppetPart.PartType.WEARABLES,
+                "asset_url": "/assets/trabby/sprites/scarf.svg",
+                "description": "Scarf accessory"
+            },
+            # Holdables
+            {
+                "name": "Staff",
+                "category": PuppetPart.Category.ACCESSORIES,
+                "part_type": PuppetPart.PartType.HOLDABLES,
+                "asset_url": "/assets/trabby/sprites/staff.svg",
+                "description": "Magic staff prop"
+            },
+            {
+                "name": "Sword",
+                "category": PuppetPart.Category.ACCESSORIES,
+                "part_type": PuppetPart.PartType.HOLDABLES,
+                "asset_url": "/assets/trabby/sprites/sword.svg",
+                "description": "Sword prop"
             },
         ]
 
@@ -185,6 +363,7 @@ class Command(BaseCommand):
                 name=part_data["name"],
                 part_type=part_data["part_type"],
                 defaults={
+                    "category": part_data["category"],
                     "asset_url": part_data["asset_url"],
                     "description": part_data.get("description", "")
                 }

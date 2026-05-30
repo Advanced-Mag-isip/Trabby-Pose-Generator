@@ -301,6 +301,11 @@ def get_puppet_parts(request: Request) -> Response:
     try:
         queryset = PuppetPart.objects.all()
         
+        # Optional filtering by category
+        category = request.query_params.get("category")
+        if category:
+            queryset = queryset.filter(category=category)
+        
         # Optional filtering by part_type
         part_type = request.query_params.get("part_type")
         if part_type:
