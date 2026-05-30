@@ -16,7 +16,7 @@ import Layout from '../layouts/Layout.astro';
       <div id = "pose-generation-metrics" class = "insights-container">
         <h2> Pose Generation Metrics</h2>
         <div id = "outer-pose-generation-container">
-          <div id = inner-pose-generation-container>
+          <div id = "inner-pose-generation-container">
             
             <div id = "total-poses-generated" class = "metric-card">
             <span class = "metric">21</span>
@@ -34,8 +34,9 @@ import Layout from '../layouts/Layout.astro';
             </div>
           </div>
 
-          <div id = "pose-generation-per-week" class = "graph-card">
+          <div id = "pose-generation-per-week-graph" class = "graph-card">
              <!--Insert Graph -->
+             <span id = "pose-generation-graph-label">Pose generation per week</span>
             <span>Show Graph</span>
           </div>
 
@@ -56,12 +57,12 @@ import Layout from '../layouts/Layout.astro';
 
         
           <div id = "selection-per-pose" class = "metric-card">
-            <span>Selection Per Post</span>
+            <span class = "pose-usage-label">Selection Per Post</span>
              <!--Insert Graph -->
             <span>Insert Graph Here</span>
           </div>
           <div id = "top-poses" class = "metric-card">
-            <span>Top Poses</span>
+            <span class = "pose-usage-label">Top Poses</span>
              <!--Insert Graph -->
             <span>Insert Graph Here</span>
           </div>
@@ -75,7 +76,8 @@ import Layout from '../layouts/Layout.astro';
         <div id = "outer-export-metric-computation-container">
             <div id ="inner-export-metric-computation-container">
             <div id = "total-export" class = "metric-card">
-            <span class = "metric-label" >Total Export</span>
+           
+            <span class = "metric-label" >Total Exports</span>
             <span class = "metric">1367</span>
             </div>
 
@@ -86,7 +88,7 @@ import Layout from '../layouts/Layout.astro';
           </div>
           
           <div id="exports-per-pose-graph" class = "graph-card">
-            <!--Insert Graph -->
+             <span id = "exports-per-pose-graph-container"> Exports per graph</span>
             <span>Insert Graph Here</span>
           </div>
         </div>
@@ -103,6 +105,8 @@ import Layout from '../layouts/Layout.astro';
       margin-bottom: 50px;
       font-family: 'Sora', sans-serif;
     }
+
+   
 
     .metric{
       font-family: 'Sora', sans-serif;
@@ -126,7 +130,7 @@ import Layout from '../layouts/Layout.astro';
 
     #total-poses-generated{
       background: var(--orange-gradient);
-      box-shadow: var(--default-shadow);
+     
     }
     #predefined-poses{
       background: var(--blue-gradient);
@@ -164,7 +168,7 @@ import Layout from '../layouts/Layout.astro';
       font-weight: bold;
       
     }
-
+  
     #top-poses{
       background: var(--blue-gradient);
       color: var(--white);
@@ -173,11 +177,12 @@ import Layout from '../layouts/Layout.astro';
       font-weight: bold;
     }
 
-
+    
     .insights-container div{
       border-radius: 20px;
     }
 
+    /*==============Pose Generation Metrics Div=========================*/
     #inner-pose-generation-container{
       display: flex;
       flex-direction: row;
@@ -206,12 +211,32 @@ import Layout from '../layouts/Layout.astro';
       
     }
 
-    #pose-generation-per-week{
-      min-height: 300px; 
+    #pose-generation-per-week-graph{
+      min-height: 400px; 
+      display: flex;
+      flex-direction: column;
+      border: var(--blue);
+      border-width: 2px;
       border-style: solid;
-      border-color: var(--orange);
+      flex: 2;        
     }
 
+    #pose-generation-graph-label{
+          box-sizing: border-box;
+          background: var(--blue-gradient);
+          margin-bottom: auto;
+          width: 100%;
+          font-family: 'Sora', sans-serif;
+          font-weight: bold;
+          border-top-left-radius: 20px;
+          border-top-right-radius: 20px;
+          font-size: 1.7em; 
+          color: var(--white);
+          padding: .5em; 
+    }
+
+    
+     /*==============Pose Usage Metrics Div =========================*/
     #inner-pose-usage-metrics{
       display: flex;
       flex-direction: row;
@@ -220,8 +245,6 @@ import Layout from '../layouts/Layout.astro';
     #inner-pose-usage-metrics div{
       display: flex;
       flex-direction: column;
-      border-style: solid;
-      border-color: var(--orange);
       padding: 10px;
     }
 
@@ -229,6 +252,7 @@ import Layout from '../layouts/Layout.astro';
       min-width: 250;
       min-height: 400px;
       flex: 1; 
+      border: 2px solid var(--orange);
     }
 
     #selection-per-pose, #top-poses{
@@ -237,10 +261,20 @@ import Layout from '../layouts/Layout.astro';
       flex: 1.5;
     }
 
-    
+    .pose-usage-label{
+    font-size: .9em; 
+    color: var(--white);
+    padding: .5em; 
+    font-family: 'Sora', sans-serif;
+    font-weight: bold;
+    margin-bottom: auto;
+  }
+
+  
+
+  
+   /*==============Export Metrics Computations =========================*/
     #inner-export-metric-computation-container div{
-      border-style: solid;
-      border-color: var(--orange);
       display: flex;
       flex-direction: column;
       padding: 20px;
@@ -259,14 +293,29 @@ import Layout from '../layouts/Layout.astro';
     }
 
    #exports-per-pose-graph{ 
-      border-style: solid;
-      border-color: var(--orange);
       display: flex;
       flex-direction: column;
-      padding: 20px;
+      
       flex: 2;              
-    min-width: 300px;
+      min-width: 300px;
+      min-height: 400px;
    }
+
+   #exports-per-pose-graph-container{
+    box-sizing: border-box;
+    background: var(--orange-gradient);
+    margin-bottom: auto;
+    width: 100%;
+    font-family: 'Sora', sans-serif;
+    font-weight: bold;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    font-size: 1.7em; 
+    color: var(--white);
+    padding: .5em; 
+   }
+
+ 
 
    #inner-pose-generation-container,
     #inner-pose-usage-metrics,
@@ -288,6 +337,7 @@ import Layout from '../layouts/Layout.astro';
         flex: 1;
         min-width: 200px;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: var(--default-shadow);
     }
 
     .metric-card:hover {
@@ -297,13 +347,15 @@ import Layout from '../layouts/Layout.astro';
 
     .graph-card {
         background: #f8fafc;
-        border: 1px dashed var(--border-color);
+        border: 2px solid var(--orange);
         border-radius: 12px;
         min-height: 250px;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 100%; /* Uses percentages instead of exact pixels for viewport safety */
+        width: 100%; 
+        box-shadow: var(--default-shadow);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .graph-card.compact {
@@ -321,5 +373,10 @@ import Layout from '../layouts/Layout.astro';
         color: var(--text-muted);
         font-size: 0.95rem;
         font-weight: 500;
+    }
+
+     .graph-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
     }
 </style>

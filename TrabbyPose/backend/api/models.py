@@ -43,77 +43,61 @@ class Export(models.Model):
     created_at = models.DateTimeField(null=True, blank=True)
 
 class PuppetPart(models.Model):
-    """Represents a single puppet asset layer (e.g., head, torso, limb)."""
+    """
+    Represents a single puppet asset organized in a hierarchical structure:
+    Category (Head, Limbs, Torso, Accessories) 
+      → Subcategory (Face, Eyes, Mouth, etc.)
+        → Option (specific asset like 'head-1', 'Round Eyes', etc.)
+    """
 
     class Category(models.TextChoices):
-        """Enumeration of puppet part categories."""
-        HEAD = "HEAD", "Head"
-        LIMBS = "LIMBS", "Limbs"
-        TORSO = "TORSO", "Torso"
-        ACCESSORIES = "ACCESSORIES", "Accessories"
-
-    class PartType(models.TextChoices):
-        """Enumeration of specific puppet part types organized by category."""
-        # Head Parts
-        FACE = "FACE", "Face"
-        EYES = "EYES", "Eyes"
-        MOUTH = "MOUTH", "Mouth"
-        EARS = "EARS", "Ears"
-        HAIR = "HAIR", "Hair"
-        EYEBROWS = "EYEBROWS", "Eyebrows"
-        
-        # Limb Parts
-        LEFT_UPPER_ARM = "LEFT_UPPER_ARM", "Left Upper Arm"
-        RIGHT_UPPER_ARM = "RIGHT_UPPER_ARM", "Right Upper Arm"
-        LEFT_FOREARM_HAND = "LEFT_FOREARM_HAND", "Left Forearm & Hand"
-        RIGHT_FOREARM_HAND = "RIGHT_FOREARM_HAND", "Right Forearm & Hand"
-        LEFT_THIGH = "LEFT_THIGH", "Left Thigh"
-        RIGHT_THIGH = "RIGHT_THIGH", "Right Thigh"
-        LEFT_LOWER_LEG_FOOT = "LEFT_LOWER_LEG_FOOT", "Left Lower Leg & Foot"
-        RIGHT_LOWER_LEG_FOOT = "RIGHT_LOWER_LEG_FOOT", "Right Lower Leg & Foot"
-        TAIL = "TAIL", "Tail"
-        
-        # Torso Parts
-        TORSO_BODY = "TORSO_BODY", "Torso"
-        
-        # Accessory Parts
-        WEARABLES = "WEARABLES", "Wearables"
-        HOLDABLES = "HOLDABLES", "Holdables"
+        """Main categories matching the Customization UI structure."""
+        HEAD = "Head", "Head"
+        LIMBS = "Limbs", "Limbs"
+        TORSO = "Torso", "Torso"
+        ACCESSORIES = "Accessories", "Accessories"
 
     id = models.AutoField(primary_key=True)
+    category = models.CharField(
+        max_length=20,
+        choices=Category.choices,
+        help_text="Main category (Head, Limbs, Torso, Accessories)"
+    )
+    subcategory = models.CharField(
+        max_length=100,
+        help_text="Subcategory within the category (e.g., 'Face', 'Eyes', 'Left Upper Arm')"
+    )
     name = models.CharField(
         max_length=100,
-        help_text="Display name for the puppet part (e.g., 'Round Head', 'Left Arm')"
+        help_text="Display name for this specific option (e.g., 'Round Eyes', 'head-1')"
     )
     asset_url = models.CharField(
         max_length=500,
         help_text="URL or file path to the asset image/SVG"
-    )
-    category = models.CharField(
-        max_length=20,
-        choices=Category.choices,
-        help_text="Main category of puppet part"
-    )
-    part_type = models.CharField(
-        max_length=30,
-        choices=PartType.choices,
-        help_text="Specific type of puppet part"
     )
     description = models.TextField(
         blank=True,
         default="",
         help_text="Optional description for documentation"
     )
+    order = models.PositiveIntegerField(
+        default=0,
+        help_text="Display order within subcategory"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["category", "part_type", "name"]
+        ordering = ["category", "subcategory", "order", "name"]
         verbose_name = "Puppet Part"
         verbose_name_plural = "Puppet Parts"
+        unique_together = [["category", "subcategory", "name"]]
+        indexes = [
+            models.Index(fields=["category", "subcategory"]),
+        ]
 
     def __str__(self) -> str:
-        return f"{self.name} ({self.get_part_type_display()})"
+        return f"{self.name} ({self.subcategory} / {self.category})"
 
 
 class PosePreset(models.Model):
