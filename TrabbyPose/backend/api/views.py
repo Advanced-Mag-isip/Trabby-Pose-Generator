@@ -19,6 +19,7 @@ from django.db.models.functions import TruncMonth, TruncWeek
 from .models import PuppetPart, PosePreset, PartConfiguration, Export, Poses, PoseSelection
 from .serializers import (
     PuppetPartSerializer,
+    PuppetPartHierarchicalSerializer,
     PosePresetListSerializer,
     PosePresetDetailSerializer,
     PosePresetCreateUpdateSerializer,
@@ -275,43 +276,139 @@ def get_expression_detail(request: Request, slug: str) -> Response:
 @api_view(["GET"])
 def get_puppet_parts(request: Request) -> Response:
     """
-    Retrieve all available puppet parts/assets.
+    Retrieve all available puppet parts/assets organized by category and subcategory.
     
-    Useful for frontend asset inventory and part picker UI components.
+    This endpoint returns a hierarchical structure matching the frontend's 
+    Customization UI organization.
     
     Query Parameters:
-        - part_type: Filter by part type (HEAD, TORSO, LIMB, FACE, EXTRA)
+        - category: Filter by category (Head, Limbs, Torso, Accessories)
+        - format: Return format - 'hierarchical' (default) or 'flat'
         
     Returns:
-        200: List of puppet parts
-        Example:
-        [
-            {
-                "id": 1,
-                "name": "Round Head",
-                "asset_url": "/assets/head_round.svg",
-                "part_type": "HEAD",
-                "part_type_display": "Head",
-                "description": "A friendly round head for Trabby",
-                ...
-            },
+        200: Puppet parts organized by category and subcategory
+        
+    Hierarchical Format (default):
+    {
+        "Head": {
+            "subcategories": ["Head Position", "Face", "Eyes", ...],
+            "options": {
+                "Head Position": [
+                    {"id": 1, "name": "head-1", "asset_url": "...", ...},
+                    ...
+                ],
+                "Face": [...]
+            }
+        },
+        "Limbs": {...},
+        "Torso": {...},
+        "Accessories": {...}
+    }
+    
+    Flat Format:
+    [
+        {
+            "id": 1,
+            "name": "head-1",
+            "asset_url": "/assets/head-1.png",
+            "category": "Head",
+            "subcategory": "Head Position",
+            "description": "...",
             ...
-        ]
+        },
+        ...
+    ]
     """
     try:
         queryset = PuppetPart.objects.all()
         
-        # Optional filtering by part_type
-        part_type = request.query_params.get("part_type")
-        if part_type:
-            queryset = queryset.filter(part_type=part_type)
+        # Optional filtering by category
+        category = request.query_params.get("category")
+        if category:
+            queryset = queryset.filter(category=category)
         
-        serializer = PuppetPartSerializer(queryset, many=True)
+        # Optional filtering by subcategory
+        subcategory = request.query_params.get("subcategory")
+        if subcategory:
+            queryset = queryset.filter(subcategory=subcategory)
+        
+        # Determine response format
+        response_format = request.query_params.get("format", "hierarchical")
+        
+        if response_format == "flat":
+            # Return flat list
+            serializer = PuppetPartSerializer(queryset, many=True)
+            return Response(
+                {
+                    "count": len(serializer.data),
+                    "data": serializer.data
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            # Return hierarchical structure (default)
+            serializer = PuppetPartHierarchicalSerializer()
+            hierarchical_data = serializer.to_representation(queryset)
+            return Response(
+                hierarchical_data,
+                status=status.HTTP_200_OK
+            )
+    except Exception as e:
         return Response(
-            {
-                "count": len(serializer.data),
-                "data": serializer.data
-            },
+            {"error": f"Failed to retrieve puppet parts: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(["GET"])
+def get_puppet_parts_hierarchical(request: Request) -> Response:
+    """
+    Retrieve all available puppet parts organized hierarchically by category and subcategory.
+    
+    This is the primary endpoint for the frontend Customization page.
+    
+    Query Parameters:
+        - category: Filter by specific category (Head, Limbs, Torso, Accessories)
+        
+    Returns:
+        200: Hierarchical structure of puppet parts
+        
+    Example Response:
+    {
+        "Head": {
+            "subcategories": ["Head Position", "Face", "Eyes", "Mouth", "Ears", "Hair", "Eyebrows"],
+            "options": {
+                "Head Position": [
+                    {"id": 1, "name": "head-1", "asset_url": "/assets/head-1.png", "order": 0, ...},
+                    {"id": 2, "name": "head-2", "asset_url": "/assets/head-2.png", "order": 1, ...},
+                    ...
+                ],
+                "Face": [
+                    {"id": 3, "name": "face-1", "asset_url": "/assets/face-1.png", "order": 0, ...},
+                    ...
+                ],
+                ...
+            }
+        },
+        "Limbs": {...},
+        "Torso": {...},
+        "Accessories": {...}
+    }
+    """
+    try:
+        queryset = PuppetPart.objects.all()
+        
+        # Optional filtering by category
+        category = request.query_params.get("category")
+        if category:
+            queryset = queryset.filter(category=category)
+        
+        # Use hierarchical serializer
+        serializer = PuppetPartHierarchicalSerializer()
+        hierarchical_data = serializer.to_representation(queryset)
+        
+        return Response(
+            hierarchical_data,
             status=status.HTTP_200_OK
         )
     except Exception as e:
