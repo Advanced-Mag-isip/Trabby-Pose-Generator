@@ -1,7 +1,6 @@
 ---
 // src/components/BarChart.astro
 
-// Define types for Astro component props (optional, good for documentation)
 interface Props {
   chartId?: string;
   labels: string[];
@@ -9,41 +8,39 @@ interface Props {
   label?: string;
 }
 
-// Extract props passed down from the parent container
-const { 
-  chartId = "default-chart", 
-  labels = [], 
-  values = [], 
-  label = "Data Overview" 
-} = Astro.props;
+const {
+  chartId = "default-chart",
+  labels = [],
+  values = [],
+  label = "Data Overview",
+} = Astro.props as Props;
 
-// Find the maximum value dynamically from the passed array to calculate proportional heights
 const maxVal = values.length > 0 ? Math.max(...values) : 0;
 ---
 
 <div class="chart-container" id={chartId}>
   <h3 class="chart-title">{label}</h3>
-  
+
   <div class="chart-area">
     {values.length === 0 ? (
       <div class="chart-error">No data available for this timeframe.</div>
     ) : (
       <div class="bars-wrapper">
         {values.map((value, index) => {
-          // Prevent division by zero if all dataset values happen to be 0
+          const safeLabel = labels[index] ?? `Item ${index + 1}`;
           const percentageHeight = maxVal > 0 ? (value / maxVal) * 100 : 0;
-          
+
           return (
-            <div class="bar-column">
+            <div class="bar-column" key={index}>
               <span class="bar-value">{value}</span>
-              
-              <div 
-                class="bar" 
-                style={`height: ${percentageHeight}%`} 
-                title={`${label} - ${labels[index]}: ${value}`}
-              ></div>
-              
-              <span class="bar-label">{labels[index]}</span>
+
+              <div
+                class="bar"
+                style={`height: ${percentageHeight}%`}
+                title={`${label} - ${safeLabel}: ${value}`}
+              />
+
+              <span class="bar-label">{safeLabel}</span>
             </div>
           );
         })}
@@ -51,90 +48,3 @@ const maxVal = values.length > 0 ? Math.max(...values) : 0;
     )}
   </div>
 </div>
-
-<style>
-  .chart-container {
-    width: 100%;
-    max-width: 550px;
-    margin: 2rem auto;
-    padding: 1.5rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    font-family: system-ui, -apple-system, sans-serif;
-  }
-
-  .chart-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 1.75rem;
-    text-align: center;
-  }
-
-  .chart-area {
-    height: 220px;
-    display: flex;
-    align-items: flex-end;
-    padding-bottom: 2rem; /* Space allocated for rotated labels */
-  }
-
-  .bars-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    width: 100%;
-    height: 100%;
-    border-bottom: 2px solid #d1d5db;
-  }
-
-  .bar-column {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1;
-    height: 100%;
-    justify-content: flex-end;
-    margin: 0 6px;
-  }
-
-  .bar-value {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #4b5563;
-    margin-bottom: 6px;
-  }
-
-  .bar {
-    width: 100%;
-    max-width: 45px;
-    background-color: #3b82f6;
-    border-radius: 4px 4px 0 0;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
-
-  .bar:hover {
-    background-color: #1d4ed8;
-    transform: scaleX(1.05);
-  }
-
-  .bar-label {
-    position: absolute;
-    bottom: -28px;
-    font-size: 0.75rem;
-    color: #6b7280;
-    white-space: nowrap;
-    transform: rotate(-15deg);
-  }
-
-  .chart-error {
-    width: 100%;
-    text-align: center;
-    color: #9ca3af;
-    font-size: 0.9rem;
-    margin-bottom: auto;
-    margin-top: auto;
-  }
-</style>
