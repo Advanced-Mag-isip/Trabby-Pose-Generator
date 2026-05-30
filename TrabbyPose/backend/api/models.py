@@ -43,61 +43,45 @@ class Export(models.Model):
     created_at = models.DateTimeField(null=True, blank=True)
 
 class PuppetPart(models.Model):
-    """
-    Represents a single puppet asset organized in a hierarchical structure:
-    Category (Head, Limbs, Torso, Accessories) 
-      → Subcategory (Face, Eyes, Mouth, etc.)
-        → Option (specific asset like 'head-1', 'Round Eyes', etc.)
-    """
+    """Represents a single puppet asset layer (e.g., head, torso, limb)."""
 
-    class Category(models.TextChoices):
-        """Main categories matching the Customization UI structure."""
-        HEAD = "Head", "Head"
-        LIMBS = "Limbs", "Limbs"
-        TORSO = "Torso", "Torso"
-        ACCESSORIES = "Accessories", "Accessories"
+    class PartType(models.TextChoices):
+        """Enumeration of puppet part types."""
+        HEAD = "HEAD", "Head"
+        TORSO = "TORSO", "Torso"
+        LIMB = "LIMB", "Limb"
+        FACE = "FACE", "Face Element"
+        EXTRA = "EXTRA", "Extra"
 
     id = models.AutoField(primary_key=True)
-    category = models.CharField(
-        max_length=20,
-        choices=Category.choices,
-        help_text="Main category (Head, Limbs, Torso, Accessories)"
-    )
-    subcategory = models.CharField(
-        max_length=100,
-        help_text="Subcategory within the category (e.g., 'Face', 'Eyes', 'Left Upper Arm')"
-    )
     name = models.CharField(
         max_length=100,
-        help_text="Display name for this specific option (e.g., 'Round Eyes', 'head-1')"
+        help_text="Display name for the puppet part (e.g., 'Round Head', 'Left Arm')"
     )
     asset_url = models.CharField(
         max_length=500,
         help_text="URL or file path to the asset image/SVG"
+    )
+    part_type = models.CharField(
+        max_length=10,
+        choices=PartType.choices,
+        help_text="Category of puppet part"
     )
     description = models.TextField(
         blank=True,
         default="",
         help_text="Optional description for documentation"
     )
-    order = models.PositiveIntegerField(
-        default=0,
-        help_text="Display order within subcategory"
-    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ["category", "subcategory", "order", "name"]
+        ordering = ["part_type", "name"]
         verbose_name = "Puppet Part"
         verbose_name_plural = "Puppet Parts"
-        unique_together = [["category", "subcategory", "name"]]
-        indexes = [
-            models.Index(fields=["category", "subcategory"]),
-        ]
 
     def __str__(self) -> str:
-        return f"{self.name} ({self.subcategory} / {self.category})"
+        return f"{self.name} ({self.get_part_type_display()})"
 
 
 class PosePreset(models.Model):

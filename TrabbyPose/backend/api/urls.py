@@ -46,11 +46,6 @@ urlpatterns = [
         views.get_puppet_parts,
         name="puppet-parts"
     ),
-    path(
-        "puppet-parts/hierarchical/",
-        views.get_puppet_parts_hierarchical,
-        name="puppet-parts-hierarchical"
-    ),
 
     # Pose Generation Insights
     path(

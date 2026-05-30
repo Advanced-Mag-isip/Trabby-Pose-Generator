@@ -29,23 +29,10 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Poses)
 class PosesAdmin(admin.ModelAdmin):
     """Admin interface for Poses model."""
-    list_display = ("name_of_poses_generated", "poses_fid", "created_at")
-    list_filter = ("created_at",)
+    list_display = ("name_of_poses_generated", "poses_fid", "is_predefined", "created_at")
+    list_filter = ("is_predefined", "created_at")
     search_fields = ("name_of_poses_generated",)
     readonly_fields = ("created_at",)
-    fieldsets = (
-        ("Pose Information", {
-            "fields": ("poses_fid", "name_of_poses_generated")
-        }),
-        ("Configuration", {
-            "fields": ("configuration",),
-            "classes": ("collapse",)
-        }),
-        ("Metadata", {
-            "fields": ("created_at",),
-            "classes": ("collapse",)
-        }),
-    )
 
 
 @admin.register(PoseSelection)
@@ -63,23 +50,21 @@ class ExportAdmin(admin.ModelAdmin):
     list_filter = ("created_at",)
     readonly_fields = ("created_at",)
 
-
 @admin.register(PuppetPart)
 class PuppetPartAdmin(admin.ModelAdmin):
     """Admin interface for PuppetPart model."""
     list_display = (
         "name",
-        "category_colored",
-        "subcategory",
+        "part_type_colored",
         "asset_preview",
         "created_at"
     )
-    list_filter = ("category", "subcategory", "created_at")
-    search_fields = ("name", "description", "subcategory")
+    list_filter = ("part_type", "created_at")
+    search_fields = ("name", "description")
     readonly_fields = ("created_at", "updated_at", "asset_preview")
     fieldsets = (
         ("Basic Information", {
-            "fields": ("name", "category", "subcategory", "description", "order")
+            "fields": ("name", "part_type", "description")
         }),
         ("Asset", {
             "fields": ("asset_url", "asset_preview")
@@ -90,22 +75,23 @@ class PuppetPartAdmin(admin.ModelAdmin):
         }),
     )
 
-    def category_colored(self, obj: PuppetPart) -> str:
-        """Display category with color coding."""
+    def part_type_colored(self, obj: PuppetPart) -> str:
+        """Display part type with color coding."""
         colors = {
-            "Head": "#FF6B6B",
-            "Limbs": "#45B7D1",
-            "Torso": "#4ECDC4",
-            "Accessories": "#98D8C8",
+            "HEAD": "#FF6B6B",
+            "TORSO": "#4ECDC4",
+            "LIMB": "#45B7D1",
+            "FACE": "#FFA07A",
+            "EXTRA": "#98D8C8",
         }
-        color = colors.get(obj.category, "#999")
+        color = colors.get(obj.part_type, "#999")
         return format_html(
             '<span style="background-color: {}; color: white; padding: 3px 10px; '
             'border-radius: 3px;">{}</span>',
             color,
-            obj.get_category_display()
+            obj.get_part_type_display()
         )
-    category_colored.short_description = "Category"
+    part_type_colored.short_description = "Part Type"
 
     def asset_preview(self, obj: PuppetPart) -> str:
         """Display a preview link for the asset."""
@@ -212,3 +198,4 @@ class PartConfigurationAdmin(admin.ModelAdmin):
         """Display position in readable format."""
         return f"({obj.position_x:.1f}, {obj.position_y:.1f})"
     position_display.short_description = "Position (X, Y)"
+

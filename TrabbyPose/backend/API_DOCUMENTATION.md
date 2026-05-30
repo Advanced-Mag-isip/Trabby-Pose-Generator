@@ -12,11 +12,9 @@ The Trabby Pose Webapp backend provides a RESTful API for managing puppet assets
 
 ```
 PuppetPart (Asset Layer)
-├── name: string (e.g., "head-1", "Round Eyes")
+├── name: string (e.g., "Round Head", "Left Arm Up")
 ├── asset_url: string (path to SVG/image)
-├── category: CHOICES [Head, Limbs, Torso, Accessories]
-├── subcategory: string (e.g., "Face", "Eyes", "Left Upper Arm", "Torso Shape")
-├── order: integer (display order within subcategory)
+├── part_type: CHOICES [HEAD, TORSO, LIMB, FACE, EXTRA]
 └── description: text
 
 PosePreset (Template Layout)
@@ -121,11 +119,10 @@ http://localhost:8000/api/
       "id": 1,
       "puppet_part": {
         "id": 1,
-        "name": "head-1",
-        "asset_url": "/assets/trabby/sprites/head-1.svg",
-        "category": "Head",
-        "subcategory": "Head Position",
-        "order": 0,
+        "name": "Round Head",
+        "asset_url": "/assets/trabby/sprites/head_round.svg",
+        "part_type": "HEAD",
+        "part_type_display": "Head",
         "description": "A friendly round head for Trabby",
         "created_at": "2026-05-29T10:30:00Z",
         "updated_at": "2026-05-29T10:30:00Z"
@@ -142,11 +139,10 @@ http://localhost:8000/api/
       "id": 2,
       "puppet_part": {
         "id": 3,
-        "name": "torso-standard",
-        "asset_url": "/assets/trabby/sprites/torso-standard.svg",
-        "category": "Torso",
-        "subcategory": "Torso Shape",
-        "order": 0,
+        "name": "Standard Torso",
+        "asset_url": "/assets/trabby/sprites/torso_standard.svg",
+        "part_type": "TORSO",
+        "part_type_display": "Torso",
         "description": "Standard rectangular torso",
         "created_at": "2026-05-29T10:30:00Z",
         "updated_at": "2026-05-29T10:30:00Z"
@@ -164,11 +160,10 @@ http://localhost:8000/api/
       "id": 5,
       "puppet_part": {
         "id": 19,
-        "name": "right-hand-thumbs-up",
-        "asset_url": "/assets/trabby/sprites/right-hand-thumbs-up.svg",
-        "category": "Accessories",
-        "subcategory": "Holdables",
-        "order": 0,
+        "name": "Thumbs Up Hand",
+        "asset_url": "/assets/trabby/sprites/hand_thumbs_up.svg",
+        "part_type": "EXTRA",
+        "part_type_display": "Extra",
         "description": "Hand giving thumbs up gesture",
         "created_at": "2026-05-29T10:30:00Z",
         "updated_at": "2026-05-29T10:30:00Z"
@@ -261,139 +256,59 @@ http://localhost:8000/api/
 **Endpoint**: `GET /api/puppet-parts/`
 
 **Query Parameters** (optional):
-- `format`: Response format - `hierarchical` (default) or `flat`
-- `category`: Filter by category (Head, Limbs, Torso, Accessories)
-- `subcategory`: Filter by subcategory (e.g., Face, Eyes, Left Upper Arm)
+- `part_type`: Filter by type (HEAD, TORSO, LIMB, FACE, EXTRA)
 
-**Description**: Retrieve all available puppet parts/assets organized hierarchically. Default response groups parts by category and subcategory for easy frontend consumption.
+**Description**: Retrieve all available puppet parts/assets. Useful for asset inventory and frontend part pickers.
 
-**Response (200 OK) - Hierarchical Format (Default)**:
+**Response (200 OK)**:
 ```json
 {
-  "Head": {
-    "subcategories": ["Head Position", "Face", "Eyes", "Mouth", "Ears", "Hair", "Eyebrows"],
-    "options": {
-      "Face": [
-        {
-          "id": 1,
-          "name": "head-face-round",
-          "asset_url": "/assets/trabby/sprites/head-face-round.svg",
-          "description": "A friendly round face for Trabby",
-          "order": 0
-        },
-        {
-          "id": 2,
-          "name": "head-face-square",
-          "asset_url": "/assets/trabby/sprites/head-face-square.svg",
-          "description": "A bold square-shaped face",
-          "order": 1
-        }
-      ],
-      "Eyes": [
-        {
-          "id": 3,
-          "name": "eyes-neutral",
-          "asset_url": "/assets/trabby/sprites/eyes-neutral.svg",
-          "description": "Neutral expression eyes",
-          "order": 0
-        },
-        {
-          "id": 4,
-          "name": "eyes-happy",
-          "asset_url": "/assets/trabby/sprites/eyes-happy.svg",
-          "description": "Happy expression eyes",
-          "order": 1
-        }
-      ]
-    }
-  },
-  "Limbs": {
-    "subcategories": ["Limbs", "Left Upper Arm", "Right Upper Arm", ...],
-    "options": {...}
-  },
-  "Torso": {
-    "subcategories": ["Torso Shape"],
-    "options": {...}
-  },
-  "Accessories": {
-    "subcategories": ["Wearables", "Holdables"],
-    "options": {...}
-  }
-}
-```
-
-**Response (200 OK) - Flat Format**:
-```json
-{
-  "count": 150,
+  "count": 20,
   "data": [
     {
       "id": 1,
-      "name": "head-face-round",
-      "asset_url": "/assets/trabby/sprites/head-face-round.svg",
-      "category": "Head",
-      "subcategory": "Face",
-      "order": 0,
-      "description": "A friendly round face for Trabby",
+      "name": "Round Head",
+      "asset_url": "/assets/trabby/sprites/head_round.svg",
+      "part_type": "HEAD",
+      "part_type_display": "Head",
+      "description": "A friendly round head for Trabby",
       "created_at": "2026-05-29T10:30:00Z",
       "updated_at": "2026-05-29T10:30:00Z"
     },
     {
       "id": 2,
-      "name": "head-face-square",
-      "asset_url": "/assets/trabby/sprites/head-face-square.svg",
-      "category": "Head",
-      "subcategory": "Face",
-      "order": 1,
-      "description": "A bold square-shaped face",
+      "name": "Square Head",
+      "asset_url": "/assets/trabby/sprites/head_square.svg",
+      "part_type": "HEAD",
+      "part_type_display": "Head",
+      "description": "A bold square-shaped head",
       "created_at": "2026-05-29T10:30:00Z",
       "updated_at": "2026-05-29T10:30:00Z"
     }
+    // ... more parts ...
   ]
 }
 ```
 
-**Filtered Response** (`GET /api/puppet-parts/?category=Limbs&subcategory=Left%20Upper%20Arm&format=flat`):
+**Filtered Response** (`GET /api/puppet-parts/?part_type=FACE`):
 ```json
 {
-  "count": 5,
+  "count": 7,
   "data": [
     {
-      "id": 25,
-      "name": "left-upper-arm-neutral",
-      "asset_url": "/assets/trabby/sprites/left-upper-arm-neutral.svg",
-      "category": "Limbs",
-      "subcategory": "Left Upper Arm",
-      "order": 0,
-      "description": "Left upper arm in neutral position",
+      "id": 11,
+      "name": "Eyes Neutral",
+      "asset_url": "/assets/trabby/sprites/eyes_neutral.svg",
+      "part_type": "FACE",
+      "part_type_display": "Face Element",
+      "description": "Neutral expression eyes",
       "created_at": "2026-05-29T10:30:00Z",
       "updated_at": "2026-05-29T10:30:00Z"
     },
-    {
-      "id": 26,
-      "name": "left-upper-arm-up",
-      "asset_url": "/assets/trabby/sprites/left-upper-arm-up.svg",
-      "category": "Limbs",
-      "subcategory": "Left Upper Arm",
-      "order": 1,
-      "description": "Left upper arm raised upward",
-      "created_at": "2026-05-29T10:30:00Z",
-      "updated_at": "2026-05-29T10:30:00Z"
-    }
+    // ... more face elements ...
   ]
 }
 ```
-
-### 6. Get Puppet Parts (Hierarchical Endpoint)
-
-**Endpoint**: `GET /api/puppet-parts/hierarchical/`
-
-**Query Parameters** (optional):
-- `category`: Filter by category (Head, Limbs, Torso, Accessories)
-
-**Description**: Dedicated endpoint for fetching puppet parts in hierarchical format. Equivalent to `GET /api/puppet-parts/?format=hierarchical`.
-
-**Response**: Same as hierarchical format shown in endpoint #5 above.
 
 ---
 
@@ -431,11 +346,7 @@ python manage.py seed_assets
 ```
 
 This will create:
-- 150+ puppet parts organized hierarchically:
-  - **Head**: 7 subcategories (Head Position, Face, Eyes, Mouth, Ears, Hair, Eyebrows) with ~45 options
-  - **Limbs**: 10 subcategories (Limbs, Left Upper Arm, Right Upper Arm, Left Forearm & Hand, Right Forearm & Hand, Left Thigh, Right Thigh, Left Lower Leg & Foot, Right Lower Leg & Foot, Tail) with ~65 options
-  - **Torso**: 1 subcategory (Torso Shape) with 7 options
-  - **Accessories**: 2 subcategories (Wearables, Holdables) with ~20 options
+- 20 puppet parts (heads, torsos, limbs, face elements, extras)
 - 3 body poses (neutral, thumbs-up, pointing)
 - 3 facial expressions (happy, surprised, confident)
 
@@ -451,36 +362,13 @@ python manage.py shell
 >>> from api.models import PosePreset, PuppetPart
 >>> PosePreset.objects.count()  # Should return 6
 6
->>> PuppetPart.objects.count()  # Should return 150+
-153
->>> PuppetPart.objects.values('category').distinct()
-<QuerySet [{'category': 'Head'}, {'category': 'Limbs'}, {'category': 'Torso'}, {'category': 'Accessories'}]>
+>>> PuppetPart.objects.count()  # Should return 20
+20
 ```
 
 ---
 
 ## Frontend Integration Examples
-
-### React/Astro Component: Fetch Hierarchical Puppet Parts
-
-```javascript
-// Fetch hierarchical puppet parts
-const response = await fetch('/api/puppet-parts/');
-const hierarchy = await response.json();
-
-// Build part picker UI
-Object.entries(hierarchy).forEach(([category, categoryData]) => {
-  console.log(`Category: ${category}`);
-  
-  categoryData.subcategories.forEach(subcategory => {
-    console.log(`  Subcategory: ${subcategory}`);
-    
-    categoryData.options[subcategory].forEach(part => {
-      console.log(`    - ${part.name}: ${part.asset_url}`);
-    });
-  });
-});
-```
 
 ### React/Astro Component: Fetch and Render a Pose
 
@@ -615,5 +503,5 @@ For questions about:
 
 ---
 
-**Last Updated**: May 30, 2026  
-**Version**: 1.1.0 (Hierarchical API Redesign)
+**Last Updated**: May 29, 2026  
+**Version**: 1.0.0 (MVP)
