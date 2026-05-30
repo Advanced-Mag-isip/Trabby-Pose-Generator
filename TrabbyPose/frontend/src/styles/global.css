@@ -9,6 +9,8 @@
     --dark-orange: #C85C27; 
     --darkest-blue: #0B1019; 
     --darker-blue: #233658;
+    --grey-text: #828A9C; 
+    --input-text-field: #E9EAED;
     --orange-gradient: linear-gradient(var(--orange),var(--dark-orange)); 
     --blue-gradient: linear-gradient(var(--darker-blue), var(--darkest-blue)); 
 
