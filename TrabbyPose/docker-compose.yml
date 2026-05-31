@@ -4,9 +4,9 @@ services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: trabbydb
-      POSTGRES_USER: trabbypose_user
-      POSTGRES_PASSWORD: post3118
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5434:5432"
     volumes:
@@ -21,11 +21,11 @@ services:
       - "8313:8313"
     environment:
       - DEBUG=True
-      - DB_NAME=trabbydb
-      - DB_USER=trabbypose_user
-      - DB_PASSWORD=post3118
-      - DB_HOST=db
-      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
     depends_on:
       - db
 
