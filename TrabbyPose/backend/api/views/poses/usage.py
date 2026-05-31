@@ -15,17 +15,28 @@ from ...models import PoseSelection
 def view_count_selection_per_pose(request):
     qs = (
         PoseSelection.objects
-        .values("pose_selection_fid__name_of_poses_generated")
-        .annotate(total=Count("selected_at"))
-        .order_by("-total")
+        .annotate(month=TruncMonth("selected_at"))
+        .values("month")
+        .annotate(total=Count("pose_selection_id"))
+        .order_by("month")
     )
 
-    labels = []
-    values = []
+    month_map = {}
 
-    for item in qs:
-        labels.append(item["pose_selection_fid__name_of_poses_generated"])
-        values.append(item["total"])
+    for row in qs:
+        if row["month"]:
+            month_index = row["month"].month
+            month_map[month_index] = row["total"]
+
+    labels = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ]
+
+    values = [
+        month_map.get(i, 0)
+        for i in range(1, 13)
+    ]
 
     return Response({
         "labels": labels,

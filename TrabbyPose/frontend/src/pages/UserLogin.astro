@@ -1,0 +1,194 @@
+---
+// src/pages/Gallery.astro
+import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import TrabahadoorDoorLogo from '../assets/trabahadoor-door-logo.svg?raw'; 
+---
+
+<Layout>
+  <div class="page-container">
+    <!-- Section Header -->
+    <div class="section-header">
+
+    </div>
+    <!-- Content Container -->
+    <div class="content-container">
+      <div id = "login-container">
+        <div id = "login-card">
+          <div id = "login-header">
+              <span id = "login-logo"><Fragment set:html={TrabahadoorDoorLogo} />
+              </span>
+              <span id = "login-text">Login</span>
+              <span id = "banner-text">
+                <span id = "welcome-text">Welcome to</span>
+                <span id = "trabbyhadoor">Trabbyhadoor</span>
+                <span id = "customizer">Customizer!</span>
+              </span>
+            </div>
+
+            <div id = "user-input">
+
+              <form id = "user-fields">
+                <div id = "username-field" class = "input-fields">
+                  <label for = "username">Username</label>
+                  <input type = "text" id = "username" name = "username" placeholder="Enter Username">
+                </div>
+
+                <div id = "password-field" class = "input-fields">
+                  <label for = "password">Password</label>
+                  <input type = "password" id = "password" name = "password" placeholder="Enter Password">
+                </div>
+                
+                <div id = "login-button-field">
+                  <a href="/Customization" style="width: 100%; text-decoration: none;">
+                    <input type="button" id = "login-button" value="Login">
+                  </a>
+                  
+                </div>
+                
+              </form>
+
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+
+
+<style>
+  #login-logo :global(svg) {
+  width: 4em;       
+  height: auto;       
+  display: block;     
+  margin-bottom: .5em; 
+  }
+
+  .page-container{
+    font-family: 'Sora', sans-serif;
+    font-weight: bold;
+     font-size: 1.2em;
+     color: var(--blue);
+  }
+  :global(#nav-links, #nav-actions) {
+    display: none !important; 
+  }
+  
+  #login-container{
+   display: flex;
+  justify-content: center; 
+  align-items: center;    
+  
+  height: 80vh;       
+  width: 100%;          
+  }
+
+
+  #login-card{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white);
+    box-shadow: var(--default-shadow);
+
+    border-width: 3px;
+    border-radius: 20px;
+    padding: 2em;
+  }
+
+  #login-header{
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #login-text{
+    font-size: 2em;
+    color: var(--blue);
+    margin-bottom: .5em;
+  }
+  
+  #banner-text{
+
+  }
+
+  #welcome-text{
+    color: var(--grey-text);
+    font-weight: 2.5px;; 
+  }
+
+  #trabbyhadoor{
+    color: var(--blue);
+  }
+
+  #customizer{
+    color:var(--orange)
+  }
+
+
+
+  #user-fields{
+    display: flex;
+    flex-direction: column;
+  
+  }
+
+  #username, #password{
+    background-color: var(--input-text-field);
+    border-style: none;
+
+    font-family: 'Sora', sans-serif;
+    font-size: 1rem;            
+    color: var(--blue);           
+    font-weight: normal;           
+  
+  
+    padding-left: 15px;
+    padding-right: 15px;
+    box-sizing: border-box;
+  }
+
+  .input-fields{
+    padding: 1em; 
+    display: flex;
+    flex-direction: column;
+    min-width: 400px;
+
+  }
+
+  #login-button-field{
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    min-width: 400px;
+    margin-top: 1em;
+  }
+  
+  input{
+    height: 3.2em;
+    border-radius: 10px;
+    width: 100%;               
+  box-sizing: border-box;
+  }
+
+  label{
+    margin-bottom: .5em;
+  }
+
+
+
+  #login-button{
+      font-style: 'Sora', sans-serif;
+      font-weight: bold;
+      background-color: var(--orange);
+      color: var(--white);
+      border-style: none;
+
+      font-size: 1.1rem; 
+      box-sizing: border-box;
+      height: 3.2em;
+     
+  }
+</style>

@@ -38,10 +38,9 @@ def view_number_of_total_poses_generated(request):
             number_of_predefined_poses + number_of_customized_poses,
     })
 
-
 @api_view(["GET"])
 def view_pose_generation_rate_per_month(request):
-    monthly_data = (
+    data = (
         Poses.objects
         .annotate(month=TruncMonth("created_at"))
         .values("month")
@@ -49,21 +48,26 @@ def view_pose_generation_rate_per_month(request):
         .order_by("month")
     )
 
-    month_map = defaultdict(int)
-
-    for entry in monthly_data:
+    # map DB results -> {month_index: count}
+    month_map = {}
+    for entry in data:
         if entry["month"]:
             month_index = entry["month"].month  # 1–12
             month_map[month_index] = entry["total"]
 
+    # fixed labels
     labels = [
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ]
 
-    data = [month_map[i] for i in range(1, 13)]
+    # fill missing months with 0
+    values = [
+        month_map.get(i, 0)
+        for i in range(1, 13)
+    ]
 
     return Response({
         "labels": labels,
-        "data": data
+        "values": values
     })
