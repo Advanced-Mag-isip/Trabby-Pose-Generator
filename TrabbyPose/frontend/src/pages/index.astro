@@ -1,6 +1,6 @@
 ---
 // src/pages/index.astro
-import '../styles/landingPage.css';
+
 import { Image } from 'astro:assets';
 import trabbyImage from '../assets/trabby/model/trabby.png';
 // import { fetchTest } from '../lib/api'; API endpoints, uncomment to connect to django
@@ -15,7 +15,7 @@ import trabbyImage from '../assets/trabby/model/trabby.png';
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Trabbyhadoor</title>
-        <link href = /css/landingPage.css rel = "stylesheet">
+
 
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +27,9 @@ import trabbyImage from '../assets/trabby/model/trabby.png';
             <div id = "app-title">
                 <div id = "trabbyhadoor">TrabbyHadoor</div>
                 <div id = "customizer">Customizer</div>
-                <div id = "landing-button"><a href="/UserLogin"><button>start</button></a></div>
+				<p>Trabahadoor’s mascot cusomization tool that allows users to customize Trabby by selecting different heads, torso, limbs, and accessories to create unique character assets.</p>
+                <div id = "landing-button"><a href="/UserLogin"><button>Start Customizing!</button></a></div>
+				
             </div>
 
             <div id = "trabby-container">
@@ -36,3 +38,89 @@ import trabbyImage from '../assets/trabby/model/trabby.png';
         </div>
 	</body>
 </html>
+
+<style>
+	html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    /*overflow-x: hidden;
+    overflow-y: hidden;*/
+}
+
+
+#main-container{
+    width: 100vw;
+    height: 100vh; 
+    background-color: #FFFF;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+
+    /* 2. Layer the repeating slanted lines on top */
+    background-image: repeating-linear-gradient(
+        -45deg,               
+        transparent,           /* Line start color */
+        transparent 10px,      /* Width of the empty space between lines */
+        #e2e8f0 10px,          /* Line border color (subtle gray) */
+        #e2e8f0 11px           /* Thickness of the actual line (1px thick here) */
+    );
+}
+
+#main-container button{
+    width: fit-content;
+    height: fit-content;
+	padding: 10px 50px;
+    font-size: 1rem;
+    border-radius: 20px;
+    font-family: 'Sora', sans-serif; 
+    font-weight: bold;
+    box-sizing: border-box;
+    background-color: #1A2B4A;
+    color: #FFFF;
+	
+    
+}
+
+button:hover{
+	transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.50);
+}
+
+
+
+
+#app-title{
+    font-size: 75px;
+    font-family: 'Sora', sans-serif; 
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;  
+    justify-content: center; 
+}
+
+img{
+    height: 500px; 
+    width: auto;
+    padding-left: 50px;
+}
+
+#trabbyhadoor{
+    color: #1A2B4A
+}
+
+#customizer{
+    color: #F26B2A
+}
+
+p{
+    font-size: 1.1rem;
+	width: 550px;
+	font-weight: normal;
+	color: var(--grey);
+}
+
+</style>

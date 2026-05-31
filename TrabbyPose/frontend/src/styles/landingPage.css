@@ -20,7 +20,7 @@ html, body {
 
     /* 2. Layer the repeating slanted lines on top */
     background-image: repeating-linear-gradient(
-        -45deg,                /* Controls the slant direction (negative for top-left to bottom-right) */
+        -45deg,               
         transparent,           /* Line start color */
         transparent 10px,      /* Width of the empty space between lines */
         #e2e8f0 10px,          /* Line border color (subtle gray) */
@@ -44,6 +44,7 @@ html, body {
 
 #landing-button{
    height: fit-content ;
+   width: fit-content;
 }
 
 #app-title{
@@ -67,4 +68,8 @@ img{
 
 #customizer{
     color: #F26B2A
+}
+
+span{
+    font-size: 1em;
 }
