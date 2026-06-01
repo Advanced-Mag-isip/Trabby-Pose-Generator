@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import trabahadoorLogo from '../assets/trabahadoor-logo.svg?raw';
-import avatarIcon from '../assets/icons/avatar-icon.png';
+import logoutIcon from '../assets/icons/log-out.svg?raw';
 import '../styles/global.css';
 const currentPath = Astro.url.pathname;
 ---
@@ -15,10 +15,10 @@ const currentPath = Astro.url.pathname;
             <a href="/Customization" class={currentPath === '/Customization' ? 'active' : ''}>Customization</a>
             <a href="/Gallery" class={currentPath === '/Gallery' ? 'active' : ''}>Gallery</a>
             <a href="/Insights" class={currentPath === '/Insights' ? 'active' : ''}>Insights</a>
-            <a href="/UserAccounts" class={currentPath === '/UserAccounts' ? 'active' : ''}>User Accounts</a>
+            <a href="/UserAccounts" class={currentPath === '/UserAccounts' ? 'active' : ''}>Settings</a>
         </div>
         <div id="nav-actions">
-            <Image id="avatar-icon" src={avatarIcon} alt="User" />
+            <a href = "/UserLogin" id = "log-out-btn"><span>Log-out &nbsp;</span><Fragment set:html={logoutIcon} alt="User"/></a>
         </div>
     </div>
 </nav>
@@ -82,13 +82,44 @@ const currentPath = Astro.url.pathname;
         display: flex;
         align-items: center;
     }
-
-    #avatar-icon {
-        width: 40px;
+    
+    #log-out-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+        width: auto;
         height: 40px;
-        border-radius: 50%;
+        border-radius: 2rem; 
         cursor: pointer;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+        color: var(--blue);
+        font-weight: bold;
+          padding: 0px 15px;
     }
+
+    #log-out-btn :global(svg) {
+        width: 24px;
+        height: 24px;
+        stroke: var(--blue); 
+        transition: fill 0.4s ease;
+    }
+
+    
+
+
+    #log-out-btn:hover {
+        background-color: var(--blue);
+        color: var(--white)
+    }
+    
+    #log-out-btn:hover :global(svg) {
+        stroke: var(--white); 
+    }
+
+
+
 
     @media (max-width: 900px) {
         #nav-links {
