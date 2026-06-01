@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:15
@@ -26,6 +24,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
     depends_on:
       - db
 
@@ -38,7 +37,7 @@ services:
     ports:
       - "8312:8312"
     environment:
-      - PUBLIC_API_URL=http://165.22.107.245:8313
+      - PUBLIC_API_URL=http://backend:8313
     depends_on:
       - backend
 

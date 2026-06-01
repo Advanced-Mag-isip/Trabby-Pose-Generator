@@ -24,9 +24,14 @@ These are the tools used. Visit the link to download.
 - **PuTTY (SSH client):** https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html
 - **WinSCP:** https://winscp.net/eng/download.php#google_vignette
 - **PostgreSQL:** https://www.postgresql.org/download/
+- **Docker:** https://www.docker.com/
 - **Node.js:** https://nodejs.org/
 - **Python:** https://www.python.org/downloads/
 - **Git:** https://git-scm.com/downloads
+
+## Docker Setup
+
+See [DOCKER_SETUP_AND_DEPLOYMENT.md](DOCKER_SETUP_AND_DEPLOYMENT.md) for the Docker compose layout, required env files, deployment notes, and the exact commands to run.
 
 
 ## Step 1 - Create the Project Folder

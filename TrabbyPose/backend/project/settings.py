@@ -11,12 +11,20 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
-from dotenv import load_dotenv
+import importlib
 import os
+
+load_dotenv = None
+try:
+    load_dotenv = importlib.import_module('dotenv').load_dotenv
+except ImportError:
+    pass
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")
+
+if load_dotenv is not None:
+    load_dotenv(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,7 +35,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'sandbox1.advancedthinkers.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', 'sandbox1.advancedthinkers.app']
 
 # Application definition
 
@@ -127,9 +135,10 @@ STATIC_URL = 'static/'
 
 # CORS_ALLOWED_ORIGINS = [os.getenv('CORS_ORIGIN')] # allows requests from our frontend origin
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:4322",
-    "http://127.0.0.1",
-    "http://localhost"
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    os.getenv('CORS_ORIGIN_LOCAL', 'http://localhost:8312'),
+    os.getenv('CORS_ORIGIN_SANDBOX', ''),
+    os.getenv('CORS_ORIGIN_IP', ''),
+    #os.getenv('ALLOWED_HOSTS', 'localhost').split(','),
 ]
