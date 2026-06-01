@@ -9,6 +9,7 @@ import IconAccessories from '../assets/icons/hammer.svg?raw';
 import IconLimbs from '../assets/icons/hand.svg?raw';
 import IconShirt from '../assets/icons/shirt.svg?raw';
 import IconLaugh from '../assets/icons/laugh.svg?raw';
+import IconPreset from '../assets/icons/person-standing.svg?raw';
 import Trabby from '../assets/trabby/model/trabby.png';
 import Layout from '../layouts/Layout.astro';
 
@@ -77,6 +78,7 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
           <div class="options-tabs" set:html={IconLimbs}></div>
           <div class="options-tabs" set:html={IconShirt}></div>
           <div class="options-tabs" set:html={IconAccessories}></div>
+          <div class="options-tabs" set:html={IconPreset}></div>
         </div>
       </div> 
     </div>
@@ -232,15 +234,18 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
     justify-content: center;
     gap: 10px;
     padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
   .selection-category {
     background-color: transparent;
     border: 4px solid var(--orange);
     border-radius: 12px;
-    width: 5em;
-    height: 5em;
+    flex: 1;
+    max-width: 5em;
+    aspect-ratio: 1;
+    min-width: 0;
     transition: background-color 0.3s ease;
-    flex-shrink: 0;
   }
   .selection-category:hover {
     background-color: color-mix(in srgb, var(--orange) 20%, transparent);
@@ -384,6 +389,12 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
 
     .tabs-container {
       left: 0;
+      top: 40px;
+    }
+
+    .options-tabs :global(svg) {
+      width: 24px;
+      height: 24px;
     }
   }
 </style>
@@ -456,211 +467,329 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
 </script>
 
 <script is:inline>
-  const TABS = {
-    Head: {
-      subcategories: ["Head Position", "Face", "Eyes", "Mouth", "Ears", "Hair", "Eyebrows"],
-      options: {
-        "Head Position": ["head-1", "head-2", "Tilted Right", "Looking Up", "Looking Down", "Bowed"],
-        "Face": ["face-1", "face-2", "Star Eyes", "Heart Eyes", "Dot Eyes", "Winking"],
-        "Eyes": ["Round Eyes", "Sleepy Eyes", "Star Eyes", "Heart Eyes", "Dot Eyes", "Winking"],
-        "Mouth": ["Smile", "Grin", "Pout", "Open Mouth", "Smirk", "Frown"],
-        "Ears": ["Round Ears", "Pointy Ears", "Floppy Ears", "No Ears", "Cat Ears", "Bear Ears"],
-        "Hair": ["No Hair", "Short Tuft", "Long Tuft", "Spiky", "Wavy", "Bun"],
-        "Eyebrows": ["Normal", "Raised", "Furrowed", "Thin", "Bushy", "Arched"],
+  function setupCustomization() {
+    // 1. Guard clause: Only run if we are actually on the customization page
+    const categoryContainer = document.getElementById("category-container");
+    const optionsContents = document.getElementById("options-contents");
+    
+    if (!categoryContainer || !optionsContents) return;
+
+    // 2. Constants and Data
+    const TABS = {
+      Head: {
+        subcategories: ["Head Position", "Face", "Eyes", "Mouth", "Ears", "Hair", "Eyebrows"],
+        options: {
+          "Head Position": ["head-1", "head-2", "Tilted Right", "Looking Up", "Looking Down", "Bowed"],
+          "Face": ["face-1", "face-2", "Star Eyes", "Heart Eyes", "Dot Eyes", "Winking"],
+          "Eyes": ["Round Eyes", "Sleepy Eyes", "Star Eyes", "Heart Eyes", "Dot Eyes", "Winking"],
+          "Mouth": ["Smile", "Grin", "Pout", "Open Mouth", "Smirk", "Frown"],
+          "Ears": ["Round Ears", "Pointy Ears", "Floppy Ears", "No Ears", "Cat Ears", "Bear Ears"],
+          "Hair": ["No Hair", "Short Tuft", "Long Tuft", "Spiky", "Wavy", "Bun"],
+          "Eyebrows": ["Normal", "Raised", "Furrowed", "Thin", "Bushy", "Arched"],
+        }
+      },
+      Limbs: {
+        subcategories: [
+          "Limbs", "Left Upper Arm", "Right Upper Arm", "Left Forearm & Hand", 
+          "Right Forearm & Hand", "Left Thigh", "Right Thigh", 
+          "Left Lower Leg & Foot", "Right Lower Leg & Foot", "Tail"
+        ],
+        options: {
+          "Limbs": ["limbs-1", "limbs-2"],
+          "Left Upper Arm": ["Default", "Raised", "Lowered", "Crossed", "Flexed"],
+          "Right Upper Arm": ["Default", "Raised", "Lowered", "Crossed", "Flexed"],
+          "Left Forearm & Hand": ["Open Hand", "Fist", "Peace Sign", "Pointing", "Wave"],
+          "Right Forearm & Hand": ["Open Hand", "Fist", "Peace Sign", "Pointing", "Wave"],
+          "Left Thigh": ["Default", "Wide Stance", "Narrow Stance", "Crossed"],
+          "Right Thigh": ["Default", "Wide Stance", "Narrow Stance", "Crossed"],
+          "Left Lower Leg & Foot": ["Default", "Tip-toe", "Flat Foot", "Raised"],
+          "Right Lower Leg & Foot": ["Default", "Tip-toe", "Flat Foot", "Raised"],
+          "Tail": ["No Tail", "Short Tail", "Long Tail", "Curly Tail", "Wagging Tail"],
+        }
+      },
+      Torso: {
+        subcategories: ["Torso Shape"],
+        options: {
+          "Torso Shape": ["torso-1", "torso-2", "Chubby", "Slim", "Muscular", "Round", "Tiny"],
+        }
+      },
+      Accessories: {
+        subcategories: ["Wearables", "Holdables"],
+        options: {
+          "Wearables": ["acc-1", "acc-2", "Scarf", "Bowtie", "Necklace", "Cape", "Backpack", "Hat", "Glasses", "Apron", "Hoodie"],
+          "Holdables": ["None", "Sword", "Staff", "Flower", "Lantern", "Book", "Umbrella", "Balloon", "Basket"],
+        }
+      },
+      Presets: {
+        subcategories: ["Poses", "Expressions"],
+        options: {
+          "Poses": ["Default", "Confident", "Running", "Back"],
+          "Expressions": ["Smile", "Laugh", "Surprised", "Sad", "Angry"],
+        }
       }
-    },
-    Limbs: {
-      subcategories: [
-        "Limbs",
-        "Left Upper Arm", "Right Upper Arm",
-        "Left Forearm & Hand", "Right Forearm & Hand",
-        "Left Thigh", "Right Thigh",
-        "Left Lower Leg & Foot", "Right Lower Leg & Foot",
-        "Tail"
-      ],
-      options: {
-        "Limbs": ["limbs-1", "limbs-2"],
-        "Left Upper Arm": ["Default", "Raised", "Lowered", "Crossed", "Flexed"],
-        "Right Upper Arm": ["Default", "Raised", "Lowered", "Crossed", "Flexed"],
-        "Left Forearm & Hand": ["Open Hand", "Fist", "Peace Sign", "Pointing", "Wave"],
-        "Right Forearm & Hand": ["Open Hand", "Fist", "Peace Sign", "Pointing", "Wave"],
-        "Left Thigh": ["Default", "Wide Stance", "Narrow Stance", "Crossed"],
-        "Right Thigh": ["Default", "Wide Stance", "Narrow Stance", "Crossed"],
-        "Left Lower Leg & Foot": ["Default", "Tip-toe", "Flat Foot", "Raised"],
-        "Right Lower Leg & Foot": ["Default", "Tip-toe", "Flat Foot", "Raised"],
-        "Tail": ["No Tail", "Short Tail", "Long Tail", "Curly Tail", "Wagging Tail"],
-      }
-    },
-    Torso: {
-      subcategories: ["Torso Shape"],
-      options: {
-        "Torso Shape": ["torso-1", "torso-2", "Chubby", "Slim", "Muscular", "Round", "Tiny"],
-      }
-    },
-    Accessories: {
-      subcategories: ["Wearables", "Holdables"],
-      options: {
-        "Wearables": ["acc-1", "acc-2", "Scarf", "Bowtie", "Necklace", "Cape", "Backpack", "Hat", "Glasses", "Apron", "Hoodie"],
-        "Holdables": ["None", "Sword", "Staff", "Flower", "Lantern", "Book", "Umbrella", "Balloon", "Basket"],
-      }
+
+    };
+    const TAB_ORDER = ["Head", "Limbs", "Torso", "Accessories", "Presets"];
+    const LAYER_Z = { Torso: 1, Head: 2, Limbs: 3, Accessories: 4 };
+
+    // 3. State Management (Restoring from sessionStorage)
+    let activeTab = "Head";
+    let activeSubcategory = TABS["Head"].subcategories[0];
+    const lastVisitedSubcategory = {
+      Head: "Head Position",
+      Limbs: "Limbs",
+      Torso: "Torso Shape",
+      Accessories: "Wearables",
+      Presets: "Poses"
+    };
+    
+    const savedSelections = sessionStorage.getItem('trabbySelections');
+    let previewSelections = savedSelections ? JSON.parse(savedSelections) : {};
+
+    let recentCategorySelections = sessionStorage.getItem('trabbyRecentSelections') 
+      ? JSON.parse(sessionStorage.getItem('trabbyRecentSelections')) 
+      : {};
+
+    // 4. Functions
+    function updateScrollButtons() {
+      const leftBtn = document.getElementById("scroll-left");
+      const rightBtn = document.getElementById("scroll-right");
+      if (!leftBtn || !rightBtn) return;
+      leftBtn.classList.toggle("hidden", categoryContainer.scrollLeft <= 0);
+      rightBtn.classList.toggle("hidden",
+        categoryContainer.scrollLeft + categoryContainer.clientWidth >= categoryContainer.scrollWidth - 1
+      );
     }
-  };
-  const TAB_ORDER = ["Head", "Limbs", "Torso", "Accessories"];
 
-  let activeTab = "Head";
-  let activeSubcategory = TABS["Head"].subcategories[0];
+    function renderCategories() {
+      const subs = TABS[activeTab].subcategories;
+      categoryContainer.innerHTML = subs.map(sub => `
+        <button 
+          class="category-btn hover-effect${sub === activeSubcategory ? ' active' : ''}" 
+          data-sub="${sub}"
+        >${sub}</button>
+      `).join("");
 
-  const categoryContainer = document.getElementById("category-container");
-  const optionsContents = document.getElementById("options-contents");
+      categoryContainer.querySelectorAll(".category-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          activeSubcategory = btn.dataset.sub;
+          lastVisitedSubcategory[activeTab] = activeSubcategory;
+          renderCategories();
+          renderOptions();
+        });
+      });
 
-  function updateScrollButtons() {
-    const leftBtn = document.getElementById("scroll-left");
-    const rightBtn = document.getElementById("scroll-right");
-    if (!leftBtn || !rightBtn) return;
-    leftBtn.classList.toggle("hidden", categoryContainer.scrollLeft <= 0);
-    rightBtn.classList.toggle("hidden",
-      categoryContainer.scrollLeft + categoryContainer.clientWidth >= categoryContainer.scrollWidth - 1
-    );
-  }
+      categoryContainer.removeEventListener("scroll", updateScrollButtons);
+      categoryContainer.addEventListener("scroll", updateScrollButtons);
 
-  function renderCategories() {
-    const subs = TABS[activeTab].subcategories;
-    categoryContainer.innerHTML = subs.map(sub => `
-      <button 
-        class="category-btn hover-effect${sub === activeSubcategory ? ' active' : ''}" 
-        data-sub="${sub}"
-      >${sub}</button>
-    `).join("");
+      document.getElementById("scroll-left").onclick = () => {
+        categoryContainer.scrollBy({ left: -150, behavior: "smooth" });
+      };
+      document.getElementById("scroll-right").onclick = () => {
+        categoryContainer.scrollBy({ left: 150, behavior: "smooth" });
+      };
 
-    categoryContainer.querySelectorAll(".category-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        activeSubcategory = btn.dataset.sub;
+      setTimeout(updateScrollButtons, 50);
+    }
+
+    function updateSummaryBoxes() {
+      const boxes = document.querySelectorAll(".selection-category");
+      // The boxes correspond to the first 4 tabs
+      const mapping = ["Head", "Limbs", "Torso", "Accessories"]; 
+      
+      boxes.forEach((box, index) => {
+        const tabName = mapping[index];
+        const recentSprite = recentCategorySelections[tabName];
+        
+        if (recentSprite) {
+          box.innerHTML = `<img src="${recentSprite}" alt="${tabName} selection" style="width:100%;height:100%;object-fit:contain;pointer-events:none;" />`;
+        } else {
+          box.innerHTML = ''; // Clear it if nothing is selected
+        }
+      });
+    }
+
+    function setPreviewLayer(tab, subcategory, spriteUrl) {
+      previewSelections[subcategory] = { tab, spriteUrl };
+      sessionStorage.setItem('trabbySelections', JSON.stringify(previewSelections));
+      
+      if (["Head", "Limbs", "Torso", "Accessories"].includes(tab)) {
+        recentCategorySelections[tab] = spriteUrl;
+        sessionStorage.setItem('trabbyRecentSelections', JSON.stringify(recentCategorySelections));
+        updateSummaryBoxes();
+      }
+
+      renderPreviewLayers();
+    }
+
+    function renderPreviewLayers() {
+      const display = document.querySelector(".character-preview-display");
+      if (!display) return;
+      
+      display.querySelectorAll(".preview-layer").forEach(el => el.remove());
+
+      Object.entries(previewSelections).forEach(([sub, { tab, spriteUrl }]) => {
+        if (!spriteUrl) return;
+        const img = document.createElement("img");
+        img.src = spriteUrl;
+        img.alt = sub;
+        img.className = "preview-layer";
+        img.style.cssText = `
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          z-index: ${LAYER_Z[tab] ?? 1};
+          pointer-events: none;
+        `;
+        display.appendChild(img);
+      });
+    }
+
+    function renderOptions() {
+      const items = TABS[activeTab].options[activeSubcategory] || [];
+      optionsContents.innerHTML = items.map(item => {
+        const spriteUrl = window.__SPRITE_MAP__?.[item];
+        const content = spriteUrl
+          ? `<img src="${spriteUrl}" alt="${item}" style="width:80%;height:80%;object-fit:contain;" />`
+          : item;
+
+        const isSelected = spriteUrl ? previewSelections[activeSubcategory]?.spriteUrl === spriteUrl : false;
+        const selectedClass = isSelected ? 'option-selected' : '';
+
+        return `<div class="option-item hover-effect ${selectedClass}" data-item="${item}" data-sprite="${spriteUrl || ''}">${content}</div>`;
+      }).join("");
+
+      optionsContents.querySelectorAll(".option-item").forEach(el => {
+        el.addEventListener("click", () => {
+          const sprite = el.dataset.sprite;
+          if (!sprite) return;
+          setPreviewLayer(activeTab, activeSubcategory, sprite);
+
+          optionsContents.querySelectorAll(".option-item").forEach(e => e.classList.remove("option-selected"));
+          el.classList.add("option-selected");
+        });
+      });
+    }
+
+    function downloadPreview() {
+      const display = document.querySelector(".character-preview-display");
+      const layers = Array.from(display.querySelectorAll(".preview-layer"))
+        .sort((a, b) => parseInt(a.style.zIndex) - parseInt(b.style.zIndex));
+
+      if (layers.length === 0) return;
+
+      const refImg = layers[0];
+      const width = refImg.naturalWidth || 512;
+      const height = refImg.naturalHeight || 512;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+
+      layers.forEach(img => {
+        ctx.drawImage(img, 0, 0, width, height);
+      });
+
+      const nameInput = document.querySelector(".character-preview-actions input");
+      const filename = nameInput?.value?.trim() || "trabby";
+
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${filename}.png`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }, "image/png");
+    }
+
+    // 5. Event Listeners for Tabs
+    document.querySelectorAll(".options-tabs").forEach((tab, i) => {
+      const newTab = tab.cloneNode(true);
+      tab.parentNode.replaceChild(newTab, tab);
+      
+      newTab.addEventListener("click", () => {
+        activeTab = TAB_ORDER[i];
+        activeSubcategory = lastVisitedSubcategory[activeTab];
         renderCategories();
         renderOptions();
+        
+        document.querySelectorAll(".options-tabs").forEach(t => t.classList.remove("tab-active"));
+        newTab.classList.add("tab-active");
       });
     });
 
-    categoryContainer.removeEventListener("scroll", updateScrollButtons);
-    categoryContainer.addEventListener("scroll", updateScrollButtons);
+    const summaryBoxes = document.querySelectorAll(".selection-category");
+    const boxMapping = ["Head", "Limbs", "Torso", "Accessories"]; // Matches order in HTML
+    
+    summaryBoxes.forEach((box, i) => {
+      const newBox = box.cloneNode(true); // Prevent duplicate listeners
+      box.parentNode.replaceChild(newBox, box);
+      
+      newBox.addEventListener("click", () => {
+        // Find which tab this box corresponds to
+        const targetTab = boxMapping[i];
+        const tabIndex = TAB_ORDER.indexOf(targetTab);
+        
+        if (tabIndex !== -1) {
+          activeTab = targetTab;
+          activeSubcategory = lastVisitedSubcategory[activeTab];
+          
+          // Render new menus
+          renderCategories();
+          renderOptions();
+          
+          // Visually highlight the correct tab on the right side
+          document.querySelectorAll(".options-tabs").forEach(t => t.classList.remove("tab-active"));
+          document.querySelectorAll(".options-tabs")[tabIndex].classList.add("tab-active");
+        }
+      });
+      
+      // Make it obvious they are clickable
+      newBox.style.cursor = "pointer";
+    });
 
-    document.getElementById("scroll-left").onclick = () => {
-      categoryContainer.scrollBy({ left: -150, behavior: "smooth" });
-    };
-    document.getElementById("scroll-right").onclick = () => {
-      categoryContainer.scrollBy({ left: 150, behavior: "smooth" });
-    };
+    // 7. Init Buttons
+    const downloadBtn = document.querySelector('[aria-label="Download"]');
+    if (downloadBtn) {
+      const newDownloadBtn = downloadBtn.cloneNode(true);
+      downloadBtn.parentNode.replaceChild(newDownloadBtn, downloadBtn);
+      newDownloadBtn.addEventListener("click", downloadPreview);
+    }
 
-    setTimeout(updateScrollButtons, 50);
-  }
+    const resetBtn = document.querySelector('[aria-label="Delete"]');
+    if (resetBtn) {
+      const newResetBtn = resetBtn.cloneNode(true);
+      resetBtn.parentNode.replaceChild(newResetBtn, resetBtn);
+      newResetBtn.addEventListener("click", () => {
+        const userConfirmed = window.confirm("Are you sure you want to clear your character? This cannot be undone.");
+        if (userConfirmed) {
+          previewSelections = {};
+          sessionStorage.removeItem('trabbySelections');
+          
+          recentCategorySelections = {};
+          sessionStorage.removeItem('trabbyRecentSelections');
+          updateSummaryBoxes();
+          
+          renderPreviewLayers();
+          renderOptions();
+        }
+      });
+    }
+    
+    // Set initial visual active state for the default Head tab
+    const firstTab = document.querySelectorAll(".options-tabs")[0];
+    if(firstTab) firstTab.classList.add("tab-active");
 
-  // z-index stacking order
-  const LAYER_Z = { Torso: 1, Head: 2, Limbs: 3, Accessories: 4 };
-
-  // tracks current selection per subcategory: { subcategory: { tab, spriteUrl } }
-  const previewSelections = {};
-
-  function setPreviewLayer(tab, subcategory, spriteUrl) {
-    previewSelections[subcategory] = { tab, spriteUrl };
+    renderCategories();
+    renderOptions();
     renderPreviewLayers();
+    updateSummaryBoxes();
   }
 
-  function renderPreviewLayers() {
-    const display = document.querySelector(".character-preview-display");
-    // remove all dynamic layers (keep nothing, re-render all)
-    display.querySelectorAll(".preview-layer").forEach(el => el.remove());
-
-    Object.entries(previewSelections).forEach(([sub, { tab, spriteUrl }]) => {
-      if (!spriteUrl) return;
-      const img = document.createElement("img");
-      img.src = spriteUrl;
-      img.alt = sub;
-      img.className = "preview-layer";
-      img.style.cssText = `
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        z-index: ${LAYER_Z[tab] ?? 1};
-        pointer-events: none;
-      `;
-      display.appendChild(img);
-    });
-  }
-
-  function renderOptions() {
-    const items = TABS[activeTab].options[activeSubcategory] || [];
-    optionsContents.innerHTML = items.map(item => {
-      const spriteUrl = window.__SPRITE_MAP__?.[item];
-      const content = spriteUrl
-        ? `<img src="${spriteUrl}" alt="${item}" style="width:80%;height:80%;object-fit:contain;" />`
-        : item;
-      return `<div class="option-item hover-effect" data-item="${item}" data-sprite="${spriteUrl || ''}">${content}</div>`;
-    }).join("");
-
-    optionsContents.querySelectorAll(".option-item").forEach(el => {
-      el.addEventListener("click", () => {
-        const sprite = el.dataset.sprite;
-        if (!sprite) return;
-        setPreviewLayer(activeTab, activeSubcategory, sprite);
-
-        // visual selected state within this subcategory
-        optionsContents.querySelectorAll(".option-item").forEach(e => e.classList.remove("option-selected"));
-        el.classList.add("option-selected");
-      });
-    });
-  }
-
-  document.querySelectorAll(".options-tabs").forEach((tab, i) => {
-    tab.addEventListener("click", () => {
-      activeTab = TAB_ORDER[i];
-      activeSubcategory = TABS[activeTab].subcategories[0];
-      renderCategories();
-      renderOptions();
-      // Visual active state on tabs
-      document.querySelectorAll(".options-tabs").forEach(t => t.classList.remove("tab-active"));
-      tab.classList.add("tab-active");
-    });
-  });
-
-  function downloadPreview() {
-    const display = document.querySelector(".character-preview-display");
-    const layers = Array.from(display.querySelectorAll(".preview-layer"))
-      .sort((a, b) => parseInt(a.style.zIndex) - parseInt(b.style.zIndex));
-
-    if (layers.length === 0) return;
-
-    // Get the natural size from the first image (all sprites are same size)
-    const refImg = layers[0];
-    const width = refImg.naturalWidth || 512;
-    const height = refImg.naturalHeight || 512;
-
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext("2d");
-
-    // Draw each layer in z-order onto transparent canvas
-    layers.forEach(img => {
-      ctx.drawImage(img, 0, 0, width, height);
-    });
-
-    // Get name from input field
-    const nameInput = document.querySelector(".character-preview-actions input");
-    const filename = nameInput?.value?.trim() || "trabby";
-
-    canvas.toBlob(blob => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${filename}.png`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }, "image/png");
-  }
-
-  // Initial render
-  renderCategories();
-  renderOptions();
-  document.querySelector('[aria-label="Download"]').addEventListener("click", downloadPreview);
+  // Hook into Astro's View Transitions lifecycle
+  document.addEventListener('astro:page-load', setupCustomization);
 </script>
