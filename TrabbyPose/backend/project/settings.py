@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 import importlib
 import os
+from datetime import timedelta
 
 load_dotenv = None
 try:
@@ -37,6 +38,31 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', 'sandbox1.advancedthinkers.app']
 
+# SimpleJWT Custom Cookie Configuration
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+    
+    'AUTH_COOKIE': 'access_token',       # Name of the cookie
+    'AUTH_COOKIE_REFRESH': 'refresh_token',
+    'AUTH_COOKIE_SECURE': True,          # True in production (HTTPS)
+    'AUTH_COOKIE_HTTP_ONLY': True,       # Prevents JS from reading token
+    'AUTH_COOKIE_PATH': '/',
+    'AUTH_COOKIE_SAMESITE': 'Lax',       # Protects against CSRF
+}
+
+# Update CORS to allow cookies to pass through
+CORS_ALLOW_CREDENTIALS = True
+
+# Add your production Astro frontend URL to CORS
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4321", # Astro default port
+    "https://your-production-astro-domain.com",
+    "https://sandbox1.advancedthinkers.app",
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -49,7 +75,15 @@ INSTALLED_APPS = [
     'rest_framework', # enables Django REST Framework, API
     'corsheaders', #handles Cross-Origin requests
     'api', # our custom app for API 
+    'rest_framework_simplejwt',
 ]
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'api.authenticate.CookieJWTAuthentication', # Use the custom cookie auth class
+    )
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # middleware to handle CORS
