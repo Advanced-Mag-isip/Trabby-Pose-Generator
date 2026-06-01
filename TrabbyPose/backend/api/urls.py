@@ -5,20 +5,9 @@ Defines all available endpoints for:
 - Pose presets (body poses)
 - Expression presets (facial expressions)
 - Puppet parts (asset inventory)
-- Authentication (login, logout, user management)
 """
 
 from django.urls import path
-
-from api.views.auth import (
-    login,
-    logout,
-    get_current_user,
-    create_user,
-    list_users,
-    delete_user,
-    update_user,
-)
 
 from api.views.poses.generation import (
     view_number_of_predefined_poses,
@@ -52,7 +41,6 @@ from api.views.exports import (
 app_name = "api"
 
 urlpatterns = [
-
     # # Legacy test endpoint
     # # path("test/", views.test, name="test"),
 
@@ -69,19 +57,8 @@ urlpatterns = [
     # path("puppet-parts/hierarchical/", get_puppet_parts_hierarchical, name="puppet-parts-hierarchical"),
 
     # ----------------------------------------
-    # Authentication Endpoints
-    # ----------------------------------------
-    path("auth/login/", login, name="auth-login"),
-    path("auth/logout/", logout, name="auth-logout"),
-    path("auth/profile/", get_current_user, name="auth-profile"),
-    path("auth/register/", create_user, name="auth-register"),
-    path("auth/users/", list_users, name="auth-users-list"),
-    path("auth/users/<int:user_id>/", update_user, name="auth-user-detail"),
-    path("auth/users/<int:user_id>/delete/", delete_user, name="auth-user-delete"),
-
-    # ----------------------------------------
-    # Analytics Part
-    # ----------------------------------------
+    #Analytics Part
+    #-----------------------------------------
     # Pose generation
     path("poses/predefined/", view_number_of_predefined_poses),
     path("poses/customized/", view_number_of_customized_poses),
