@@ -24,6 +24,26 @@ import Torso2 from '../assets/trabby/sprites/torso-2.png';
 import Acc1 from '../assets/trabby/sprites/acc-1.png';
 import Acc2 from '../assets/trabby/sprites/acc-2.png';
 
+import body1 from '../assets/trabby/sprites/official-assets/body/body-1.png';
+import body2 from '../assets/trabby/sprites/official-assets/body/body-2.png';
+import body3 from '../assets/trabby/sprites/official-assets/body/body-3.png';
+
+import expression1 from '../assets/trabby/sprites/official-assets/expression/expression-1.png';
+import expression2 from '../assets/trabby/sprites/official-assets/expression/expression-2.png';
+import expression3 from '../assets/trabby/sprites/official-assets/expression/expression-3.png';
+import expression4 from '../assets/trabby/sprites/official-assets/expression/expression-4.png';
+import expression5 from '../assets/trabby/sprites/official-assets/expression/expression-5.png';
+import expression6 from '../assets/trabby/sprites/official-assets/expression/expression-6.png';
+import expression7 from '../assets/trabby/sprites/official-assets/expression/expression-7.png';
+import expression8 from '../assets/trabby/sprites/official-assets/expression/expression-8.png';
+import expression9 from '../assets/trabby/sprites/official-assets/expression/expression-9.png';
+import expression10 from '../assets/trabby/sprites/official-assets/expression/expression-10.png';
+import expression11 from '../assets/trabby/sprites/official-assets/expression/expression-11.png';
+import expression12 from '../assets/trabby/sprites/official-assets/expression/expression-12.png';
+import expression13 from '../assets/trabby/sprites/official-assets/expression/expression-13.png';
+import expression14 from '../assets/trabby/sprites/official-assets/expression/expression-14.png';
+import expression15 from '../assets/trabby/sprites/official-assets/expression/expression-15.png';
+
 ---
 
 <Layout>
@@ -106,14 +126,14 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
-    height: clamp(500px, 80vh, 700px);
+    height: clamp(450px, 80vh, 630px);
   }
 
   /* ── RIGHT PANEL ── */
   #panel-customization-options {
     z-index: 1;
     position: relative;
-    margin-left: 90px;
+    margin-left: 80px;
     background-color: var(--white);
     flex: 2 1 400px;
     min-width: 320px;
@@ -123,7 +143,7 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
-    height: clamp(500px, 80vh, 700px);
+    height: clamp(450px, 80vh, 630px);
   }
 
   #panel-header-preview {
@@ -134,7 +154,7 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
   }
   #panel-header-preview, #panel-header-options {
     color: var(--white);
-    height: 40px;
+    height: 36px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -142,7 +162,7 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
     padding: 10px 20px;
     font-family: 'Sora', sans-serif;
     font-weight: bold;
-    font-size: 1.5em;
+    font-size: 1.3em;
     flex-shrink: 0;
   }
 
@@ -240,11 +260,13 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
   .selection-category {
     background-color: transparent;
     border: 4px solid var(--orange);
-    border-radius: 12px;
+    border-radius: 10px;
     flex: 1;
-    max-width: 5em;
+    max-width: 4.5em;
     aspect-ratio: 1;
     min-width: 0;
+    position: relative;
+    overflow: hidden;
     transition: background-color 0.3s ease;
   }
   .selection-category:hover {
@@ -260,8 +282,8 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
 
   .tabs-container {
     position: absolute;
-    top: 80px;
-    left: 20px;
+    top: 72px;
+    left: 18px;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -273,7 +295,7 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
     color: var(--white);
     border: 4px solid transparent;
     border-right: none;
-    padding: 24px 18px;
+    padding: 20px 16px; 
     border-radius: 16px 0px 0px 16px;
     font-family: 'Sora', sans-serif;
     font-weight: bold;
@@ -367,7 +389,7 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
   }
   #options-contents {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 16px;
     width: 100%;
     padding-bottom: 20px;
@@ -447,6 +469,20 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
     background-color: var(--transparent-orange);
     border: 4px solid var(--orange);
   }
+  .summary-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.2;
+    pointer-events: none;
+  }
+  .summary-placeholder :global(svg) {
+    width: 60%;
+    height: 60%;
+    fill: currentColor;
+  }
 </style>
 
 <script define:vars={{
@@ -461,9 +497,34 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
     'torso-2': Torso2.src,
     'acc-1': Acc1.src,
     'acc-2': Acc2.src,
+    'body1': body1.src,
+    'body2': body2.src,
+    'body3': body3.src,
+    'expression1': expression1.src,
+    'expression2': expression2.src,
+    'expression3': expression3.src,
+    'expression4': expression4.src,
+    'expression5': expression5.src,
+    'expression6': expression6.src,
+    'expression7': expression7.src,
+    'expression8': expression8.src,
+    'expression9': expression9.src,
+    'expression10': expression10.src,
+    'expression11': expression11.src,
+    'expression12': expression12.src,
+    'expression13': expression13.src,
+    'expression14': expression14.src,
+    'expression15': expression15.src,
+  },
+  tabIcons: {
+    Head: IconLaugh,
+    Limbs: IconLimbs,
+    Torso: IconShirt,
+    Accessories: IconAccessories,
   }
 }}>
   window.__SPRITE_MAP__ = spriteMap;
+  window.__TAB_ICONS__ = tabIcons;
 </script>
 
 <script is:inline>
@@ -521,16 +582,29 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
         }
       },
       Presets: {
-        subcategories: ["Poses", "Expressions"],
+        subcategories: ["Body", "Expressions"],
         options: {
-          "Poses": ["Default", "Confident", "Running", "Back"],
-          "Expressions": ["Smile", "Laugh", "Surprised", "Sad", "Angry"],
+          "Body": ["body1", "body2", "body3", "Confident", "Running", "Back"],
+          "Expressions": ["expression1", "expression2", "expression3", "expression4", "expression5", "expression6", "expression7", "expression8", "expression9", "expression10", "expression11", "expression12", "expression13", "expression14", "expression15", "Happy", "Sad", "Angry", "Surprised", "Sleepy"],
         }
       }
 
     };
     const TAB_ORDER = ["Head", "Limbs", "Torso", "Accessories", "Presets"];
-    const LAYER_Z = { Torso: 1, Head: 2, Limbs: 3, Accessories: 4 };
+    const LAYER_Z = { 
+      Torso: 10, 
+      Limbs: 20, 
+      Accessories: 50,
+      "Head Position": 30,
+      "Ears": 31,
+      "Face": 32,
+      "Eyes": 33,
+      "Mouth": 34,
+      "Eyebrows": 35,
+      "Hair": 36,
+      "Body": 37,
+      "Expressions": 38,
+    };
 
     // 3. State Management (Restoring from sessionStorage)
     let activeTab = "Head";
@@ -540,7 +614,7 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
       Limbs: "Limbs",
       Torso: "Torso Shape",
       Accessories: "Wearables",
-      Presets: "Poses"
+      Presets: "Body"
     };
     
     const savedSelections = sessionStorage.getItem('trabbySelections');
@@ -563,6 +637,7 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
 
     function renderCategories() {
       const subs = TABS[activeTab].subcategories;
+      document.getElementById("panel-header-options").textContent = `Customization: ${activeTab}`;
       categoryContainer.innerHTML = subs.map(sub => `
         <button 
           class="category-btn hover-effect${sub === activeSubcategory ? ' active' : ''}" 
@@ -594,7 +669,6 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
 
     function updateSummaryBoxes() {
       const boxes = document.querySelectorAll(".selection-category");
-      // The boxes correspond to the first 4 tabs
       const mapping = ["Head", "Limbs", "Torso", "Accessories"]; 
       
       boxes.forEach((box, index) => {
@@ -602,9 +676,10 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
         const recentSprite = recentCategorySelections[tabName];
         
         if (recentSprite) {
-          box.innerHTML = `<img src="${recentSprite}" alt="${tabName} selection" style="width:100%;height:100%;object-fit:contain;pointer-events:none;" />`;
+          box.innerHTML = `<img src="${recentSprite}" alt="${tabName} selection" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;" />`;
         } else {
-          box.innerHTML = ''; // Clear it if nothing is selected
+          const iconSvg = window.__TAB_ICONS__?.[tabName] ?? '';
+          box.innerHTML = `<div class="summary-placeholder">${iconSvg}</div>`;
         }
       });
     }
@@ -640,7 +715,7 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
           width: 100%;
           height: 100%;
           object-fit: contain;
-          z-index: ${LAYER_Z[tab] ?? 1};
+          z-index: ${LAYER_Z[sub] ?? LAYER_Z[tab] ?? 1};
           pointer-events: none;
         `;
         display.appendChild(img);
@@ -649,20 +724,48 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
 
     function renderOptions() {
       const items = TABS[activeTab].options[activeSubcategory] || [];
-      optionsContents.innerHTML = items.map(item => {
+
+      const isNoneSelected = !previewSelections[activeSubcategory]?.spriteUrl;
+      const noneTile = `<div class="option-item hover-effect ${isNoneSelected ? 'option-selected' : ''}" data-item="__none__" data-sprite="">
+        <span style="font-size:1em; opacity:0.4;">none</span>
+      </div>`;
+
+      const itemTiles = items.map(item => {
         const spriteUrl = window.__SPRITE_MAP__?.[item];
         const content = spriteUrl
           ? `<img src="${spriteUrl}" alt="${item}" style="width:80%;height:80%;object-fit:contain;" />`
           : item;
 
-        const isSelected = spriteUrl ? previewSelections[activeSubcategory]?.spriteUrl === spriteUrl : false;
-        const selectedClass = isSelected ? 'option-selected' : '';
+        const isSelected = spriteUrl
+          ? previewSelections[activeSubcategory]?.spriteUrl === spriteUrl
+          : false;
 
-        return `<div class="option-item hover-effect ${selectedClass}" data-item="${item}" data-sprite="${spriteUrl || ''}">${content}</div>`;
+        return `<div class="option-item hover-effect ${isSelected ? 'option-selected' : ''}" data-item="${item}" data-sprite="${spriteUrl || ''}">${content}</div>`;
       }).join("");
+
+      optionsContents.innerHTML = noneTile + itemTiles;
 
       optionsContents.querySelectorAll(".option-item").forEach(el => {
         el.addEventListener("click", () => {
+          if (el.dataset.item === "__none__") {
+            delete previewSelections[activeSubcategory];
+            sessionStorage.setItem('trabbySelections', JSON.stringify(previewSelections));
+
+            // Check if any selections remain for this tab; if not, clear the summary box
+            const remainingEntry = Object.values(previewSelections).find(v => v.tab === activeTab && v.spriteUrl);
+            if (remainingEntry) {
+              recentCategorySelections[activeTab] = remainingEntry.spriteUrl;
+            } else {
+              delete recentCategorySelections[activeTab];
+            }
+            sessionStorage.setItem('trabbyRecentSelections', JSON.stringify(recentCategorySelections));
+
+            renderPreviewLayers();
+            renderOptions();
+            updateSummaryBoxes();
+            return;
+          }
+
           const sprite = el.dataset.sprite;
           if (!sprite) return;
           setPreviewLayer(activeTab, activeSubcategory, sprite);
@@ -705,6 +808,73 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
         URL.revokeObjectURL(url);
       }, "image/png");
     }
+
+    function randomize() {
+    const SPRITE_KEYS = Object.keys(window.__SPRITE_MAP__ || {});
+    // read the sprites actually loaded in the assetsd
+    const CUSTOM_ASSETS = {
+      "Head Position": SPRITE_KEYS.filter(k => k.startsWith("head-")),
+      "Face": SPRITE_KEYS.filter(k => k.startsWith("face-")),
+      "Limbs": SPRITE_KEYS.filter(k => k.startsWith("limbs-")),
+      "Torso Shape": SPRITE_KEYS.filter(k => k.startsWith("torso-")),
+      "Wearables": SPRITE_KEYS.filter(k => k.startsWith("acc-")),
+    };
+
+    const PRESET_BODIES = SPRITE_KEYS.filter(k => k.startsWith("body"));
+    const PRESET_EXPRESSIONS = SPRITE_KEYS.filter(k => k.startsWith("expression"));
+
+    function pick(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    // Randomly decide which combo type to use
+    const usePreset = Math.random() < 0.5;
+
+    // Clear all current selections first
+    previewSelections = {};
+    recentCategorySelections = {};
+
+    if (usePreset) {
+      // --- Preset path: one Body + one Expression ---
+      const bodyKey = pick(PRESET_BODIES);
+      const exprKey = pick(PRESET_EXPRESSIONS);
+      const bodyUrl = window.__SPRITE_MAP__[bodyKey];
+      const exprUrl = window.__SPRITE_MAP__[exprKey];
+
+      if (bodyUrl) { previewSelections["Body"] = { tab: "Presets", spriteUrl: bodyUrl  }; }
+      if (exprUrl) { previewSelections["Expressions"] = { tab: "Presets", spriteUrl: exprUrl  }; }
+
+    } else {
+      const picks = {
+        "Head Position": { tab: "Head", assets: CUSTOM_ASSETS["Head Position"] },
+        "Face": { tab: "Head", assets: CUSTOM_ASSETS["Face"] },
+        "Limbs": { tab: "Limbs", assets: CUSTOM_ASSETS["Limbs"] },
+        "Torso Shape": { tab: "Torso", assets: CUSTOM_ASSETS["Torso Shape"] },
+        "Wearables": { tab: "Accessories", assets: CUSTOM_ASSETS["Wearables"] },
+      };
+
+      Object.entries(picks).forEach(([sub, { tab, assets }]) => {
+        if (!assets.length) return;
+        const key = pick(assets);
+        const url = window.__SPRITE_MAP__[key];
+        if (url) {
+          previewSelections[sub] = { tab, spriteUrl: url };
+          if (["Head Position", "Limbs", "Torso Shape", "Wearables"].includes(sub)) {
+            const tabKey = { "Head Position": "Head", "Limbs": "Limbs", "Torso Shape": "Torso", "Wearables": "Accessories" }[sub];
+            if (tabKey) recentCategorySelections[tabKey] = url;
+          }
+        }
+      });
+    }
+
+    // Persist + re-render everything
+    sessionStorage.setItem('trabbySelections', JSON.stringify(previewSelections));
+    sessionStorage.setItem('trabbyRecentSelections', JSON.stringify(recentCategorySelections));
+
+    renderPreviewLayers();
+    renderOptions();
+    updateSummaryBoxes();
+  }
 
     // 5. Event Listeners for Tabs
     document.querySelectorAll(".options-tabs").forEach((tab, i) => {
@@ -760,6 +930,13 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
       newDownloadBtn.addEventListener("click", downloadPreview);
     }
 
+    const randomBtn = document.querySelector('[aria-label="Randomize"]');
+    if (randomBtn) {
+      const newRandomBtn = randomBtn.cloneNode(true);
+      randomBtn.parentNode.replaceChild(newRandomBtn, randomBtn);
+      newRandomBtn.addEventListener("click", randomize);
+    }
+
     const resetBtn = document.querySelector('[aria-label="Delete"]');
     if (resetBtn) {
       const newResetBtn = resetBtn.cloneNode(true);
@@ -788,6 +965,7 @@ import Acc2 from '../assets/trabby/sprites/acc-2.png';
     renderOptions();
     renderPreviewLayers();
     updateSummaryBoxes();
+    document.getElementById("panel-header-options").textContent = `Customization: ${activeTab}`;
   }
 
   // Hook into Astro's View Transitions lifecycle
