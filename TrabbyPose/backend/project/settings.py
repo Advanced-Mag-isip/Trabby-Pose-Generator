@@ -135,11 +135,9 @@ STATIC_URL = 'static/'
 
 # CORS_ALLOWED_ORIGINS = [os.getenv('CORS_ORIGIN')] # allows requests from our frontend origin
 CORS_ALLOWED_ORIGINS = [
-    origin for origin in [
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        os.getenv('CORS_ORIGIN_LOCAL', 'http://localhost:8312'),
-        os.getenv('CORS_ORIGIN_SANDBOX'),
-        os.getenv('CORS_ORIGIN_IP'),
-    ] if origin
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:4322",
+    "http://127.0.0.1",
+    "http://localhost", 
 ]
