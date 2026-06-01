@@ -9,7 +9,7 @@ Defines all available endpoints for:
 
 Note: User management is handled through Django admin panel at /admin/
 """
-
+from django.contrib import admin
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -55,6 +55,7 @@ urlpatterns = [
     # ----------------------------------------
     # Authentication Endpoints
     # ----------------------------------------
+    path('admin/', admin.site.urls),
     path("auth/login/", login_user, name="login"),
     path("auth/logout/", logout_user, name="logout"),
     path("auth/user/", get_current_user, name="current-user"),
