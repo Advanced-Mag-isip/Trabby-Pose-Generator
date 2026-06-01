@@ -59,7 +59,7 @@ import TrabahadoorDoorLogo from '../assets/trabahadoor-door-logo.svg?raw';
 
     try {
       // Point this to your Django URL configuration environment variable
-      const BACKEND_URL = 'http://localhost:8000'; 
+      const BACKEND_URL = 'http://127.0.0.1:8000'; 
       
       const response = await fetch(`${BACKEND_URL}/api/auth/login/`, {
         method: 'POST',

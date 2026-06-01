@@ -4,7 +4,7 @@ Django Admin configuration for Puppet & Pose management models.
 Provides a user-friendly interface for managing puppet parts, pose presets,
 and their configurations in the Django admin panel.
 """
-
+import hashlib
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import (
@@ -24,6 +24,21 @@ class UserAdmin(admin.ModelAdmin):
     list_filter = ("is_permitted", "created_at")
     search_fields = ("user_name", "email_address", "first_name", "last_name")
     readonly_fields = ("created_at", "updated_at")
+
+    def save_model(self, request, obj, form, change):
+        """Intercepts saves to hash the password securely before hitting the database."""
+        # Check if the 'password' field was changed or if this is a brand new user
+        if 'password' in form.changed_data or not change:
+            raw_password = obj.password
+            
+            # SHA-256 hashes are exactly 64 characters long. 
+            # We only hash it if a password exists and isn't already hashed.
+            if raw_password and len(raw_password) != 64:
+                hashed_password = hashlib.sha256(raw_password.encode()).hexdigest()
+                obj.password = hashed_password
+                
+        # Continue with the normal save process
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Poses)
