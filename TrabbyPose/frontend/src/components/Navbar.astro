@@ -40,7 +40,21 @@ const currentPath = Astro.url.pathname;
         padding: 1rem 30px;
         display: flex;
         justify-content: space-between;
+        align-items: center;
         box-sizing: border-box;
+        flex-wrap: wrap;
+    }
+
+    #nav-logo :global(svg) {
+        width: 140px;
+        height: auto;
+    }
+
+    #nav-links {
+        display: flex;
+        gap: 10px;
+        margin: 0;
+        align-items: center;
     }
 
     #nav-links a {
@@ -51,25 +65,22 @@ const currentPath = Astro.url.pathname;
         padding: 10px 15px;
         border-radius: 2rem;
         transition: background-color 0.3s, color 0.3s;
+        white-space: nowrap;
     }
+
     #nav-links a:hover {
         color: var(--orange);
         background-color: var(--light-gray);
     }
+
     #nav-links a.active {
         color: var(--white);
         background-color: var(--blue);
     }
 
-    #nav-links {
+    #nav-actions {
         display: flex;
-        gap: 10px;
-        margin: auto 60px 0px 0px;
-    }
-
-    #nav-logo :global(svg) {
-        width: 140px;
-        height: auto;
+        align-items: center;
     }
     
     #log-out-btn {
@@ -109,4 +120,29 @@ const currentPath = Astro.url.pathname;
 
 
 
+
+    @media (max-width: 900px) {
+        #nav-links {
+            gap: 5px;
+        }
+        
+        #nav-links a {
+            padding: 8px 10px;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .nav-safe-area {
+            padding: 1rem 15px;
+        }
+        
+        #nav-links {
+            order: 3;
+            width: 100%;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+    }
 </style>
