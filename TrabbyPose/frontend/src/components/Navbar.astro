@@ -18,10 +18,56 @@ const currentPath = Astro.url.pathname;
             <a href="/UserAccounts" class={currentPath === '/UserAccounts' ? 'active' : ''}>Settings</a>
         </div>
         <div id="nav-actions">
-            <a href = "/UserLogin" id = "log-out-btn"><span>Log-out &nbsp;</span><Fragment set:html={logoutIcon} alt="User"/></a>
+            <button id="log-out-btn">
+                <span>Log-out &nbsp;</span>
+                <Fragment set:html={logoutIcon} alt="User"/>
+            </button>
         </div>
     </div>
 </nav>
+
+<script>
+    const logoutBtn = document.getElementById('log-out-btn');
+
+    logoutBtn?.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        try {
+            // Point this to your Django backend
+            const BACKEND_URL = 'http://127.0.0.1:8000'; 
+            
+            // Call the Django logout view you wrote earlier
+            const response = await fetch(`${BACKEND_URL}/api/auth/logout/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                // CRITICAL: This sends the HTTP-Only cookie to Django so it knows who to log out
+                credentials: 'include', 
+            });
+
+            if (response.ok) {
+                // Django successfully deleted the cookies! 
+                window.location.href = '/UserLogin';
+            } else {
+                console.error("Logout failed on the server.");
+                // Force redirect anyway as a fallback safety measure
+                window.location.href = '/UserLogin';
+            }
+        } catch (error) {
+            console.error("Network error during logout:", error);
+            window.location.href = '/UserLogin';
+        }
+    });
+
+     window.addEventListener('pageshow', (event) => {
+    // event.persisted is TRUE if the page was loaded from the Back/Forward cache
+    if (event.persisted) {
+      // Force the browser to request a fresh copy from the server
+      window.location.reload();
+    }
+  });
+</script>
 
 <style>
     #main-navigation {
@@ -83,22 +129,27 @@ const currentPath = Astro.url.pathname;
         align-items: center;
     }
     
-    #log-out-btn {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: row;
-        width: auto;
-        height: 40px;
-        border-radius: 2rem; 
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        text-decoration: none;
-        color: var(--blue);
-        font-weight: bold;
-          padding: 0px 15px;
-    }
-
+#log-out-btn {
+   
+    background: none;
+    border: none;
+    font-size: 1rem; 
+    
+   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    width: auto;
+    height: 40px;
+    border-radius: 2rem; 
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    color: var(--blue);
+    font-weight: bold;
+    padding: 0px 15px;
+}
     #log-out-btn :global(svg) {
         width: 24px;
         height: 24px;

@@ -23,6 +23,24 @@ class UserLoginSerializer(serializers.Serializer):
         username = attrs.get('username')
         password = attrs.get('password')
         
+        print(f"ATTEMPTING LOGIN FOR: {username}")
+
+        try:
+            user = User.objects.get(user_name=username)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('Invalid username or password.')
+        
+        # 1. Hash the incoming password from Astro
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        
+        # 2. TEMPORARY DEBUGGING STRINGS (Add these two lines)
+        print(f"DATABASE PASSWORD: {user.password}")
+        print(f"ASTRO HASHED PASSWORD: {hashed_password}")
+        
+        # 3. Compare them
+        if user.password != hashed_password:
+            raise serializers.ValidationError('Invalid username or password.')
+        
         try:
             user = User.objects.get(user_name=username)
         except User.DoesNotExist:
