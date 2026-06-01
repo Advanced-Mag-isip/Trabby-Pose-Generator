@@ -5,16 +5,12 @@ class User(models.Model):
     user_id = models.AutoField(primary_key=True)
     first_name = models.CharField(max_length=225)
     last_name = models.CharField(max_length=225)
-    user_name = models.CharField(max_length=225, unique=True)
-    password = models.CharField(max_length=255)  # Increased for hashed passwords
-    email_address = models.CharField(max_length=225, unique=True)
-    is_permitted = models.IntegerField(default=1)
-    is_admin = models.BooleanField(default=False)  # Admin flag for user account creation
+    user_name = models.CharField(max_length=225)
+    password = models.CharField(max_length=225)
+    email_address = models.CharField(max_length=225)
+    is_permitted = models.IntegerField()
     created_at = models.DateTimeField(null=True, blank=False)
     updated_at = models.DateTimeField(null=True, blank=False)
-
-    def __str__(self):
-        return f"{self.user_name} ({self.first_name} {self.last_name})"
 
 #Poses Model
 class Poses(models.Model):
