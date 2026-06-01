@@ -2,12 +2,23 @@
 URL routing for the Trabby Pose API.
 
 Defines all available endpoints for:
+- Authentication (login, logout)
 - Pose presets (body poses)
 - Expression presets (facial expressions)
 - Puppet parts (asset inventory)
+
+Note: User management is handled through Django admin panel at /admin/
 """
 
 from django.urls import path
+from rest_framework_simplejwt.views import TokenRefreshView
+
+from api.views.auth import (
+    login_user,
+    logout_user,
+    get_current_user,
+    refresh_token,
+)
 
 from api.views.poses.generation import (
     view_number_of_predefined_poses,
@@ -41,6 +52,14 @@ from api.views.exports import (
 app_name = "api"
 
 urlpatterns = [
+    # ----------------------------------------
+    # Authentication Endpoints
+    # ----------------------------------------
+    path("auth/login/", login_user, name="login"),
+    path("auth/logout/", logout_user, name="logout"),
+    path("auth/user/", get_current_user, name="current-user"),
+    path("auth/token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+
     # # Legacy test endpoint
     # # path("test/", views.test, name="test"),
 
@@ -57,8 +76,8 @@ urlpatterns = [
     # path("puppet-parts/hierarchical/", get_puppet_parts_hierarchical, name="puppet-parts-hierarchical"),
 
     # ----------------------------------------
-    #Analytics Part
-    #-----------------------------------------
+    # Analytics Part
+    # ----------------------------------------
     # Pose generation
     path("poses/predefined/", view_number_of_predefined_poses),
     path("poses/customized/", view_number_of_customized_poses),
