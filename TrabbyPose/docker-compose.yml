@@ -18,7 +18,7 @@ services:
     ports:
       - "8313:8313"
     environment:
-      - DEBUG=True
+      - DEBUG=${DEBUG}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
