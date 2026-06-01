@@ -1,21 +1,10 @@
-"""
-Authentication Views for user login and profile management.
-
-Provides API endpoints for:
-- User login with JWT token generation
-- User logout
-- Get current user profile
-- Refresh JWT tokens
-
-Note: User management is handled through Django admin panel.
-"""
-
+from django.conf import settings
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.utils import timezone
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from api.models import User
 from api.auth_serializers import (
@@ -24,23 +13,13 @@ from api.auth_serializers import (
     UserProfileSerializer
 )
 
-
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_user(request):
     """
-    Login a user and return JWT tokens.
-    
-    Expected POST data:
-    {
-        "user_name": "username",
-        "password": "password"
-    }
-    
-    Returns:
-    - 200: Login successful with tokens and user data
-    - 400: Invalid credentials or validation errors
+    Logs in a user and attaches JWT tokens via secure, HttpOnly cookies.
     """
+
     serializer = UserLoginSerializer(data=request.data)
     
     if serializer.is_valid():
@@ -50,111 +29,120 @@ def login_user(request):
         
         # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
         
-        return Response(
+        # Omit raw tokens from the frontend payload body for XSS safety
+        response = Response(
             {
                 'message': 'Login successful.',
                 'user': UserSerializer(user).data,
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
             },
             status=status.HTTP_200_OK
         )
+        
+        # Set Access Cookie
+        response.set_cookie(
+            key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+            value=access_token,
+            expires=timezone.now() + settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+            httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+            samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            path='/'
+        )
+        
+        # Set Refresh Cookie
+        response.set_cookie(
+            key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
+            value=refresh_token,
+            expires=timezone.now() + settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
+            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+            httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+            samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            path='/'
+        )
+        
+        return response
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny]) # Changed to AllowAny so users with expired access tokens can still log out
 def logout_user(request):
     """
-    Logout a user.
-    
-    Simply invalidates the token on the client side. The token will still be valid
-    until expiration. For complete token blacklisting, implement a token blacklist
-    using the drf-simplejwt TokenBlacklist feature.
-    
-    Returns:
-    - 200: Logout successful
+    Logs out the user by blacklisting their refresh token and deleting local auth cookies.
     """
-    return Response(
-        {'message': 'Logout successful. Please remove the token from client storage.'},
-        status=status.HTTP_200_OK
-    )
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_user_profile(request):
-    """
-    Get the current authenticated user's profile.
+    response = Response({'message': 'Logout successful.'}, status=status.HTTP_200_OK)
     
-    Requires: Valid JWT token in Authorization header
+    # Extract the refresh token from cookies to blacklist it safely on the server side
+    refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
+    if refresh_token:
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        except (TokenError, AttributeError):
+            pass # Token is already invalid or blacklisting configuration is absent
+            
+    # Instruct client browser to instantly drop auth cookies
+    response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'], path='/')
+    response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'], path='/')
     
-    Returns:
-    - 200: Current user profile
-    - 401: Unauthorized
-    """
-    try:
-        # Get the user from the JWT token
-        user = User.objects.get(user_id=request.auth.get('user_id') if hasattr(request.auth, 'get') else None)
-    except (User.DoesNotExist, TypeError, AttributeError):
-        # Fallback: Try to find user by checking if request has user info
-        # This is a fallback for token-based auth
-        return Response(
-            {'error': 'User not found'},
-            status=status.HTTP_404_NOT_FOUND
-        )
-    
-    serializer = UserProfileSerializer(user)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    return response
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_current_user(request):
     """
-    Get the current authenticated user's information.
-    
-    This endpoint works with JWT tokens to retrieve the user making the request.
-    
-    Requires: Valid JWT token in Authorization header
-    
-    Returns:
-    - 200: Current user information
-    - 401: Unauthorized
+    Retrieves the authenticated user instance determined by the CookieJWTAuthentication class.
     """
-    # The JWT token contains the user_id, we need to retrieve it
-    # Django REST Framework's TokenAuthentication doesn't include user_id in token by default
-    # We need to extract it from the request.user object
-    
-    if request.user and request.user.is_authenticated:
-        # If using session auth, request.user will be the User object
-        serializer = UserProfileSerializer(request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    return Response(
-        {'error': 'Not authenticated'},
-        status=status.HTTP_401_UNAUTHORIZED
-    )
+    serializer = UserProfileSerializer(request.user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def refresh_token(request):
     """
-    Refresh JWT access token.
-    
-    Expected POST data:
-    {
-        "refresh": "refresh_token_string"
-    }
-    
-    Returns:
-    - 200: New access token
-    - 400: Invalid refresh token
+    Rotates and issues a fresh access token using the stored refresh cookie.
     """
-    from rest_framework_simplejwt.views import TokenRefreshView
+    refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
     
-    view = TokenRefreshView.as_view()
-    return view(request)
+    if not refresh_token:
+        return Response({'error': 'Refresh token missing.'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+    try:
+        refresh = RefreshToken(refresh_token)
+        new_access_token = str(refresh.access_token)
+        
+        response = Response({'message': 'Token refreshed successfully.'}, status=status.HTTP_200_OK)
+        
+        # Apply fresh updated access token to cookie
+        response.set_cookie(
+            key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+            value=new_access_token,
+            expires=timezone.now() + settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
+            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+            httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+            samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            path='/'
+        )
+        
+        # If ROTATE_REFRESH_TOKENS is enabled, update the refresh cookie too
+        if settings.SIMPLE_JWT.get('ROTATE_REFRESH_TOKENS', False):
+            response.set_cookie(
+                key=settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'],
+                value=str(refresh),
+                expires=timezone.now() + settings.SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
+                secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+                httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+                samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+                path='/'
+            )
+            
+        return response
+        
+    except TokenError:
+        return Response({'error': 'Token is invalid or expired.'}, status=status.HTTP_401_UNAUTHORIZED)

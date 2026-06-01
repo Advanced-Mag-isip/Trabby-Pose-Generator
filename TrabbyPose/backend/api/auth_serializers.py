@@ -15,16 +15,16 @@ class UserLoginSerializer(serializers.Serializer):
     
     Authenticates user credentials and returns user info.
     """
-    user_name = serializers.CharField()
+    username = serializers.CharField()
     password = serializers.CharField(write_only=True)
     
     def validate(self, attrs):
         """Validate login credentials."""
-        user_name = attrs.get('user_name')
+        username = attrs.get('username')
         password = attrs.get('password')
         
         try:
-            user = User.objects.get(user_name=user_name)
+            user = User.objects.get(user_name=username)
         except User.DoesNotExist:
             raise serializers.ValidationError('Invalid username or password.')
         
