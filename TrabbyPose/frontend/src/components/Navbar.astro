@@ -53,16 +53,16 @@ const currentPath = Astro.url.pathname;
 
                     if (response.ok) {
 
-                        window.history.pushState(null, null, '/UserLogin');
+                        window.history.pushState(null, "", '/UserLogin');
                         window.location.href = '/UserLogin';
                     } else {
                         console.error("Logout failed on the server.");
-                        window.history.pushState(null, null, '/UserLogin');
+                        window.history.pushState(null, "", '/UserLogin');
                         window.location.href = '/UserLogin';
                     }
                 } catch (error) {
                     console.error("Network error during logout:", error);
-                    window.history.pushState(null, null, '/UserLogin');
+                    window.history.pushState(null, "", '/UserLogin');
                     window.location.href = '/UserLogin';
                 }
             });
@@ -86,9 +86,9 @@ const currentPath = Astro.url.pathname;
             }
         });
 
-        window.history.pushState(null, null, window.location.href);
+        window.history.pushState(null, "", window.location.href);
         window.addEventListener('popstate', (event) => {
-            window.history.pushState(null, null, window.location.href);
+            window.history.pushState(null, "", window.location.href);
         });
     }
 
