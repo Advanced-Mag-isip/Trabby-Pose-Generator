@@ -2,6 +2,12 @@
 import { ClientRouter } from 'astro:transitions';
 import Navbar from '../components/Navbar.astro';
 import '../styles/global.css';
+
+// Set cache control headers to prevent page caching
+Astro.response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+Astro.response.headers.set('Pragma', 'no-cache');
+Astro.response.headers.set('Expires', '0');
+Astro.response.headers.set('X-Content-Type-Options', 'nosniff');
 ---
 
 <!doctype html>
@@ -12,6 +18,10 @@ import '../styles/global.css';
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" href="/favicon.ico" />
         <meta name="generator" content={Astro.generator} />
+        <!-- Cache prevention meta tags -->
+        <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta http-equiv="expires" content="0" />
         <title>TrabbyHador Customization</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,6 +36,50 @@ import '../styles/global.css';
         <main class="content-safe-area">
             <slot />
         </main>
+
+        <script>
+            // Setup back button protection on page load
+            function setupBackButtonProtection() {
+                const protectedPaths = ['/Customization', '/Gallery', '/Insights', '/UserAccounts'];
+                
+                // Prevent going back by pushing a new state
+                window.history.pushState(null, null, window.location.href);
+                
+                // Handle popstate event (back/forward button)
+                window.addEventListener('popstate', () => {
+                    const currentPath = window.location.pathname;
+                    const hasAuthCookie = document.cookie.includes('access_token');
+                    
+                    if (protectedPaths.includes(currentPath) && !hasAuthCookie) {
+                        window.location.href = '/UserLogin';
+                    } else {
+                        window.history.pushState(null, null, window.location.href);
+                    }
+                });
+            }
+
+            function setupPageUnloadHandlers() {
+                window.addEventListener('pageshow', (event) => {
+                    if (event.persisted) {
+                        window.location.reload();
+                    }
+                });
+            }
+            
+            function initializeProtection() {
+                setupBackButtonProtection();
+                setupPageUnloadHandlers();
+            }
+
+            // Initialize on both standard load and Astro transitions
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeProtection);
+            } else {
+                initializeProtection();
+            }
+            
+            document.addEventListener('astro:page-load', initializeProtection);
+        </script>
     </body>
 </html>
 

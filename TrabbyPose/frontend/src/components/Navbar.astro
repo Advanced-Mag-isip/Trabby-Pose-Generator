@@ -38,6 +38,11 @@ const currentPath = Astro.url.pathname;
                 try {
                     const BACKEND_URL = 'http://127.0.0.1:8000'; 
                     
+                    // Clear all session and local storage before logout
+                    sessionStorage.clear();
+                    localStorage.clear();
+                    
+                    // Send logout request to server
                     const response = await fetch(`${BACKEND_URL}/api/auth/logout/`, {
                         method: 'POST',
                         headers: {
@@ -47,34 +52,70 @@ const currentPath = Astro.url.pathname;
                     });
 
                     if (response.ok) {
-                        window.location.reload();
+
+                        window.history.pushState(null, null, '/UserLogin');
                         window.location.href = '/UserLogin';
                     } else {
                         console.error("Logout failed on the server.");
+                        window.history.pushState(null, null, '/UserLogin');
                         window.location.href = '/UserLogin';
                     }
                 } catch (error) {
                     console.error("Network error during logout:", error);
+                    window.history.pushState(null, null, '/UserLogin');
                     window.location.href = '/UserLogin';
                 }
             });
 
-            // Mark the button so we don't accidentally attach multiple event listeners
             logoutBtn.dataset.listenerAttached = "true";
         }
     }
 
+    function preventBackNavigation() {
+
+        window.addEventListener('popstate', (event) => {
+            // Check if user is likely authenticated (has access token cookie)
+            const hasAuthCookie = document.cookie.includes('access_token');
+            
+            if (!hasAuthCookie && (window.location.pathname === '/Customization' || 
+                                   window.location.pathname === '/Gallery' ||
+                                   window.location.pathname === '/Insights' ||
+                                   window.location.pathname === '/UserAccounts')) {
+
+                window.location.href = '/UserLogin';
+            }
+        });
+
+        window.history.pushState(null, null, window.location.href);
+        window.addEventListener('popstate', (event) => {
+            window.history.pushState(null, null, window.location.href);
+        });
+    }
+
     // Runs on standard initial page load
-    document.addEventListener('DOMContentLoaded', initializeLogout);
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeLogout();
+        preventBackNavigation();
+    });
     
     // Runs every single time Astro changes pages or transitions state
-    document.addEventListener('astro:page-load', initializeLogout);
+    document.addEventListener('astro:page-load', () => {
+        initializeLogout();
+        preventBackNavigation();
+    });
 
-   
+    // Detect bfcache (Back/Forward cache) restoration and reload to prevent stale content
     window.addEventListener('pageshow', (event) => {
         if (event.persisted) {
+
             window.location.reload();
         }
+    });
+
+    // Additional: Unload event to ensure cleanup
+    window.addEventListener('beforeunload', () => {
+
+        document.body.style.display = 'none';
     });
 </script>
 
