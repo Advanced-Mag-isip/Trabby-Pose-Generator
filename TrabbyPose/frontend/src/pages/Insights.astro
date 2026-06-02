@@ -104,12 +104,15 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
           </div>
 
           <div id="pose-generation-per-month" class="graph-card">
-            <LineChart
-              chartId="pose-generation-chart"
-              labels={poseRateLabels}
-              values={poseRateValues}
-              label="Pose Generation Per Month"
-            />
+            <div id = "pose-generation-per-week-graph" class = "graph-card">
+              <span id = "pose-generation-graph-label">Pose generation per week</span>
+              <LineChart
+                chartId="pose-generation-chart"
+                labels={poseRateLabels}
+                values={poseRateValues}
+                label="Pose Generation Per Month"
+              />
+            </div>
           </div>
 
         </div>
@@ -148,7 +151,7 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
               <span class="metric-label">Total Exports</span>
               <span class="metric">{totalExports.total_exports}</span>
             </div>
-
+          
           <div class="metric-card" id="exports-per-pose">
             <PieChart
               chartId="exports-month-chart"
@@ -161,6 +164,7 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
           </div>
 
           <div id="exports-per-pose-graph" class="graph-card">
+              <span id = "exports-per-pose-graph-container"> Exports per graph</span>
             <LineChart
               chartId="exports-month-chart"
               labels={monthlyLabels}
