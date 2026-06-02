@@ -36,7 +36,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', 'sandbox1.advancedthinkers.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'backend', 'sandbox1.advancedthinkers.app', 'api-sandbox1.advancedthinkers.app']
 
 # SimpleJWT Custom Cookie Configuration
 SIMPLE_JWT = {
