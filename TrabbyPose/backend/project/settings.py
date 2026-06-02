@@ -61,6 +61,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:4322",
     "http://127.0.0.1",
+    "http://192.168.56.1:8312",
+    "http://192.168.101.25:8312",
 ]
 # Application definition
 
