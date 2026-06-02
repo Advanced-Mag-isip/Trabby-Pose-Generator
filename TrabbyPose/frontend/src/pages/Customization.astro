@@ -74,7 +74,7 @@ Astro.response.headers.set('Expires', '0');
             <button id="download-btn" set:html={IconDownload} aria-label="Download"></button>
           </div>
         </div>
-        <div class="character-preview-display">
+        <div id="character-preview-display" class="character-preview-display">
           <!-- <Image src={Trabby} alt="Character Preview" /> -->
         </div>
         <div class="character-preview-selections">
@@ -696,7 +696,7 @@ Astro.response.headers.set('Expires', '0');
     function setPreviewLayer(tab, subcategory, spriteUrl) {
       previewSelections[subcategory] = { tab, spriteUrl };
       sessionStorage.setItem('trabbySelections', JSON.stringify(previewSelections));
-      
+
       if (["Head", "Limbs", "Torso", "Accessories"].includes(tab)) {
         recentCategorySelections[tab] = spriteUrl;
         sessionStorage.setItem('trabbyRecentSelections', JSON.stringify(recentCategorySelections));
@@ -789,7 +789,9 @@ Astro.response.headers.set('Expires', '0');
       const display = document.querySelector(".character-preview-display");
       const layers = Array.from(display.querySelectorAll(".preview-layer"))
         .sort((a, b) => parseInt(a.style.zIndex) - parseInt(b.style.zIndex));
-        window.__PREVIEW_SELECTIONS__ = previewSelections;
+
+window.__PREVIEW_SELECTIONS__ = previewSelections;
+
       if (layers.length === 0) return;
 
       const refImg = layers[0];
