@@ -1,6 +1,11 @@
 ---
 // src/pages/UserAccounts.astro
 import Layout from '../layouts/Layout.astro';
+
+// Protected page - check authentication and set no-cache headers
+Astro.response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+Astro.response.headers.set('Pragma', 'no-cache');
+Astro.response.headers.set('Expires', '0');
 ---
 
 <Layout>

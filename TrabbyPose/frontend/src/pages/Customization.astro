@@ -44,6 +44,11 @@ import expression13 from '../assets/trabby/sprites/official-assets/expression/ex
 import expression14 from '../assets/trabby/sprites/official-assets/expression/expression-14.png';
 import expression15 from '../assets/trabby/sprites/official-assets/expression/expression-15.png';
 
+// Protected page - check authentication and set no-cache headers
+Astro.response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+Astro.response.headers.set('Pragma', 'no-cache');
+Astro.response.headers.set('Expires', '0');
+
 ---
 
 <Layout>
