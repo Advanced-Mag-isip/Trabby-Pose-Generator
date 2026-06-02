@@ -789,7 +789,7 @@ Astro.response.headers.set('Expires', '0');
       const display = document.querySelector(".character-preview-display");
       const layers = Array.from(display.querySelectorAll(".preview-layer"))
         .sort((a, b) => parseInt(a.style.zIndex) - parseInt(b.style.zIndex));
-
+        window.__PREVIEW_SELECTIONS__ = previewSelections;
       if (layers.length === 0) return;
 
       const refImg = layers[0];

@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.PUBLIC_API_URL ?? "http://localhost:8313";
+const BASE_URL = import.meta.env.PUBLIC_API_URL;
 
 export async function fetchTest() {
   try {

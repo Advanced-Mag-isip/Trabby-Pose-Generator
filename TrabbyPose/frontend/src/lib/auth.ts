@@ -70,7 +70,7 @@ export async function validateSession(backendUrl: string): Promise<boolean> {
  * Protect a page by redirecting to login if not authenticated
  * Call this at the top of protected pages
  */
-export function protectPage(backendUrl: string = 'http://127.0.0.1:8000'): void {
+export function protectPage(backendUrl: string = import.meta.env.PUBLIC_API_URL): void {
   if (!hasAuthCookie()) {
     // No auth cookie, redirect to login
     window.location.href = '/UserLogin';
