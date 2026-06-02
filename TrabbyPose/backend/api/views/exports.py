@@ -3,8 +3,10 @@ from rest_framework.response import Response
 from django.db.models import Count
 from django.db.models.functions import TruncMonth
 from collections import defaultdict
+from rest_framework import status
 
-from ..models import Export
+
+from ..models import User, Poses, Export
 
 # ---------------------------------------------------------------
 # Pose Exports Data Insights
@@ -66,3 +68,48 @@ def view_export_generation_per_month(request):
         "labels": labels,
         "values": values
     })
+
+
+@api_view(["POST"])
+def create_pose(request):
+    try:
+        pose_name = request.data.get("pose_name")
+        pose_config = request.data.get("pose")
+
+        if not pose_name:
+            return Response(
+                {"error": "pose_name is required"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # TEMPORARY
+        user = User.objects.first()
+
+        if not user:
+            return Response(
+                {"error": "No user found"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        pose = Poses.objects.create(
+            poses_fid=user,
+            name_of_poses_generated=pose_name,
+            configuration=pose_config
+        )
+
+        return Response(
+            {
+                "pose_id": pose.poses_id,
+                "pose_name": pose.name_of_poses_generated,
+                "message": "Pose created successfully"
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+    except Exception as e:
+        print("CREATE POSE ERROR:", str(e))
+
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
