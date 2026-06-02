@@ -1,16 +1,7 @@
-document.addEventListener("astro:page-load", () => {
-  console.log("Customization script loaded");
-
-  const downloadBtn = document.getElementById("download-btn");
-
-  if (!downloadBtn) {
-    console.error("Download button not found");
-    return;
-  }
-
-  console.log("Download button found");
-
-  downloadBtn.addEventListener("click", getPoseInfo);
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("#download-btn");
+  if (!button) return;
+  getPoseInfo(event);
 });
 
 async function getPoseInfo(event) {
@@ -22,6 +13,24 @@ async function getPoseInfo(event) {
     );
 
     const pose_name = input?.value?.trim() || "Untitled Pose";
+
+    // // ================================
+    // // DEBUG: print selected assets (RAW MAP)
+    // // ================================
+    // const selectedMap = getSelectionMapBySub();
+    // console.log("=== SELECTED MAP (RAW) ===");
+    // console.log([...selectedMap]);
+
+    // // ================================
+    // // DEBUG: print selected assets (TABLE FORMAT)
+    // // ================================
+    // const selectedTable = [...selectedMap].map(([sub, url]) => ({
+    //   subcategory: sub,
+    //   spriteUrl: url
+    // }));
+
+    // console.log("=== SELECTED ASSETS (TABLE) ===");
+    // console.table(selectedTable);
 
     const config = buildPoseConfiguration();
 
@@ -57,16 +66,14 @@ async function getPoseInfo(event) {
 
       console.error("Server Error:", errorMessage);
 
-      throw new Error(
-        `HTTP ${response.status}: ${response.statusText}`
-      );
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    let savedPose;
+    const savedPose = contentType?.includes("application/json")
+      ? await response.json()
+      : null;
 
-    if (contentType?.includes("application/json")) {
-      savedPose = await response.json();
-    } else {
+    if (!savedPose) {
       throw new Error("Expected JSON response from server.");
     }
 
@@ -85,17 +92,14 @@ async function getPoseInfo(event) {
 
 // Mapping selected assets by their subcategory
 function getSelectionMapBySub() {
+  const source = window.__PREVIEW_SELECTIONS__ || {};
   const map = new Map();
 
-  const source =
-    typeof previewSelections !== "undefined" ? previewSelections : {};
-
-  for (const [sub, entry] of Object.entries(source)) {
-    // ONLY keep actual selected items
-    if (!entry || !entry.spriteUrl) continue;
-
-    map.set(sub, entry.spriteUrl);
-  }
+  Object.entries(source).forEach(([sub, entry]) => {
+    if (entry?.spriteUrl) {
+      map.set(sub, entry.spriteUrl);
+    }
+  });
 
   return map;
 }
@@ -103,6 +107,17 @@ function getSelectionMapBySub() {
 // Build pose configuration
 function buildPoseConfiguration() {
   const selected = getSelectionMapBySub();
+
+  // console.log("=== BUILD POSE MAP ===");
+  // console.log([...selected]);
+
+  // const isEmpty = Object.keys(selected).length === 0;
+  // if (isEmpty==0) {
+  //   console.warn("No assets selected. Returning empty pose configuration.");
+  // }else{
+  //   console.log("Building pose configuration with selected assets...");
+  // }
+
   const getAsset = (sub) => selected.get(sub) || null;
 
   return {
