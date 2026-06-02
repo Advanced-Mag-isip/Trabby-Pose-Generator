@@ -3,6 +3,8 @@
 
 import { Image } from 'astro:assets';
 import trabbyImage from '../assets/trabby/model/trabby.png';
+import trabbyBody from '../assets/trabby/model/trabby-body.png';
+import trabbyWave from '../assets/trabby/model/trabby-arm-wave.png';
 // import { fetchTest } from '../lib/api'; API endpoints, uncomment to connect to django
 // const apiTestData = await fetchTest(); API endpoints, uncomment to connect to django
 ---
@@ -23,17 +25,20 @@ import trabbyImage from '../assets/trabby/model/trabby.png';
 		<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&display=swap" rel="stylesheet">
 	</head>
 	<body>
-        <div id = "main-container">
-            <div id = "app-title">
-                <div id = "trabbyhadoor">TrabbyHadoor</div>
-                <div id = "customizer">Customizer</div>
-				<p>Trabahadoor’s mascot cusomization tool that allows users to customize Trabby by selecting different heads, torso, limbs, and accessories to create unique character assets.</p>
-                <div id = "landing-button"><a href="/UserLogin"><button>Start Customizing!</button></a></div>
-				
-            </div>
+        <div class="ultramaincontainer">
+            <div id = "main-container">
+                <div id = "app-title">
+                    <div id = "trabbyhadoor">TrabbyHadoor</div>
+                    <div id = "customizer">Customizer</div>
+                    <p>Trabahadoor’s mascot cusomization tool that allows users to customize Trabby by selecting different heads, torso, limbs, and accessories to create unique character assets.</p>
+                    <div id = "landing-button"><a href="/UserLogin"><button>Start Customizing!</button></a></div>
+                    
+                </div>
 
-            <div id = "trabby-container">
-                <Image src ={trabbyImage} alt = "Trabby">
+                <div id = "trabby-container">
+                    <Image class="trabby-wave" src ={trabbyWave} alt = "TrabbyWave"></Image>
+                    <Image class="trabby-body" src ={trabbyBody} alt = "TrabbyBody"></Image>
+                </div>
             </div>
         </div>
 	</body>
@@ -43,31 +48,32 @@ import trabbyImage from '../assets/trabby/model/trabby.png';
 	html, body {
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
-    /*overflow-x: hidden;
-    overflow-y: hidden;*/
 }
 
+.ultramaincontainer{
+    height: 100vh; 
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: repeating-linear-gradient(
+        -45deg,               
+        transparent,
+        transparent 10px,
+        #e2e8f0 10px,
+        #e2e8f0 11px
+    );
+}
 
 #main-container{
-    width: 100vw;
-    height: 100vh; 
-    background-color: #FFFF;
+    background-color: transparent;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-
-
-    /* 2. Layer the repeating slanted lines on top */
-    background-image: repeating-linear-gradient(
-        -45deg,               
-        transparent,           /* Line start color */
-        transparent 10px,      /* Width of the empty space between lines */
-        #e2e8f0 10px,          /* Line border color (subtle gray) */
-        #e2e8f0 11px           /* Thickness of the actual line (1px thick here) */
-    );
+    flex-wrap: wrap;
+    padding: 100px;
+    
 }
 
 #main-container button{
@@ -81,8 +87,7 @@ import trabbyImage from '../assets/trabby/model/trabby.png';
     box-sizing: border-box;
     background-color: #1A2B4A;
     color: #FFFF;
-	
-    
+    transition: all 0.3s ease;
 }
 
 button:hover{
@@ -90,16 +95,14 @@ button:hover{
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.50);
 }
 
-
-
-
 #app-title{
     font-size: 75px;
     font-family: 'Sora', sans-serif; 
     font-weight: bold;
     display: flex;
     flex-direction: column;  
-    justify-content: center; 
+    justify-content: center;
+    padding-bottom: 40px;
 }
 
 img{
@@ -122,5 +125,46 @@ p{
 	font-weight: normal;
 	color: var(--grey);
 }
+
+#trabby-container{
+    position: relative;
+    width: 500px;
+    height: 500px;
+    animation: hover 3s infinite;
+}
+
+.trabby-body {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+}
+
+.trabby-wave {
+    position: absolute;
+    z-index: 2;
+    top: 10px;
+    left: 0;
+    transform-origin: 60% 57%;
+    animation: wave 2s infinite;
+}
+
+@keyframes wave {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(-20deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes hover {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+
+// REPLACE the rotation axis of the wave animation to make it look more natural. Adjust the transform-origin property to change the pivot point of the rotation.
+
+
+
 
 </style>

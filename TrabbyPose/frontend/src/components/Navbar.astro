@@ -15,7 +15,7 @@ const currentPath = Astro.url.pathname;
             <a href="/Customization" class={currentPath === '/Customization' ? 'active' : ''}>Customization</a>
             <a href="/Gallery" class={currentPath === '/Gallery' ? 'active' : ''}>Gallery</a>
             <a href="/Insights" class={currentPath === '/Insights' ? 'active' : ''}>Insights</a>
-            <a href="/UserAccounts" class={currentPath === '/UserAccounts' ? 'active' : ''}>Settings</a>
+            <a href="/Settings" class={currentPath === '/Settings' ? 'active' : ''}>Settings</a>
         </div>
         <div id="nav-actions">
             <button id="log-out-btn">
@@ -80,7 +80,7 @@ const currentPath = Astro.url.pathname;
             if (!hasAuthCookie && (window.location.pathname === '/Customization' || 
                                    window.location.pathname === '/Gallery' ||
                                    window.location.pathname === '/Insights' ||
-                                   window.location.pathname === '/UserAccounts')) {
+                                   window.location.pathname === '/Settings')) {
 
                 window.location.href = '/UserLogin';
             }
