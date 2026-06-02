@@ -22,9 +22,7 @@ async function safeFetch(url) {
   }
 }
 
-/* =======================================
-   POSE GENERATION METRICS
-======================================= */
+// Pose Generation Metrics
 
 export function getPoseGenerationRate() {
   return safeFetch(`${BASE_URL}/poses/generationRate/`);
@@ -42,10 +40,7 @@ export function getTotalPoseCount() {
   return safeFetch(`${BASE_URL}/poses/totalGenerated/`);
 }
 
-/* =======================================
-   POSE USAGE METRICS
-======================================= */
-
+// Pose Selection Metrics
 export function getTotalPoseSelections() {
   return safeFetch(`${BASE_URL}/poses/selectionTotal/`);
 }
@@ -58,10 +53,7 @@ export function getTopPoseRanking() {
   return safeFetch(`${BASE_URL}/poses/topPoses/`);
 }
 
-/* =======================================
-   EXPORT METRICS
-======================================= */
-
+// Export-related metrics
 export function getTotalExports() {
   return safeFetch(`${BASE_URL}/exports/total/`);
 }

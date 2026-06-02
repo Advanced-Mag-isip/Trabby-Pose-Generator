@@ -82,7 +82,6 @@ def create_pose(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # TEMPORARY
         user = User.objects.first()
 
         if not user:
@@ -91,17 +90,25 @@ def create_pose(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        # Pose Post
         pose = Poses.objects.create(
             poses_fid=user,
             name_of_poses_generated=pose_name,
             configuration=pose_config
         )
 
+        # Export Post
+        export = Export.objects.create(
+            export_fid=pose
+        )
+
         return Response(
             {
                 "pose_id": pose.poses_id,
+                "export_id": export.export_id,
                 "pose_name": pose.name_of_poses_generated,
-                "message": "Pose created successfully"
+                "pose_config": pose.configuration,
+                "message": "Pose created and exported successfully"
             },
             status=status.HTTP_201_CREATED
         )
