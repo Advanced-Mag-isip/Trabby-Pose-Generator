@@ -60,15 +60,14 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Add your production Astro frontend URL to CORS
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8312",
-    "http://127.0.0.1:8312",
-    "http://localhost:4321", # Astro default port
-    "https://your-production-astro-domain.com",
-    "https://sandbox1.advancedthinkers.app",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:4322",
-    "http://127.0.0.1",
+    origin for origin in [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'http://localhost:8312',
+        os.getenv('CORS_ORIGIN_LOCAL', 'http://localhost:8312'),
+        os.getenv('CORS_ORIGIN_SANDBOX'),
+        os.getenv('CORS_ORIGIN_IP'),
+    ] if origin
 ]
 # Application definition
 

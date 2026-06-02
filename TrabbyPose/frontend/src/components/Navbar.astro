@@ -27,46 +27,54 @@ const currentPath = Astro.url.pathname;
 </nav>
 
 <script>
-    const logoutBtn = document.getElementById('log-out-btn');
+    function initializeLogout() {
+        const logoutBtn = document.getElementById('log-out-btn');
 
-    logoutBtn?.addEventListener('click', async (e) => {
-        e.preventDefault();
+        // Check if the button exists and ensure we don't duplicate listeners
+        if (logoutBtn && !logoutBtn.dataset.listenerAttached) {
+            logoutBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
 
-        try {
-            // Point this to your Django backend
-            const BACKEND_URL = 'http://127.0.0.1:8000'; 
-            
-            // Call the Django logout view you wrote earlier
-            const response = await fetch(`${BACKEND_URL}/api/auth/logout/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                // CRITICAL: This sends the HTTP-Only cookie to Django so it knows who to log out
-                credentials: 'include', 
+                try {
+                    const BACKEND_URL = 'http://localhost:8313'; 
+                    
+                    const response = await fetch(`${BACKEND_URL}/api/auth/logout/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        credentials: 'include', 
+                    });
+
+                    if (response.ok) {
+                        window.location.href = '/UserLogin';
+                    } else {
+                        console.error("Logout failed on the server.");
+                        window.location.href = '/UserLogin';
+                    }
+                } catch (error) {
+                    console.error("Network error during logout:", error);
+                    window.location.href = '/UserLogin';
+                }
             });
 
-            if (response.ok) {
-                // Django successfully deleted the cookies! 
-                window.location.href = '/UserLogin';
-            } else {
-                console.error("Logout failed on the server.");
-                // Force redirect anyway as a fallback safety measure
-                window.location.href = '/UserLogin';
-            }
-        } catch (error) {
-            console.error("Network error during logout:", error);
-            window.location.href = '/UserLogin';
+            // Mark the button so we don't accidentally attach multiple event listeners
+            logoutBtn.dataset.listenerAttached = "true";
+        }
+    }
+
+    // Runs on standard initial page load
+    document.addEventListener('DOMContentLoaded', initializeLogout);
+    
+    // Runs every single time Astro changes pages or transitions state
+    document.addEventListener('astro:page-load', initializeLogout);
+
+    // Kept your back/forward cache fallback safety measure
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            window.location.reload();
         }
     });
-
-     window.addEventListener('pageshow', (event) => {
-    // event.persisted is TRUE if the page was loaded from the Back/Forward cache
-    if (event.persisted) {
-      // Force the browser to request a fresh copy from the server
-      window.location.reload();
-    }
-  });
 </script>
 
 <style>

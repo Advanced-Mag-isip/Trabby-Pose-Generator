@@ -14,8 +14,6 @@ Before deploying, make sure these files are correct for the sandbox server:
 - [TrabbyPose/frontend/astro.config.mjs](TrabbyPose/frontend/astro.config.mjs)
 - [TrabbyPose/frontend/src/lib/api.ts](TrabbyPose/frontend/src/lib/api.ts)
 
-If you change Django models, create the migration files locally and commit them before deploying.
-
 ## Recommended Values
 
 ### Root `.env`

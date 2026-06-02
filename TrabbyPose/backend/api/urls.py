@@ -37,7 +37,9 @@ from api.views.exports import (
     view_exports_per_pose,
     view_total_exports,
     view_export_generation_per_month,
+    create_pose,
 )
+
 
 # from api.views.configuration.config import (
 #     test,
@@ -94,4 +96,5 @@ urlpatterns = [
     path("exports/total/", view_total_exports),
     path("exports/pose/", view_exports_per_pose),
     path("exports/month/", view_export_generation_per_month),
+    path("exports/poses/create/", create_pose),
 ]

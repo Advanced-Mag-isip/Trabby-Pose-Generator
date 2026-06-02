@@ -9,6 +9,7 @@ export default defineConfig({
         allowedHosts: [
             'sandbox1.advancedthinkers.app',
             'http://165.22.107.245:8313',
+            'http://localhost:8313',
         ]
     }
 });

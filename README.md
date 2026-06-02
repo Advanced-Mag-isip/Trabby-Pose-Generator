@@ -29,23 +29,21 @@ These are the tools used. Visit the link to download.
 - **Python:** https://www.python.org/downloads/
 - **Git:** https://git-scm.com/downloads
 
-## Docker Setup
+## Local Setup
 
-See [DOCKER_SETUP_AND_DEPLOYMENT.md](DOCKER_SETUP_AND_DEPLOYMENT.md) for the Docker compose layout, required env files, deployment notes, and the exact commands to run.
-
-
-## Step 1 - Create the Project Folder
+## Step 1 - Clone the repository
 
 ```bash
-mkdir TrabbyPose
+git clone https://github.com/Advanced-Mag-isip/Trabby-Pose-Generator.git
 cd TrabbyPose
 ```
 
-## Step 2 - Set Up Django Backend
+## Step 2 - Set Up the Backend
 
 ### Create and activate virtual environment
 
 ```bash
+cd backend
 python -m venv venv
 venv\Scripts\activate.bat
 ```
@@ -54,6 +52,25 @@ venv\Scripts\activate.bat
 
 ```bash
 pip install django djangorestframework psycopg2-binary python-dotenv django-cors-headers
+```
+
+Generate a secret key:
+
+```bash
+python3 -c "import secrets; print(secrets.token_urlsafe(50))"
+```
+Create a `.env` file:
+
+Example contents:
+```bash
+SECRET_KEY=generate-a-new-key-for-server
+DEBUG=False
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=localhost
+DB_PORT=5432
+ALLOWED_HOSTS=localhost,127.0.0.1,sandbox.xxxxxxxxxxxx
 ```
 
 ### Create the Django project and app
