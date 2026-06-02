@@ -1,5 +1,4 @@
-const BASE_URL = `${import.meta.env.PUBLIC_API_URL}/api`;
-/* ---------------------------------------
+const BASE_URL = `${import.meta.env.INTERNAL_API_URL || import.meta.env.PUBLIC_API_URL}/api`;/* ---------------------------------------
    SAFE FETCH (SSR-safe + JSON-safe)
 ---------------------------------------- */
 async function safeFetch(url) {

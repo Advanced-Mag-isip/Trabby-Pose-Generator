@@ -37,7 +37,8 @@ services:
     ports:
       - "8312:8312"
     environment:
-      - PUBLIC_API_URL=http://backend:8313
+      - PUBLIC_API_URL=${PUBLIC_API_URL}
+      - INTERNAL_API_URL=${INTERNAL_API_URL}
     depends_on:
       - backend
 

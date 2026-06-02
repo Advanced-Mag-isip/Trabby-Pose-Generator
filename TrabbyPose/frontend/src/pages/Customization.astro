@@ -66,7 +66,7 @@ import expression15 from '../assets/trabby/sprites/official-assets/expression/ex
           <div class="action-buttons">
             <button set:html={IconTrash} aria-label="Delete"></button>
             <button set:html={IconRandom} aria-label="Randomize"></button>
-            <button set:html={IconDownload} aria-label="Download"></button>
+            <button id="download-btn" set:html={IconDownload} aria-label="Download"></button>
           </div>
         </div>
         <div class="character-preview-display">
@@ -104,6 +104,10 @@ import expression15 from '../assets/trabby/sprites/official-assets/expression/ex
     </div>
   </div>
 </Layout>
+
+<script>
+  import "../services/eventHooks.js";
+</script>
 
 <style>
   .content-container {

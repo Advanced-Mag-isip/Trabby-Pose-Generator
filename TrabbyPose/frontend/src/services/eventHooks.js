@@ -33,7 +33,7 @@ async function getPoseInfo(event) {
     console.log("Sending payload:", payload);
 
     const response = await fetch(
-      "http://127.0.0.1:8000/api/exports/poses/create/",
+       `${import.meta.env.PUBLIC_API_URL}/api/exports/poses/create/`,
       {
         method: "POST",
         headers: {
