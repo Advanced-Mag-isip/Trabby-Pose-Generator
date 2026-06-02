@@ -57,7 +57,7 @@ urlpatterns = [
     # ----------------------------------------
     # Authentication Endpoints
     # ----------------------------------------
-    path('', admin.site.urls),
+    path('admin/', admin.site.urls),
     path("auth/login/", login_user, name="login"),
     path("auth/logout/", logout_user, name="logout"),
     path("auth/user/", get_current_user, name="current-user"),
