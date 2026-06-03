@@ -16,22 +16,22 @@ from ..models import User, Poses, Export
 # Pose Exports Data Insights
 # ---------------------------------------------------------------
 
-@api_view(["GET"])
-def view_exports_per_pose(request):
-    qs = (
-        Export.objects
-        .values("export_fid__name_of_poses_generated")
-        .annotate(total=Count("export_id"))
-        .order_by("-total")
-    )
+# @api_view(["GET"])
+# def view_exports_per_pose(request):
+#     qs = (
+#         Export.objects
+#         .values("export_fid__name_of_poses_generated")
+#         .annotate(total=Count("export_id"))
+#         .order_by("-total")
+#     )
 
-    labels = [item["export_fid__name_of_poses_generated"] for item in qs]
-    values = [item["total"] for item in qs]
+#     labels = [item["export_fid__name_of_poses_generated"] for item in qs]
+#     values = [item["total"] for item in qs]
 
-    return Response({
-        "labels": labels,
-        "values": values
-    })
+#     return Response({
+#         "labels": labels,
+#         "values": values
+#     })
 
 
 @api_view(["GET"])
@@ -188,4 +188,42 @@ def most_used_asset(request):
     return Response({
         "file_name": row[0],
         "total": row[1],
+    })
+
+# From view exports per pose to get top 10 most used assets across all poses, along with their usage counts: need to rename path and endpoint, later nalang haha
+@api_view(["GET"])
+def view_exports_per_pose(request):
+    table = Poses._meta.db_table
+
+    query = f"""
+        SELECT
+            split_part(
+                split_part(asset::text, '?', 1),
+                '/',
+                array_length(
+                    string_to_array(
+                        split_part(asset::text, '?', 1),
+                        '/'
+                    ),
+                    1
+                )
+            ) AS file_name,
+            COUNT(*) AS total
+        FROM {table}
+        CROSS JOIN LATERAL jsonb_path_query(
+            configuration::jsonb,
+            '$.**.asset ? (@ != null)'
+        ) AS asset
+        GROUP BY file_name
+        ORDER BY total DESC
+        LIMIT 10;
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+
+    return Response({
+        "labels": [row[0] for row in rows],
+        "values": [row[1] for row in rows],
     })
