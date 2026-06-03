@@ -89,7 +89,6 @@ import TrabahadoorDoorLogo from '../assets/trabahadoor-door-logo.svg?raw';
 </script>
 
 <style>
-  /* Kept your exact styles, just minor addition for the button */
   #login-logo :global(svg) {
     width: 4em;       
     height: auto;      
@@ -120,6 +119,7 @@ import TrabahadoorDoorLogo from '../assets/trabahadoor-door-logo.svg?raw';
     border-width: 3px;
     border-radius: 20px;
     padding: 2em;
+
   }
   #login-header{
     display: flex;
@@ -162,14 +162,18 @@ import TrabahadoorDoorLogo from '../assets/trabahadoor-door-logo.svg?raw';
     padding: 1em; 
     display: flex;
     flex-direction: column;
-    min-width: 400px;
+    width: 100%; 
+    max-width: 400px; 
+    box-sizing: border-box;
   }
   #login-button-field{
     display: flex;
     flex-direction: column;
     padding: 1em;
-    min-width: 400px;
+    width: 100%; 
+    max-width: 400px; 
     margin-top: 1em;
+    box-sizing: border-box;
   }
   input, button{
     height: 3.2em;
@@ -190,5 +194,24 @@ import TrabahadoorDoorLogo from '../assets/trabahadoor-door-logo.svg?raw';
     box-sizing: border-box;
     height: 3.2em;
     cursor: pointer;
+  }
+
+  @media (max-width: 600px) {
+    #login-card {
+      padding: 1.5em 1em; 
+      width: 90%;
+      max-width: 400px;
+      box-sizing: border-box;
+    }
+    
+    .input-fields, 
+    #login-button-field {
+      padding: 0.5em 0;
+    }
+    
+    #banner-text {
+      text-align: center;
+      line-height: 1.4;
+    }
   }
 </style>
