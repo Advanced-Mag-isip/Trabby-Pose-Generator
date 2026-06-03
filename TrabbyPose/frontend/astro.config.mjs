@@ -12,5 +12,8 @@ export default defineConfig({
             'localhost',
             'backend',
         ]
+    },
+    devToolbar: {
+        enabled: false
     }
 });
