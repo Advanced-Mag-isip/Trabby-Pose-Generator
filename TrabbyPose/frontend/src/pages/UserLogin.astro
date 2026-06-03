@@ -1,5 +1,5 @@
 ---
-// src/pages/Gallery.astro
+// src/pages/UserLogin.astro
 import Layout from '../layouts/Layout.astro';
 import { Image } from 'astro:assets';
 import TrabahadoorDoorLogo from '../assets/trabahadoor-door-logo.svg?raw'; 
@@ -119,12 +119,12 @@ import TrabahadoorDoorLogo from '../assets/trabahadoor-door-logo.svg?raw';
     border-width: 3px;
     border-radius: 20px;
     padding: 2em;
-
+    opacity: 0;
+    animation: slideFadeUp 0.8s ease-out 0.1s forwards;
   }
   #login-header{
     display: flex;
     flex-direction: column;
-    padding: 1em;
     justify-content: center;
     align-items: center;
   }
@@ -150,16 +150,15 @@ import TrabahadoorDoorLogo from '../assets/trabahadoor-door-logo.svg?raw';
   #username, #password{
     background-color: var(--input-text-field);
     border-style: none;
-    font-family: 'Sora', sans-serif;
-    font-size: 1rem;            
-    color: var(--blue);           
+    font-family: 'Sora', sans-serif;    
+    color: var(--blue);
+    font-size: 16px;      
     font-weight: normal;           
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 0 30px;
     box-sizing: border-box;
   }
   .input-fields{
-    padding: 1em; 
+    padding: 1em 0; 
     display: flex;
     flex-direction: column;
     width: 100%; 
@@ -169,7 +168,6 @@ import TrabahadoorDoorLogo from '../assets/trabahadoor-door-logo.svg?raw';
   #login-button-field{
     display: flex;
     flex-direction: column;
-    padding: 1em;
     width: 100%; 
     max-width: 400px; 
     margin-top: 1em;
@@ -190,15 +188,36 @@ import TrabahadoorDoorLogo from '../assets/trabahadoor-door-logo.svg?raw';
     background-color: var(--orange);
     color: var(--white);
     border-style: none;
-    font-size: 1.1rem; 
+    font-size: 1em;
     box-sizing: border-box;
-    height: 3.2em;
+    height: 3em;
     cursor: pointer;
   }
 
-  @media (max-width: 600px) {
+  @keyframes slideFadeUp {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes simpleFadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+
+
+  @media (max-width: 900px) {
+    .page-container {
+      font-size: 0.9em;
+    }
+
     #login-card {
-      padding: 1.5em 1em; 
+      padding: 2em; 
       width: 90%;
       max-width: 400px;
       box-sizing: border-box;
