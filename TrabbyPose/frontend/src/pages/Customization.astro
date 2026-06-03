@@ -136,6 +136,8 @@ Astro.response.headers.set('Expires', '0');
     display: flex;
     flex-direction: column;
     height: clamp(450px, 80vh, 630px);
+    opacity: 0;
+    animation: slideFadeUp 0.8s ease-out 0.1s forwards;
   }
 
   /* ── RIGHT PANEL ── */
@@ -287,6 +289,8 @@ Astro.response.headers.set('Expires', '0');
     flex: 2 1 400px;
     min-width: 320px;
     display: flex;
+    opacity: 0;
+    animation: slideFadeUp 0.8s ease-out 0.1s forwards;
   }
 
   .tabs-container {
@@ -403,6 +407,23 @@ Astro.response.headers.set('Expires', '0');
     width: 100%;
     padding-bottom: 20px;
   }
+
+  @keyframes slideFadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes simpleFadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
 
   @media (max-width: 768px) {
     .spacer {
@@ -547,34 +568,25 @@ Astro.response.headers.set('Expires', '0');
     // Constants and Data
     const TABS = {
       Head: {
-        subcategories: ["Head Position", "Face", "Eyes", "Mouth", "Ears", "Hair", "Eyebrows"],
+        subcategories: ["Head Position", "Eyes", "Mouth", "Face"],
         options: {
           "Head Position": ["head-1", "head-2", "Tilted Right", "Looking Up", "Looking Down", "Bowed"],
-          "Face": ["face-1", "face-2", "Star Eyes", "Heart Eyes", "Dot Eyes", "Winking"],
           "Eyes": ["Round Eyes", "Sleepy Eyes", "Star Eyes", "Heart Eyes", "Dot Eyes", "Winking"],
           "Mouth": ["Smile", "Grin", "Pout", "Open Mouth", "Smirk", "Frown"],
-          "Ears": ["Round Ears", "Pointy Ears", "Floppy Ears", "No Ears", "Cat Ears", "Bear Ears"],
-          "Hair": ["No Hair", "Short Tuft", "Long Tuft", "Spiky", "Wavy", "Bun"],
-          "Eyebrows": ["Normal", "Raised", "Furrowed", "Thin", "Bushy", "Arched"],
+          "Face": ["face-1", "face-2", "Star Eyes", "Heart Eyes", "Dot Eyes", "Winking"],
         }
       },
       Limbs: {
         subcategories: [
-          "Limbs", "Left Upper Arm", "Right Upper Arm", "Left Forearm & Hand", 
-          "Right Forearm & Hand", "Left Thigh", "Right Thigh", 
-          "Left Lower Leg & Foot", "Right Lower Leg & Foot", "Tail"
+          "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Tail", "Limbs"
         ],
         options: {
-          "Limbs": ["limbs-1", "limbs-2"],
-          "Left Upper Arm": ["Default", "Raised", "Lowered", "Crossed", "Flexed"],
-          "Right Upper Arm": ["Default", "Raised", "Lowered", "Crossed", "Flexed"],
-          "Left Forearm & Hand": ["Open Hand", "Fist", "Peace Sign", "Pointing", "Wave"],
-          "Right Forearm & Hand": ["Open Hand", "Fist", "Peace Sign", "Pointing", "Wave"],
-          "Left Thigh": ["Default", "Wide Stance", "Narrow Stance", "Crossed"],
-          "Right Thigh": ["Default", "Wide Stance", "Narrow Stance", "Crossed"],
-          "Left Lower Leg & Foot": ["Default", "Tip-toe", "Flat Foot", "Raised"],
-          "Right Lower Leg & Foot": ["Default", "Tip-toe", "Flat Foot", "Raised"],
+          "Left Arm": ["Default", "Raised", "Lowered", "Crossed", "Flexed"],
+          "Right Arm": ["Default", "Raised", "Lowered", "Crossed", "Flexed"],
+          "Left Leg": ["Open Hand", "Fist", "Peace Sign", "Pointing", "Wave"],
+          "Right Leg": ["Open Hand", "Fist", "Peace Sign", "Pointing", "Wave"],
           "Tail": ["No Tail", "Short Tail", "Long Tail", "Curly Tail", "Wagging Tail"],
+          "Limbs": ["limbs-1", "limbs-2"],
         }
       },
       Torso: {
@@ -584,17 +596,16 @@ Astro.response.headers.set('Expires', '0');
         }
       },
       Accessories: {
-        subcategories: ["Wearables", "Holdables"],
+        subcategories: ["Wearables",],
         options: {
           "Wearables": ["acc-1", "acc-2", "Scarf", "Bowtie", "Necklace", "Cape", "Backpack", "Hat", "Glasses", "Apron", "Hoodie"],
-          "Holdables": ["None", "Sword", "Staff", "Flower", "Lantern", "Book", "Umbrella", "Balloon", "Basket"],
         }
       },
       Presets: {
-        subcategories: ["Body", "Expressions"],
+        subcategories: ["Face Presets", "Pose Presets"],
         options: {
-          "Body": ["body1", "body2", "body3", "Confident", "Running", "Back"],
-          "Expressions": ["expression1", "expression2", "expression3", "expression4", "expression5", "expression6", "expression7", "expression8", "expression9", "expression10", "expression11", "expression12", "expression13", "expression14", "expression15", "Happy", "Sad", "Angry", "Surprised", "Sleepy"],
+          "Face Presets": ["expression1", "expression2", "expression3", "expression4", "expression5", "expression6", "expression7", "expression8", "expression9", "expression10", "expression11", "expression12", "expression13", "expression14", "expression15", "Happy", "Sad", "Angry", "Surprised", "Sleepy"],
+          "Pose Presets": ["body1", "body2", "body3", "Confident", "Running", "Back"],
         }
       }
 
@@ -602,17 +613,19 @@ Astro.response.headers.set('Expires', '0');
     const TAB_ORDER = ["Head", "Limbs", "Torso", "Accessories", "Presets"];
     const LAYER_Z = { 
       Torso: 10, 
-      Limbs: 20, 
+      Limbs: 30, 
       Accessories: 50,
-      "Head Position": 30,
-      "Ears": 31,
-      "Face": 32,
-      "Eyes": 33,
-      "Mouth": 34,
-      "Eyebrows": 35,
-      "Hair": 36,
-      "Body": 37,
-      "Expressions": 38,
+
+      "Head Position": 20,
+      "Ears": 21,
+      "Face": 22,
+      "Eyes": 23,
+      "Mouth": 24,
+      "Eyebrows": 25,
+      "Hair": 26,
+      
+      "Pose Presets": 40,
+      "Face Presets": 41,
     };
 
     // State Management (Restoring from sessionStorage)
@@ -623,7 +636,7 @@ Astro.response.headers.set('Expires', '0');
       Limbs: "Limbs",
       Torso: "Torso Shape",
       Accessories: "Wearables",
-      Presets: "Body"
+      Presets: "Face Presets"
     };
     
     const savedSelections = sessionStorage.getItem('trabbySelections');

@@ -11,160 +11,207 @@ import trabbyWave from '../assets/trabby/model/trabby-arm-wave.png';
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<link href="https://googleapis.com" rel="stylesheet">
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Trabbyhadoor</title>
+    <head>
+        <link href="https://googleapis.com" rel="stylesheet">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content={Astro.generator} />
+        <title>Trabbyhadoor</title>
 
-
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	
-		<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&display=swap" rel="stylesheet">
-	</head>
-	<body>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&display=swap" rel="stylesheet">
+    </head>
+    <body>
         <div class="ultramaincontainer">
-            <div id = "main-container">
-                <div id = "app-title">
-                    <div id = "trabbyhadoor">TrabbyHadoor</div>
-                    <div id = "customizer">Customizer</div>
-                    <p>Trabahadoor’s mascot cusomization tool that allows users to customize Trabby by selecting different heads, torso, limbs, and accessories to create unique character assets.</p>
-                    <div id = "landing-button"><a href="/UserLogin"><button>Start Customizing!</button></a></div>
-                    
+            <div id="main-container">
+                <div id="app-title">
+                    <div id="trabbyhadoor">TrabbyHadoor</div>
+                    <div id="customizer">Customizer</div>
+                    <p>Trabahadoor’s mascot customization tool that allows users to customize Trabby by selecting different heads, torso, limbs, and accessories to create unique character assets.</p>
+                    <div id="landing-button">
+                        <a href="/UserLogin"><button>Start Customizing!</button></a>
+                    </div>
                 </div>
 
-                <div id = "trabby-container">
-                    <Image class="trabby-wave" src ={trabbyWave} alt = "TrabbyWave"></Image>
-                    <Image class="trabby-body" src ={trabbyBody} alt = "TrabbyBody"></Image>
+                <div id="trabby-container">
+                    <Image class="trabby-body" src={trabbyBody} alt="TrabbyBody"></Image>
+                    <Image class="trabby-wave" src={trabbyWave} alt="TrabbyWave"></Image>
                 </div>
             </div>
         </div>
-	</body>
+    </body>
 </html>
 
 <style>
-	html, body {
-    margin: 0;
-    padding: 0;
-}
+    html, body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
 
-.ultramaincontainer{
-    height: 100vh; 
-    background-color: transparent;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-image: repeating-linear-gradient(
-        -45deg,               
-        transparent,
-        transparent 10px,
-        #e2e8f0 10px,
-        #e2e8f0 11px
-    );
-}
+    .ultramaincontainer {
+        min-height: 100vh;
+        width: 100%;
+        background-color: transparent;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        box-sizing: border-box;
+        background-image: repeating-linear-gradient(
+            -45deg,               
+            transparent,
+            transparent 10px,
+            #e2e8f0 10px,
+            #e2e8f0 11px
+        );
+    }
 
-#main-container{
-    background-color: transparent;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 100px;
-    
-}
+    #main-container {
+        background-color: transparent;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 3rem; 
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+    }
 
-#main-container button{
-    width: fit-content;
-    height: fit-content;
-	padding: 10px 50px;
-    font-size: 1rem;
-    border-radius: 20px;
-    font-family: 'Sora', sans-serif; 
-    font-weight: bold;
-    box-sizing: border-box;
-    background-color: #1A2B4A;
-    color: #FFFF;
-    transition: all 0.3s ease;
-}
+    #app-title {
+        font-size: clamp(40px, 5vw + 1rem, 75px);
+        font-family: 'Sora', sans-serif; 
+        font-weight: bold;
+        display: flex;
+        flex-direction: column;  
+        justify-content: center;
+        flex: 1 1 400px;
+    }
 
-button:hover{
-	transform: translateY(-3px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.50);
-}
+    #trabbyhadoor { 
+        color: #1A2B4A; 
+        opacity: 0;
+        animation: slideFadeUp 0.8s ease-out 0.1s forwards;
+    }
+    #customizer { 
+        color: #F26B2A; 
+        opacity: 0;
+        animation: slideFadeUp 0.8s ease-out 0.3s forwards;
+    }
 
-#app-title{
-    font-size: 75px;
-    font-family: 'Sora', sans-serif; 
-    font-weight: bold;
-    display: flex;
-    flex-direction: column;  
-    justify-content: center;
-    padding-bottom: 40px;
-}
+    p {
+        font-size: 1.1rem;
+        max-width: 550px;
+        width: 100%; 
+        font-weight: normal;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+        opacity: 0;
+        animation: slideFadeUp 0.8s ease-out 0.5s forwards;
+    }
 
-img{
-    height: 500px; 
-    width: auto;
-    padding-left: 50px;
-}
+    /* Button */
+    #main-container button {
+        width: fit-content;
+        height: fit-content;
+        padding: 15px 40px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 30px;
+        font-family: 'Sora', sans-serif; 
+        font-weight: bold;
+        cursor: pointer;
+        background-color: #1A2B4A;
+        color: #FFFF;
+        transition: all 0.3s ease;
+    }
 
-#trabbyhadoor{
-    color: #1A2B4A
-}
+    button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.50);
+    }
 
-#customizer{
-    color: #F26B2A
-}
+    #trabby-container {
+        position: relative;
+        flex: 1 1 300px;
+        max-width: 500px;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        animation: hover 3s infinite ease-in-out;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        animation: simpleFadeIn 0.8s ease-out 0.7s forwards;
+    }
 
-p{
-    font-size: 1.1rem;
-	width: 550px;
-	font-weight: normal;
-	color: var(--grey);
-}
+    #landing-button {
+        opacity: 0;
+        animation: slideFadeUp 0.8s ease-out 0.7s forwards;
+    }
 
-#trabby-container{
-    position: relative;
-    width: 500px;
-    height: 500px;
-    animation: hover 3s infinite;
-}
+    img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+    }
 
-.trabby-body {
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    left: 0;
-}
+    .trabby-body {
+        position: absolute;
+        z-index: 1;
+    }
 
-.trabby-wave {
-    position: absolute;
-    z-index: 2;
-    top: 10px;
-    left: 0;
-    transform-origin: 60% 57%;
-    animation: wave 2s infinite;
-}
+    .trabby-wave {
+        position: absolute;
+        z-index: 2;
+        transform-origin: 60% 57%; 
+        animation: wave 2.5s infinite ease-in-out;
+    }
 
-@keyframes wave {
-    0% { transform: rotate(0deg); }
-    50% { transform: rotate(-20deg); }
-    100% { transform: rotate(0deg); }
-}
+    /* Animations */
+    @keyframes wave {
+        0% { transform: rotate(0deg); }
+        50% { transform: rotate(-35deg); }
+        100% { transform: rotate(0deg); }
+    }
 
-@keyframes hover {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
-}
+    @keyframes hover {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-15px); }
+        100% { transform: translateY(0px); }
+    }
 
+    @keyframes slideFadeUp {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
 
-// REPLACE the rotation axis of the wave animation to make it look more natural. Adjust the transform-origin property to change the pivot point of the rotation.
+    @keyframes simpleFadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
 
+    /* Mobile Adjustments */
+    @media (max-width: 768px) {
+        #main-container {
+            text-align: center;
+            gap: 2rem;
+        }
 
-
-
+        #app-title {
+            align-items: center;
+        }
+    }
 </style>
