@@ -1,17 +1,13 @@
-const BASE_URL = `${import.meta.env.INTERNAL_API_URL || import.meta.env.PUBLIC_API_URL}/api`;/* ---------------------------------------
-   SAFE FETCH (SSR-safe + JSON-safe)
----------------------------------------- */
+const BASE_URL = "http://127.0.0.1:8000/api";
+
 async function safeFetch(url) {
   const res = await fetch(url);
   const text = await res.text();
-
-  // Handle HTTP errors
   if (!res.ok) {
     console.error("API ERROR:", url, text);
     throw new Error(`HTTP ${res.status} at ${url}`);
   }
 
-  // Ensure valid JSON
   try {
     return JSON.parse(text);
   } catch (err) {
@@ -21,7 +17,6 @@ async function safeFetch(url) {
 }
 
 // Pose Generation Metrics
-
 export function getPoseGenerationRate() {
   return safeFetch(`${BASE_URL}/poses/generationRate/`);
 }
@@ -48,7 +43,7 @@ export function getSelectionPerPose() {
 }
 
 export function getTopPoseRanking() {
-  return safeFetch(`${BASE_URL}/poses/topPoses/`);
+  return safeFetch(`${BASE_URL}/poses/topConfigurations`);
 }
 
 // Export-related metrics
@@ -66,4 +61,8 @@ export function getExportsPerMonth() {
 
 export function getTopExports() {
   return safeFetch(`${BASE_URL}/exports/pose/`);
+}
+
+export function getMostUsedAsset() {
+  return safeFetch(`${BASE_URL}/exports/assets/mostUsed/`);
 }

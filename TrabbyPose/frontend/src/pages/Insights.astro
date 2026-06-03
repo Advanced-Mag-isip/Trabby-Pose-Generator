@@ -14,8 +14,9 @@ import {
   getTotalExports,
   getExportsPerMonth,
   getTopExports,
-  getSelectionPerPose
-} from "../services/insightsAPI.js";
+  getSelectionPerPose,
+  getMostUsedAsset
+} from "../services/insightsApi.js";
 
 // Protected page - check authentication and set no-cache headers
 Astro.response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
@@ -35,7 +36,8 @@ const [
   totalExports,
   exportMonthly,
   topExports,
-  usagePerMonth
+  usagePerMonth,
+  mostUsedAsset
 ] = await Promise.all([
   getPoseGenerationRate(),
   getPredefinedPoseCount(),
@@ -46,13 +48,22 @@ const [
   getTotalExports(),
   getExportsPerMonth(),
   getTopExports(),
-  getSelectionPerPose()
+  getSelectionPerPose(),
+  getMostUsedAsset()
 ]);
 
 const monthlyLabels = exportMonthly.labels ?? [];
 const monthlyValues = exportMonthly.values ?? [];
 
-const topPoseLabels = topPoses.labels ?? [];
+const topPoseLabels = (topPoses.labels ?? []).map(label =>
+  label
+    .split(" + ")
+    .map(part => part.replace(/\.[^/.]+$/, "")) // removes .png, .jpg, etc.
+    .join(" + ")
+);
+
+console.log("=== MONTHLY LABELS (SERVER) ===");
+console.log(monthlyLabels);
 const topPoseValues = topPoses.values ?? [];
 
 const poseRateLabels = poseRate.labels ?? [];
@@ -63,6 +74,10 @@ const topExportValues = topExports.values ?? [];
 
 const usagePerMonthLabels = usagePerMonth.labels ?? [];
 const usagePerMonthValues = usagePerMonth.values ?? [];
+
+const mostUsedAssetLabel =
+  mostUsedAsset?.file_name?.replace(/\.[^/.]+$/, "") || "";
+const mostUsedAssetValue = mostUsedAsset?.total ?? 0;
 ---
 
 <Layout>
@@ -88,12 +103,12 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
 
             <div class="metric-card" id="total-poses-generated">
               <span class="metric">{totalPoses.total_poses_generated}</span>
-              <span class="metric-label">Total Poses Generated</span>
+              <span class="metric-label">Total Poses Generated (Unique Configurations)</span>
             </div>
 
             <div class="metric-card" id="predefined-poses">
-              <span class="metric">{predefined.number_of_predefined_poses}</span>
-              <span class="metric-label">Predefined Poses</span>
+              <span class="metric">{mostUsedAssetValue}</span>
+              <span class="metric-label">Most Used Asset ({mostUsedAssetLabel}) </span>
             </div>
 
             <div class="metric-card" id="customized-poses">
@@ -103,13 +118,26 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
 
           </div>
 
-          <div id="pose-generation-per-month" class="graph-card">
+          <div id="pose-generation-per-month">
+            <div id = "pose-generation-per-week-graph" class = "graph-card">
+              <span id = "pose-generation-graph-label">Pose generation per week</span>
+              <LineChart
+                chartId="pose-generation-chart"
+                labels={poseRateLabels}
+                values={poseRateValues}
+                label="Pose Generation Per Month"
+              />
+            </div>
+
+            <div id="exports-per-pose-graph" class="graph-card">
+              <span id = "exports-per-pose-graph-container"> Exports per graph</span>
             <LineChart
-              chartId="pose-generation-chart"
-              labels={poseRateLabels}
-              values={poseRateValues}
-              label="Pose Generation Per Month"
+              chartId="exports-month-chart"
+              labels={monthlyLabels}
+              values={monthlyValues}
+              label="Exports Per Month"
             />
+          </div>
           </div>
 
         </div>
@@ -118,38 +146,20 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
       <!-- ===================================
            POSE USAGE METRICS
       =================================== -->
-
-
-          <div class="metric-card" id="top-poses">
-            <span>Top Poses Breakdown</span>
-
-            <PieChart
-              chartId="top-poses-distribution-chart"
-              labels={topPoseLabels}
-              values={topPoseValues}
-              label="Popularity Share"
-            />
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ===================================
-           EXPORT METRICS
-      =================================== -->
-      <div id="export-metric-computation-container" class="insights-container">
+        <div id="export-metric-computation-container" class="insights-container">
         <h2>Export Metrics Computation</h2>
 
-        <div id="outer-export-metric-computation-container">
 
-          <div id="inner-export-metric-computation-container">
-
-            <div class="metric-card" id="total-export">
+           <div class="metric-card" id="total-export">
               <span class="metric-label">Total Exports</span>
               <span class="metric">{totalExports.total_exports}</span>
             </div>
+          
+          <div id="inner-export-metric-computation-container">
 
+           
           <div class="metric-card" id="exports-per-pose">
+            <span>Top Pose Exports</span>
             <PieChart
               chartId="exports-month-chart"
               labels={topExportLabels}
@@ -158,19 +168,31 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
             />
           </div>
 
-          </div>
+            <div class="metric-card" id="top-poses">
+            <span>Top Pose Configurations</span>
 
-          <div id="exports-per-pose-graph" class="graph-card">
-            <LineChart
-              chartId="exports-month-chart"
-              labels={monthlyLabels}
-              values={monthlyValues}
-              label="Exports Per Month"
+            <PieChart
+              chartId="top-poses-distribution-chart"
+              labels={topPoseLabels}
+              values={topPoseValues}
+              label="Top Pose Configuration Breakdown"
             />
           </div>
 
+          
+
         </div>
       </div>
+
+        
+
+        </div>
+      </div>
+
+      <!-- ===================================
+           EXPORT METRICS
+      =================================== -->
+      
 
     </div>
   </div>
@@ -179,6 +201,12 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
 
 
 <style>
+
+    #pose-generation-per-month{
+      display: flex; 
+      flex-direction: row;
+      gap: 1em;
+    }
     .insights-container{
       margin-bottom: 50px;
       font-family: 'Sora', sans-serif;
@@ -219,6 +247,8 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
 
     #total-export{
       background: var(--blue-gradient);
+      flex: .5; 
+      margin-bottom: 1em;
     }
 
     #exports-per-pose{
@@ -253,6 +283,16 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
       font-family: 'Sora', sans-serif;
       font-size: 2em;
       font-weight: bold;
+      flex: 1;
+    }
+
+    #exports-per-pose{
+      background: var(--orange-gradient);
+      color: var(--white);
+      font-family: 'Sora', sans-serif;
+      font-size: 2em;
+      font-weight: bold;
+      flex: 1; 
     }
 
     
@@ -352,6 +392,10 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
 
   
    /*==============Export Metrics Computations =========================*/
+
+   #export-metric-computation-container{
+    padding-bottom: 10em;
+   }
     #inner-export-metric-computation-container div{
       display: flex;
       flex-direction: column;
@@ -361,14 +405,10 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
 
      #inner-export-metric-computation-container{
       display: flex; 
-      flex-direction: column;
+      flex-direction: row;
       gap: 20px; 
     }
-
-     #outer-export-metric-computation-container{
-      display: flex; 
-      flex-direction: row;
-    }
+    
 
    #exports-per-pose-graph{ 
       display: flex;
@@ -378,6 +418,8 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
       min-width: 300px;
       min-height: 400px;
    }
+
+
 
    #exports-per-pose-graph-container{
     box-sizing: border-box;
