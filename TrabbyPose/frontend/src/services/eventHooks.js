@@ -8,11 +8,8 @@ async function getPoseInfo(event) {
   event?.preventDefault();
 
   try {
-    const input = document.querySelector(
-      ".character-preview-actions input"
-    );
-
-    const pose_name = input?.value?.trim() || "Untitled Pose";
+    const input = document.querySelector(".character-preview-actions input");
+    const pose_name = input?.value?.trim() || "trabby";
     const selectedMap = getSelectionMapBySub();
 
     if (selectedMap.size === 0) {
@@ -21,16 +18,10 @@ async function getPoseInfo(event) {
     }
 
     const config = buildPoseConfiguration();
-
-    const payload = {
-      pose_name,
-      pose: config,
-    };
-
+    const payload = {pose_name, pose: config,};
     console.log("Sending payload:", payload);
 
-    const response = await fetch(
-       `${import.meta.env.PUBLIC_API_URL}/api/exports/poses/create/`,
+    const response = await fetch("http://127.0.0.1:8000/api/exports/poses/create/",
       {
         method: "POST",
         headers: {
@@ -84,9 +75,7 @@ function getSelectionMapBySub() {
   const map = new Map();
 
   Object.entries(source).forEach(([sub, entry]) => {
-    if (entry?.spriteUrl) {
-      map.set(sub, entry.spriteUrl);
-    }
+    if (entry?.spriteUrl) {map.set(sub, entry.spriteUrl);}
   });
 
   return map;
