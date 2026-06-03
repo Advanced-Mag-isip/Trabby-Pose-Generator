@@ -71,6 +71,8 @@ def view_pose_generation_rate_per_month(request):
     monthly_signatures = defaultdict(set)
 
     for p in poses:
+        if not p.created_at:
+            continue
         config = p.configuration
 
         assets = []
