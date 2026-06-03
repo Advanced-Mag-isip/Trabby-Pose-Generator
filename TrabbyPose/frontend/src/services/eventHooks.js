@@ -13,24 +13,12 @@ async function getPoseInfo(event) {
     );
 
     const pose_name = input?.value?.trim() || "Untitled Pose";
+    const selectedMap = getSelectionMapBySub();
 
-    // // ================================
-    // // DEBUG: print selected assets (RAW MAP)
-    // // ================================
-    // const selectedMap = getSelectionMapBySub();
-    // console.log("=== SELECTED MAP (RAW) ===");
-    // console.log([...selectedMap]);
-
-    // // ================================
-    // // DEBUG: print selected assets (TABLE FORMAT)
-    // // ================================
-    // const selectedTable = [...selectedMap].map(([sub, url]) => ({
-    //   subcategory: sub,
-    //   spriteUrl: url
-    // }));
-
-    // console.log("=== SELECTED ASSETS (TABLE) ===");
-    // console.table(selectedTable);
+    if (selectedMap.size === 0) {
+      console.error("No assets selected. Aborting save.");
+      return;
+    }
 
     const config = buildPoseConfiguration();
 
@@ -107,17 +95,6 @@ function getSelectionMapBySub() {
 // Build pose configuration
 function buildPoseConfiguration() {
   const selected = getSelectionMapBySub();
-
-  // console.log("=== BUILD POSE MAP ===");
-  // console.log([...selected]);
-
-  // const isEmpty = Object.keys(selected).length === 0;
-  // if (isEmpty==0) {
-  //   console.warn("No assets selected. Returning empty pose configuration.");
-  // }else{
-  //   console.log("Building pose configuration with selected assets...");
-  // }
-
   const getAsset = (sub) => selected.get(sub) || null;
 
   return {
