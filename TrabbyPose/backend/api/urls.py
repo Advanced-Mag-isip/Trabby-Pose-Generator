@@ -25,6 +25,7 @@ from api.views.poses.generation import (
     view_number_of_customized_poses,
     view_number_of_total_poses_generated,
     view_pose_generation_rate_per_month,
+    view_top_pose_configurations,
 )
 
 from api.views.poses.usage import (
@@ -38,6 +39,8 @@ from api.views.exports import (
     view_total_exports,
     view_export_generation_per_month,
     create_pose,
+    get_pose_config_value,
+    most_used_asset,
 )
 
 
@@ -90,11 +93,16 @@ urlpatterns = [
     # Pose usage
     path("poses/selectionPerPose/", view_count_selection_per_pose),
     path("poses/selectionTotal/", view_total_count_selection_of_poses),
+
+    # Top Pose Configurations
     path("poses/topPoses/", view_top_poses_selection_count_ranking),
+    path("poses/topConfigurations/", view_top_pose_configurations),
 
     # Exports
     path("exports/total/", view_total_exports),
     path("exports/pose/", view_exports_per_pose),
     path("exports/month/", view_export_generation_per_month),
     path("exports/poses/create/", create_pose),
+    path("exports/pose/config/", get_pose_config_value),
+    path("exports/assets/mostUsed/", most_used_asset),
 ]

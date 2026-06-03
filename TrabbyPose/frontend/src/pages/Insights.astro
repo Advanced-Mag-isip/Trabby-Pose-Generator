@@ -14,7 +14,8 @@ import {
   getTotalExports,
   getExportsPerMonth,
   getTopExports,
-  getSelectionPerPose
+  getSelectionPerPose,
+  getMostUsedAsset
 } from "../services/insightsApi.js";
 
 // Protected page - check authentication and set no-cache headers
@@ -35,7 +36,8 @@ const [
   totalExports,
   exportMonthly,
   topExports,
-  usagePerMonth
+  usagePerMonth,
+  mostUsedAsset
 ] = await Promise.all([
   getPoseGenerationRate(),
   getPredefinedPoseCount(),
@@ -46,13 +48,19 @@ const [
   getTotalExports(),
   getExportsPerMonth(),
   getTopExports(),
-  getSelectionPerPose()
+  getSelectionPerPose(),
+  getMostUsedAsset()
 ]);
 
 const monthlyLabels = exportMonthly.labels ?? [];
 const monthlyValues = exportMonthly.values ?? [];
 
-const topPoseLabels = topPoses.labels ?? [];
+const topPoseLabels = (topPoses.labels ?? []).map(label =>
+  label
+    .split(" + ")
+    .map(part => part.replace(/\.[^/.]+$/, "")) // removes .png, .jpg, etc.
+    .join(" + ")
+);
 const topPoseValues = topPoses.values ?? [];
 
 const poseRateLabels = poseRate.labels ?? [];
@@ -63,6 +71,10 @@ const topExportValues = topExports.values ?? [];
 
 const usagePerMonthLabels = usagePerMonth.labels ?? [];
 const usagePerMonthValues = usagePerMonth.values ?? [];
+
+const mostUsedAssetLabel =
+  mostUsedAsset?.file_name?.replace(/\.[^/.]+$/, "") || "";
+const mostUsedAssetValue = mostUsedAsset?.total ?? 0;
 ---
 
 <Layout>
@@ -88,12 +100,12 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
 
             <div class="metric-card" id="total-poses-generated">
               <span class="metric">{totalPoses.total_poses_generated}</span>
-              <span class="metric-label">Total Poses Generated</span>
+              <span class="metric-label">Total Poses Generated (Unique Configurations)</span>
             </div>
 
             <div class="metric-card" id="predefined-poses">
-              <span class="metric">{predefined.number_of_predefined_poses}</span>
-              <span class="metric-label">Predefined Poses</span>
+              <span class="metric">{mostUsedAssetValue}</span>
+              <span class="metric-label">Most Used Asset ({mostUsedAssetLabel}) </span>
             </div>
 
             <div class="metric-card" id="customized-poses">
@@ -121,13 +133,13 @@ const usagePerMonthValues = usagePerMonth.values ?? [];
 
 
           <div class="metric-card" id="top-poses">
-            <span>Top Poses Breakdown</span>
+            <span>Top Pose Configurations</span>
 
             <PieChart
               chartId="top-poses-distribution-chart"
               labels={topPoseLabels}
               values={topPoseValues}
-              label="Popularity Share"
+              label="Top Pose Configuration Breakdown"
             />
           </div>
 

@@ -1,3 +1,6 @@
+import os
+from urllib.parse import urlparse
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db.models import Count
@@ -29,13 +32,36 @@ def view_number_of_customized_poses(request):
 
 @api_view(["GET"])
 def view_number_of_total_poses_generated(request):
-    # Replace with actual query if you have an is_predefined field
-    number_of_predefined_poses = 0
-    number_of_customized_poses = Poses.objects.count()
+    poses = Poses.objects.all()
+
+    seen_signatures = set()
+
+    for p in poses:
+        config = p.configuration
+
+        assets = []
+
+        def extract_assets(data):
+            if isinstance(data, dict):
+                for k, v in data.items():
+                    if k == "asset" and v:
+                        filename = os.path.basename(urlparse(v.split("?")[0]).path)
+                        assets.append(filename)
+                    else:
+                        extract_assets(v)
+
+            elif isinstance(data, list):
+                for item in data:
+                    extract_assets(item)
+
+        extract_assets(config)
+
+        signature = tuple(sorted(assets))
+
+        seen_signatures.add(signature)
 
     return Response({
-        "total_poses_generated":
-            number_of_predefined_poses + number_of_customized_poses,
+        "total_poses_generated": len(seen_signatures)
     })
 
 @api_view(["GET"])
@@ -70,4 +96,48 @@ def view_pose_generation_rate_per_month(request):
     return Response({
         "labels": labels,
         "values": values
+    })
+
+@api_view(["GET"])
+def view_top_pose_configurations(request):
+    poses = Poses.objects.all()
+
+    signature_count = defaultdict(int)
+
+    for p in poses:
+        config = p.configuration
+
+        assets = []
+
+        def extract_assets(data):
+            if isinstance(data, dict):
+                for k, v in data.items():
+                    if k == "asset" and v:
+                        filename = os.path.basename(urlparse(v.split("?")[0]).path)
+                        assets.append(filename)
+                    else:
+                        extract_assets(v)
+
+            elif isinstance(data, list):
+                for item in data:
+                    extract_assets(item)
+
+        extract_assets(config)
+
+        signature = " + ".join(sorted(assets))
+        signature_count[signature] += 1
+
+    # sort by most common
+    sorted_data = sorted(
+        signature_count.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+    # top 10 only (important for charts)
+    top_data = sorted_data[:10]
+
+    return Response({
+        "labels": [item[0] for item in top_data],
+        "values": [item[1] for item in top_data]
     })

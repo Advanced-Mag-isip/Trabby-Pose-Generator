@@ -1,6 +1,10 @@
+import os
+from urllib.parse import unquote, urlparse
+
+from django.db import connection
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.db.models import Count
+from django.db.models import F, CharField, Count, Func, Value
 from django.db.models.functions import TruncMonth
 from collections import defaultdict
 from rest_framework import status
@@ -120,3 +124,68 @@ def create_pose(request):
             {"error": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+@api_view(["GET"])
+def get_pose_config_value(request):
+    poses = Poses.objects.all().order_by("-poses_id")
+
+    def clean(data):
+        if isinstance(data, dict):
+            new_data = {}
+            for k, v in data.items():
+                if k == "asset":
+                    if v:
+                        v = unquote(os.path.basename(urlparse(v.split("?")[0]).path))
+                    new_data[k] = v
+                else:
+                    new_data[k] = clean(v)
+            return new_data
+
+        if isinstance(data, list):
+            return [clean(i) for i in data]
+
+        return data
+
+    return Response([
+        {
+            "id": p.poses_id,
+            "name": p.name_of_poses_generated,
+            "created": getattr(p, "created_at", None),
+            "config": clean(p.configuration)
+        }
+        for p in poses
+    ])
+
+@api_view(["GET"])
+def most_used_asset(request):
+    table = Poses._meta.db_table
+
+    query = f"""
+        SELECT
+            split_part(
+                split_part(asset::text, '?', 1),
+                '/',
+                array_length(string_to_array(split_part(asset::text, '?', 1), '/'), 1)
+            ) AS file_name,
+            COUNT(*) AS total
+        FROM {table}
+        CROSS JOIN LATERAL jsonb_path_query(
+            configuration::jsonb,
+            '$.**.asset ? (@ != null)'
+        ) AS asset
+        GROUP BY file_name
+        ORDER BY total DESC
+        LIMIT 1;
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        row = cursor.fetchone()
+
+    if not row:
+        return Response({"file_name": None, "total": 0})
+
+    return Response({
+        "file_name": row[0],
+        "total": row[1],
+    })
