@@ -320,6 +320,8 @@ Astro.response.headers.set('Expires', '0');
     display: flex;
     flex-direction: column;
     height: clamp(450px, 75vh, 700px);
+    opacity: 0;
+    animation: slideFadeUp 0.8s ease-out 0.1s forwards;
   }
 
   #panel-header-gallery {
@@ -484,6 +486,22 @@ Astro.response.headers.set('Expires', '0');
     height: 3.5px;
     background-color: var(--white);
     border-radius: 50%;
+  }
+
+  @keyframes slideFadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes simpleFadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
   }
 
   @media (max-width: 1100px) {

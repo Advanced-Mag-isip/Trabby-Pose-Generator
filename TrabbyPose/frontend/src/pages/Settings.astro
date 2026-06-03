@@ -1,6 +1,10 @@
 ---
-// src/pages/UserAccounts.astro
+// src/pages/Settings.astro
 import Layout from '../layouts/Layout.astro';
+import { Image } from 'astro:assets';
+import IconAccount from '../assets/icons/user.svg?raw';
+import IconPassword from '../assets/icons/lock.svg?raw';
+import IconNewPassword from '../assets/icons/lock-keyhole-open.svg?raw';
 
 // Protected page - check authentication and set no-cache headers
 Astro.response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
@@ -17,8 +21,187 @@ Astro.response.headers.set('Expires', '0');
     </div>
     <!-- Content Container -->
     <div class="content-container">
-      <h2>Content</h2>
-      <p>This is the content container. Put stuff here hehe</p>
+      <div class="account-settings-container">
+        <div class="container-header">
+          <span class="icon"><Fragment set:html={IconAccount} /></span>
+          Account Settings
+        </div>
+        <form class="account-settings-content">
+          <h3>Change Password</h3>
+          <div class="input-group-container">
+            <div class="input-group">
+              <label for="current-password">Current Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" set:html={IconPassword}></span>
+                <input type="password" id="current-password" name="current-password" placeholder="Enter Current Password" required>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="new-password">New Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" set:html={IconNewPassword}></span>
+                <input type="password" id="new-password" name="new-password" placeholder="Enter New Password" required>
+              </div>
+            </div>
+            <div class="input-group">
+              <label for="confirm-password">Confirm New Password</label>
+              <div class="input-wrapper">
+                <span class="input-icon" set:html={IconNewPassword}></span>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm New Password" required>
+              </div>
+            </div>
+          </div>
+          <div class="actions-container">
+            <button id="save-changes-btn">Save Changes</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </Layout>
+
+<style>
+  .account-settings-container {
+    background-color: var(--white);
+    border-radius: 24px;
+    margin: 0 auto;
+    overflow: hidden;
+    border: 4px solid var(--blue);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    animation: slideFadeUp 0.8s ease-out 0.1s forwards
+  }
+
+  .container-header {
+    color: var(--white);
+    font-size: 1.25rem;
+    font-family: Sora, sans-serif;
+    font-weight: bold;
+    background-color: var(--blue);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .container-header :global(svg) {
+    width: 24px;
+    height: 24px;
+    stroke-width: 3px;
+    color: var(--white);
+  }
+
+  .container-header h3 {
+    font-size: 1.5rem;
+    color: var(--white);
+  }
+
+  .account-settings-content{
+    background-color: #FFFFFF50;
+    color: var(--blue);
+    border-radius: 12px;
+    padding: 24px;
+    font-family: 'Sora', sans-serif;
+    font-weight: bold;
+  }
+
+  .account-settings-content h3 {
+    margin: 0;
+    color: var(--orange);
+  }
+
+  .input-group-container {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--input-text-field);
+    color: var(--blue);
+    border: 3px solid var(--blue);
+    border-radius: 12px;
+    padding: 5px 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .input-wrapper input {
+    border: none;
+    background-color: transparent;
+    font-family: 'Sora', sans-serif;
+    font-size: 1rem;
+    color: var(--blue);
+    flex: 1;
+    outline: none;
+  }
+
+  .input-wrapper :global(svg) {
+    width: 20px;
+    height: 20px;
+    stroke-width: 3px;
+    color: var(--blue);
+    padding-top: 2px;
+  }
+
+  .actions-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 40px;
+  }
+
+  #save-changes-btn {
+    background-color: var(--orange);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    font-family: 'Sora', sans-serif;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    transition: all 0.3s ease;
+  }
+
+  #save-changes-btn:hover {
+    background-color: var(--dark-orange);
+    color: var(--white);
+    transform: scale(1.005);
+  }
+
+  @keyframes slideFadeUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes simpleFadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @media (max-width: 900px) {
+    .input-group-container {
+      flex-direction: column;
+    }
+  }
+
+</style>
