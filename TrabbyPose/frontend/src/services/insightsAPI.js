@@ -49,8 +49,13 @@ export function getSelectionPerPose() {
   return safeFetch(`${BASE_URL}/poses/selectionPerPose/`);
 }
 
+// To Remove: Old endpoint that only returns pose names and selection counts
 export function getTopPoseRanking() {
   return safeFetch(`${BASE_URL}/poses/topPoses/`);
+}
+
+export function getTopPoseRanking() {
+  return safeFetch(`${BASE_URL}/poses/topConfigurations`);
 }
 
 // Export-related metrics
@@ -68,4 +73,8 @@ export function getExportsPerMonth() {
 
 export function getTopExports() {
   return safeFetch(`${BASE_URL}/exports/pose/`);
+}
+
+export function getMostUsedAsset() {
+  return safeFetch(`${BASE_URL}/exports/assets/mostUsed/`);
 }
