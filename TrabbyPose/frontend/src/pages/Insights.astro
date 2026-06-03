@@ -158,24 +158,22 @@ const mostUsedAssetValue = mostUsedAsset?.total ?? 0;
           <div id="inner-export-metric-computation-container">
 
            
-          <div class="metric-card" id="exports-per-pose">
-            <span>Top Pose Exports</span>
+          <div class="graph-card" id="exports-per-pose">
+            <span id = "top-pose-label">Top Used Assets</span>
             <PieChart
               chartId="exports-month-chart"
               labels={topExportLabels}
               values={topExportValues}
-              label="Top Pose Exports "
             />
           </div>
 
-            <div class="metric-card" id="top-poses">
-            <span>Top Pose Configurations</span>
+            <div class="graph-card" id="top-poses">
+            <span id = "top-pose-configurations-label">Top Pose Configurations</span>
 
             <PieChart
               chartId="top-poses-distribution-chart"
               labels={topPoseLabels}
               values={topPoseValues}
-              label="Top Pose Configuration Breakdown"
             />
           </div>
 
@@ -251,9 +249,6 @@ const mostUsedAssetValue = mostUsedAsset?.total ?? 0;
       margin-bottom: 1em;
     }
 
-    #exports-per-pose{
-      background: var(--orange-gradient);
-    }
 
     #poses-selected{
       background: var(--white);
@@ -276,25 +271,6 @@ const mostUsedAssetValue = mostUsedAsset?.total ?? 0;
       font-weight: bold;
       
     }
-  
-    #top-poses{
-      background: var(--blue-gradient);
-      color: var(--white);
-      font-family: 'Sora', sans-serif;
-      font-size: 2em;
-      font-weight: bold;
-      flex: 1;
-    }
-
-    #exports-per-pose{
-      background: var(--orange-gradient);
-      color: var(--white);
-      font-family: 'Sora', sans-serif;
-      font-size: 2em;
-      font-weight: bold;
-      flex: 1; 
-    }
-
     
     .insights-container div{
       border-radius: 20px;
@@ -373,11 +349,6 @@ const mostUsedAssetValue = mostUsedAsset?.total ?? 0;
       border: 2px solid var(--orange);
     }
 
-    #selection-per-pose, #top-poses{
-      min-width: 400px;
-      min-height: 380px;
-      flex: 1.5;
-    }
 
     .pose-usage-label{
     font-size: .9em; 
@@ -395,13 +366,7 @@ const mostUsedAssetValue = mostUsedAsset?.total ?? 0;
 
    #export-metric-computation-container{
     padding-bottom: 10em;
-   }
-    #inner-export-metric-computation-container div{
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      flex: 1;
-    }
+   }  
 
      #inner-export-metric-computation-container{
       display: flex; 
@@ -499,4 +464,90 @@ const mostUsedAssetValue = mostUsedAsset?.total ?? 0;
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
     }
+
+    #top-pose-label, #top-pose-configurations-label {
+        box-sizing: border-box;
+        background: var(--orange-gradient);
+        
+        margin-bottom: 0; 
+        
+        width: 100%;
+        font-family: 'Sora', sans-serif;
+        font-weight: bold;
+        border-top-left-radius: 10px; 
+        border-top-right-radius: 10px;
+        font-size: 1.7em; 
+        color: var(--white);
+        padding: .5em; 
+ 
+    }
+
+    #exports-per-pose, #top-poses {
+        display: flex;
+        flex-direction: column;
+       
+        justify-content: flex-start; 
+        align-items: center;
+        
+        
+        padding: 0; 
+        overflow: hidden; 
+    }
+
+    #exports-per-pose > :global(.pie-container),
+    #top-poses > :global(.pie-container) {
+        margin: auto;
+    }
+
+    
+    @media (max-width: 992px) {
+      
+        #inner-pose-generation-container,
+        #pose-generation-per-month,
+        #inner-export-metric-computation-container {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .metric-card{
+          margin: ..2em 0; 
+          box-sizing: border-box;
+        }
+
+       
+        .metric-card,
+        .graph-card,
+        #pose-generation-per-week-graph,
+        #exports-per-pose-graph,
+        #exports-per-pose,
+        #top-poses,
+        #inner-pose-generation-container div {
+            min-width: 100% !important;
+            width: 100%;
+        }
+
+        .metric {
+            font-size: 2.2em;
+        }
+        
+        .metric-label {
+            font-size: 1.1em;
+        }
+
+        #top-pose-label, 
+        #top-pose-configurations-label, 
+        #pose-generation-graph-label,
+        #exports-per-pose-graph-container {
+            font-size: 1.3em;
+        }
+        
+       
+        .insights-container {
+            margin-bottom: 30px;
+        }
+        .page-container {
+            padding: 10px;
+        }
+    }
+
 </style>
