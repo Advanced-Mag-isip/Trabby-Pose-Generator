@@ -66,30 +66,46 @@ def view_number_of_total_poses_generated(request):
 
 @api_view(["GET"])
 def view_pose_generation_rate_per_month(request):
-    data = (
-        Poses.objects
-        .annotate(month=TruncMonth("created_at"))
-        .values("month")
-        .annotate(total=Count("poses_id"))
-        .order_by("month")
-    )
+    poses = Poses.objects.all().order_by("created_at")
 
-    # map DB results -> {month_index: count}
-    month_map = {}
-    for entry in data:
-        if entry["month"]:
-            month_index = entry["month"].month  # 1–12
-            month_map[month_index] = entry["total"]
+    monthly_signatures = defaultdict(set)
 
-    # fixed labels
+    for p in poses:
+        if not p.created_at:
+            continue
+        config = p.configuration
+
+        assets = []
+
+        def extract_assets(data):
+            if isinstance(data, dict):
+                for k, v in data.items():
+                    if k == "asset" and v:
+                        filename = os.path.basename(
+                            urlparse(v.split("?")[0]).path
+                        )
+                        assets.append(filename)
+                    else:
+                        extract_assets(v)
+
+            elif isinstance(data, list):
+                for item in data:
+                    extract_assets(item)
+
+        extract_assets(config)
+
+        signature = tuple(sorted(assets))
+
+        month_index = p.created_at.month
+        monthly_signatures[month_index].add(signature)
+
     labels = [
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ]
 
-    # fill missing months with 0
     values = [
-        month_map.get(i, 0)
+        len(monthly_signatures.get(i, set()))
         for i in range(1, 13)
     ]
 
