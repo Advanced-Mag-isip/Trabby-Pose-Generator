@@ -22,7 +22,7 @@ const LAYER_PATHS = {
 
 async function loadGallery() {
   try {
-    const res = await fetch("http://127.0.0.1:8000/api/exports/pose/config/");
+    const res = await fetch(`${import.meta.env.PUBLIC_API_URL}/api/exports/pose/config/`);
     const poses = await res.json();
 
     window.__GRID_DATA__ = poses.map((pose) => ({
