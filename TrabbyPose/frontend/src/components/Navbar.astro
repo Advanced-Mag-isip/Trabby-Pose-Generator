@@ -4,9 +4,11 @@ import trabahadoorLogo from '../assets/trabahadoor-logo.svg?raw';
 import logoutIcon from '../assets/icons/log-out.svg?raw';
 import '../styles/global.css';
 const currentPath = Astro.url.pathname;
+import hoverNavbarAudio from '../assets/audio/nav-bar-hover.mp3'; 
 ---
 
 <nav id="main-navigation">
+    <audio id="nav-hover-sound" src={hoverNavbarAudio} preload="auto"></audio>
     <div class="nav-safe-area">
         <a href="/" id="nav-logo">
             <Fragment set:html={trabahadoorLogo} />
@@ -23,53 +25,116 @@ const currentPath = Astro.url.pathname;
                 <Fragment set:html={logoutIcon} alt="User"/>
             </button>
         </div>
+
+        <div id="logout-modal" class="hidden">
+            <div class="modal-content">
+                <h3>Are you sure you want to log out?</h3>
+                <p>You will be redirected to the login screen.</p>
+            <div class="modal-actions">
+                <button id="cancel-logout-btn">Cancel</button>
+                <button id="confirm-logout-btn">Yes, Log Out</button>
+            </div>
+        </div>
+</div>
     </div>
 </nav>
 
 <script>
-    function initializeLogout() {
-        const logoutBtn = document.getElementById('log-out-btn');
 
-        // Check if the button exists and ensure we don't duplicate listeners
-        if (logoutBtn && !logoutBtn.dataset.listenerAttached) {
-            logoutBtn.addEventListener('click', async (e) => {
-                e.preventDefault();
+   function initializeNavAudio() {
+        const clickSound = document.getElementById('nav-hover-sound') as HTMLAudioElement;
+        const navLinks = document.querySelectorAll('#nav-links a');
 
-                try {
-                    const BACKEND_URL = import.meta.env.PUBLIC_API_URL; 
-                    
-                    // Clear all session and local storage before logout
-                    sessionStorage.clear();
-                    localStorage.clear();
-                    
-                    // Send logout request to server
-                    const response = await fetch(`${BACKEND_URL}/api/auth/logout/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        credentials: 'include', 
-                    });
-
-                    if (response.ok) {
-
-                        window.history.pushState(null, "", '/UserLogin');
-                        window.location.href = '/UserLogin';
-                    } else {
-                        console.error("Logout failed on the server.");
-                        window.history.pushState(null, "", '/UserLogin');
-                        window.location.href = '/UserLogin';
-                    }
-                } catch (error) {
-                    console.error("Network error during logout:", error);
-                    window.history.pushState(null, "", '/UserLogin');
-                    window.location.href = '/UserLogin';
-                }
+        if (navLinks.length > 0 && clickSound) {
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    clickSound.currentTime = 0; 
+                    clickSound.play().catch(e => console.log("Audio blocked:", e));
+                });
             });
-
-            logoutBtn.dataset.listenerAttached = "true";
         }
     }
+
+    document.addEventListener('astro:page-load', () => {
+        initializeNavAudio();
+        initializeLogout();
+        preventBackNavigation();
+    });
+
+    // Detect bfcache (Back/Forward cache) restoration
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+
+    // Unload event to ensure cleanup
+    window.addEventListener('beforeunload', () => {
+        document.body.style.display = 'none';
+    });
+
+
+    function initializeLogout() {
+    const navLogoutBtn = document.getElementById('log-out-btn');
+    const modal = document.getElementById('logout-modal');
+    const cancelBtn = document.getElementById('cancel-logout-btn');
+    const confirmBtn = document.getElementById('confirm-logout-btn');
+
+    // 1. Show the modal when clicking the nav button
+    if (navLogoutBtn && modal && !navLogoutBtn.dataset.listenerAttached) {
+        navLogoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.add('show');
+        });
+        navLogoutBtn.dataset.listenerAttached = "true";
+    }
+
+    // 2. Hide the modal when clicking Cancel
+    if (cancelBtn && modal && !cancelBtn.dataset.listenerAttached) {
+        cancelBtn.addEventListener('click', () => {
+            modal.classList.remove('show');
+        });
+        cancelBtn.dataset.listenerAttached = "true";
+    }
+
+    // 3. Actually log out when clicking Confirm
+    if (confirmBtn && !confirmBtn.dataset.listenerAttached) {
+        confirmBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            // Optional: change button text so user knows it's working
+            confirmBtn.textContent = "Logging out...";
+            confirmBtn.style.opacity = "0.7";
+
+            try {
+                const BACKEND_URL = 'http://127.0.0.1:8000'; 
+                
+                sessionStorage.clear();
+                localStorage.clear();
+                
+                const response = await fetch(`${BACKEND_URL}/api/auth/logout/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include', 
+                });
+
+                if (response.ok) {
+                    window.history.pushState(null, "", '/UserLogin');
+                    window.location.href = '/UserLogin';
+                } else {
+                    console.error("Logout failed on the server.");
+                    window.location.href = '/UserLogin';
+                }
+            } catch (error) {
+                console.error("Network error during logout:", error);
+                window.location.href = '/UserLogin';
+            }
+        });
+        confirmBtn.dataset.listenerAttached = "true";
+    }
+}
 
     function preventBackNavigation() {
 
@@ -120,6 +185,70 @@ const currentPath = Astro.url.pathname;
 </script>
 
 <style>
+ 
+    #logout-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+
+    #logout-modal.show {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .modal-content {
+        background-color: var(--white, #ffffff);
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        max-width: 400px;
+        width: 90%;
+    }
+
+    .modal-content h3 {
+        margin-top: 0;
+        color: var(--blue, #000);
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .modal-actions button {
+        padding: 10px 20px;
+        border-radius: 2rem;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    #cancel-logout-btn {
+        background-color: var(--light-gray, #e0e0e0);
+        color: #333;
+    }
+
+    #confirm-logout-btn {
+        background-color: var(--orange, #ff6b00);
+        color: white;
+    }
     #main-navigation {
         background-color: #ffffff10;
         backdrop-filter: blur(10px);
