@@ -1,18 +1,29 @@
 ---
-// src/components/PieChart.astro
-
 interface Props {
   chartId?: string;
   labels: string[];
   values: number[];
-  label?: string;
+  // --- NEW CUSTOMIZATION PROPS ---
+  colors?: string[];
 }
 
 const {
   chartId = "default-pie-chart",
   labels = [],
   values = [],
-  label = "Top Pose Selections"
+  // --- DEFAULT BRAND COLORS ---
+  colors = [
+    "#F26B2A", // Vibrant Orange
+    "#1A2B4A", // Dark Blue
+    "#4ECDC4", // Teal
+    "#FF6B6B", // Coral
+    "#45B7D1", // Light Blue
+    "#C85C27", // Dark Orange
+    "#98D8C8", // Mint
+    "#F9D56E", // Yellow
+    "#2C3E50", // Navy
+    "#84cc16"  // Green
+  ]
 } = Astro.props;
 
 // Combine labels + values
@@ -27,30 +38,14 @@ const top10 = combined
   .slice(0, 10);
 
 // Total for percentage calculation
-const total = top10.reduce((sum, item) => sum + item.value, 0) || 1;
-
-// Color palette (10 segments)
-const colors = [
-  "#3b82f6",
-  "#10b981",
-  "#f59e0b",
-  "#ef4444",
-  "#8b5cf6",
-  "#06b6d4",
-  "#84cc16",
-  "#f97316",
-  "#ec4899",
-  "#6b7280"
-];
+const total = top10.reduce((sum, item) => sum + item.value, 0);
 
 // Build conic-gradient
 let current = 0;
-
 const gradientStops = top10.map((item, i) => {
-  const percent = (item.value / total) * 100;
+  const percent = (item.value / (total || 1)) * 100;
   const start = current;
   current += percent;
-
   return `${colors[i % colors.length]} ${start}% ${current}%`;
 }).join(", ");
 
@@ -58,67 +53,61 @@ const conicGradientStyle = `background: conic-gradient(${gradientStops})`;
 ---
 
 <div class="pie-container" id={chartId}>
-  <h3 class="pie-title">{label}</h3>
 
-  <div class="pie-workspace">
-    <div class="pie-wheel-wrapper">
-      <div class="pie-wheel" style={conicGradientStyle}>
-        <div class="pie-center-cutout">
-          <span class="center-value">{total}</span>
-          <span class="center-sub">Top 10 total</span>
+  {total === 0 || values.length === 0 ? (
+    <div class="chart-error">No data available for this timeframe.</div>
+  ) : (
+    <div class="pie-workspace">
+      <div class="pie-wheel-wrapper">
+        <div class="pie-wheel" style={conicGradientStyle}>
+          <div class="pie-center-cutout">
+            <span class="center-value">{total}</span>
+            <span class="center-sub">Total</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="pie-legend">
-      {top10.map((item, i) => (
-        <div class="legend-item">
-          <span
-            class="legend-indicator"
-            style={`background:${colors[i % colors.length]}`}
-          ></span>
-          <span class="legend-text">
-            {item.label} ({item.value})
-          </span>
-        </div>
-      ))}
+      <div class="pie-legend">
+        {top10.map((item, i) => (
+          <div class="legend-item">
+            <span
+              class="legend-indicator"
+              style={`background:${colors[i % colors.length]}`}
+            ></span>
+            <span class="legend-text">
+              {item.label} ({item.value})
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
+  )}
+
 </div>
 
 <style>
   .pie-container {
     width: 100%;
-    max-width: 550px;
-    margin: 2rem auto;
+    margin: 0 auto;
     padding: 1.5rem;
-    border: 1px solid #e5e7eb;
+    box-sizing: border-box;   
+    /* border: 1px solid #e5e7eb; */ /* Removed to match line chart */
     border-radius: 12px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
-      0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    font-family: system-ui, -apple-system, sans-serif;
-  }
-
-  .pie-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 1.5rem;
-    text-align: center;
+    background: transparent; /* Removed hardcoded white */
+    font-family: system-ui;
   }
 
   .pie-workspace {
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    gap: 1rem;
+    justify-content: center;
+    gap: 2rem;
     flex-wrap: wrap;
   }
 
   .pie-wheel-wrapper {
-    width: 160px;
-    height: 160px;
+    width: 180px;
+    height: 180px;
   }
 
   .pie-wheel {
@@ -129,7 +118,8 @@ const conicGradientStyle = `background: conic-gradient(${gradientStops})`;
     align-items: center;
     justify-content: center;
     transition: transform 0.3s ease;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+    /* Subtle inner shadow for depth */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04); 
   }
 
   .pie-wheel:hover {
@@ -139,7 +129,8 @@ const conicGradientStyle = `background: conic-gradient(${gradientStops})`;
   .pie-center-cutout {
     width: 72%;
     height: 72%;
-    background-color: #ffffff;
+    /* Matches the parent container's white background */
+    background-color: var(--white, #ffffff); 
     border-radius: 50%;
     display: flex;
     flex-direction: column;
@@ -165,8 +156,8 @@ const conicGradientStyle = `background: conic-gradient(${gradientStops})`;
   .pie-legend {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    min-width: 200px;
+    gap: 0.6rem;
+    min-width: 180px;
   }
 
   .legend-item {
@@ -178,9 +169,15 @@ const conicGradientStyle = `background: conic-gradient(${gradientStops})`;
   }
 
   .legend-indicator {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 3px;
     flex-shrink: 0;
+  }
+
+  .chart-error { 
+    text-align: center; 
+    color: #9ca3af; 
+    padding: 2rem; 
   }
 </style>
