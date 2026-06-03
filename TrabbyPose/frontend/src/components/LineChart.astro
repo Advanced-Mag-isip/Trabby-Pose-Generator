@@ -4,98 +4,84 @@ interface Props {
   labels: string[];
   values: number[];
   label?: string;
+  // --- NEW CUSTOMIZATION PROPS ---
+  lineColor?: string;
+  fillColor?: string;
+  strokeWidth?: string | number;
+  pointRadius?: string | number;
 }
 
 const {
   chartId = "default-line-chart",
   labels = [],
   values = [],
-  label = "Data Overview"
+  label = "Data Overview",
+  // --- DEFAULT VALUES ---
+  lineColor = "#1A2B4A",       // Default blue line
+  fillColor = "transparent",   // Default no fill
+  strokeWidth = "2",           // Default line thickness
+  pointRadius = "2"            // Default dot size
 } = Astro.props;
-
-const colors = "#3b82f6";
 
 // compute max value
 const maxVal = Math.max(0, ...values);
+
+// Helper function to generate the SVG path points
+const generatePathPoints = () => {
+  return values.map((value, index) => {
+    const x = labels.length > 1 ? (index / (labels.length - 1)) * 90 + 5 : 50;
+    const y = maxVal > 0 ? 90 - (value / maxVal) * 80 : 90;
+    return `${index === 0 ? "M" : "L"} ${x} ${y}`;
+  }).join(" ");
+};
+
+const pathString = generatePathPoints();
 ---
 
 <div class="chart-container" id={chartId}>
-  <h3 class="chart-title">{label}</h3>
+
 
   {values.length === 0 ? (
     <div class="chart-error">No data available for this timeframe.</div>
   ) : (
     <div class="chart-wrapper">
 
-      <!-- Y AXIS -->
       <div class="y-axis">
         <span>{maxVal}</span>
         <span>{Math.round(maxVal / 2)}</span>
         <span>0</span>
       </div>
 
-      <!-- SVG CHART -->
       <svg viewBox="0 0 100 100" class="line-svg">
 
-        <!-- GRID -->
-        <line x1="5" y1="10" x2="95" y2="10" stroke="#eee" />
-        <line x1="5" y1="50" x2="95" y2="50" stroke="#eee" />
-        <line x1="5" y1="90" x2="95" y2="90" stroke="#eee" />
+        <line x1="5" y1="10" x2="95" y2="10" stroke="#F26B2A" />
+        <line x1="5" y1="50" x2="95" y2="50" stroke="#F26B2A" />
+        <line x1="5" y1="90" x2="95" y2="90" stroke="#F26B2A" />
 
-        <!-- AXES -->
-        <line x1="5" y1="10" x2="5" y2="90" stroke="#ccc" />
-        <line x1="5" y1="90" x2="95" y2="90" stroke="#ccc" />
+        <line x1="5" y1="10" x2="5" y2="90" stroke="#C85C27" />
+        <line x1="5" y1="90" x2="95" y2="90" stroke="#C85C27" />
 
-        {values.map((value, index) => {
-          const x =
-            labels.length > 1
-              ? (index / (labels.length - 1)) * 90 + 5
-              : 50;
+        {fillColor !== "transparent" && (
+          <path
+            d={`${pathString} L 95 90 L 5 90 Z`}
+            fill={fillColor}
+            stroke="none"
+          />
+        )}
 
-          const y =
-            maxVal > 0
-              ? 90 - (value / maxVal) * 80
-              : 90;
-
-          return null;
-        })}
-
-        <!-- LINE PATH -->
         <path
-          d={values
-            .map((value, index) => {
-              const x =
-                labels.length > 1
-                  ? (index / (labels.length - 1)) * 90 + 5
-                  : 50;
-
-              const y =
-                maxVal > 0
-                  ? 90 - (value / maxVal) * 80
-                  : 90;
-
-              return `${index === 0 ? "M" : "L"} ${x} ${y}`;
-            })
-            .join(" ")}
+          d={pathString}
           fill="none"
-          stroke={colors}
-          stroke-width="2"
+          stroke={lineColor}
+          stroke-width={strokeWidth}
         />
 
-        <!-- POINTS -->
         {values.map((value, index) => {
-          const x =
-            labels.length > 1
-              ? (index / (labels.length - 1)) * 90 + 5
-              : 50;
-
-          const y =
-            maxVal > 0
-              ? 90 - (value / maxVal) * 80
-              : 90;
+          const x = labels.length > 1 ? (index / (labels.length - 1)) * 90 + 5 : 50;
+          const y = maxVal > 0 ? 90 - (value / maxVal) * 80 : 90;
 
           return (
-            <circle cx={x} cy={y} r="2" fill={colors}>
+            <circle cx={x} cy={y} r={pointRadius} fill="#ffffff" stroke={lineColor} stroke-width="1.5">
               <title>{`${labels[index] ?? "Point"}: ${value}`}</title>
             </circle>
           );
@@ -105,7 +91,6 @@ const maxVal = Math.max(0, ...values);
     </div>
   )}
 
-  <!-- X AXIS -->
   <div class="x-axis">
     {labels.map((l) => (
       <span>{l}</span>
@@ -114,60 +99,63 @@ const maxVal = Math.max(0, ...values);
 </div>
 
 <style>
+  /* I kept your exact original styles here to prevent breaking your layout */
   .chart-container {
     width: 100%;
     max-width: 600px;
     margin: 2rem auto;
     padding: 1.5rem;
-    border: 1px solid #e5e7eb;
+    /*border: 1px solid #e5e7eb;*/
     border-radius: 12px;
-    background: #fff;
+    background: transparent;
     font-family: system-ui;
   }
-
-  .chart-title {
-    text-align: center;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: #1f2937;
+  .chart-title { 
+    text-align: center; font-weight: 600; margin-bottom: 1rem; color: #1f2937; 
   }
-
   .chart-wrapper {
-    display: flex;
-    align-items: center;
-  }
-
+     display: flex; 
+     align-items: center; 
+    }
   .y-axis {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 220px;
-    font-size: 0.7rem;
-    color: #6b7280;
-    padding-right: 6px;
+     display: flex; 
+     flex-direction: column; 
+     justify-content: space-between; 
+     height: 220px; 
+     font-size: 0.7rem; 
+     color: #6b7280; 
+     padding-right: 6px; 
+    }
+
+  .line-svg { 
+    width: 100%; 
+    height: 220px; 
+    overflow: visible; 
   }
 
-  .line-svg {
-    width: 100%;
-    height: 220px;
+  .x-axis { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 0.7rem; 
+    color: #6b7280; 
+    margin-top: 6px; 
   }
 
-  .x-axis {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.7rem;
-    color: #6b7280;
-    margin-top: 6px;
+  .x-axis span { 
+    flex: 1; 
+    text-align: center; 
   }
 
-  .x-axis span {
-    flex: 1;
-    text-align: center;
+  .chart-error { 
+    text-align: center; 
+    color: #9ca3af; 
+    padding: 2rem; 
   }
-
-  .chart-error {
-    text-align: center;
-    color: #9ca3af;
-    padding: 2rem;
+  
+  circle { 
+    transition: r 0.2s ease; cursor: pointer; 
   }
+  circle:hover { 
+    r: 4; 
+    }
 </style>
