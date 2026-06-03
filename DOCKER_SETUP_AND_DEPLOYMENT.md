@@ -1,194 +1,151 @@
-# Docker Setup Guide
+# Docker Setup and Deployment Guide
 
-## 1. Files Involved In The Docker Setup
+## Tech Stack and Architecture
+- Frontend: Astro JS (Port 8312)
+- Backend: Django / REST Framework (Port 8313)
+- Database: PostgreSQL (Internal Port 5432, Host Port 5434)
 
-### Root compose file
+### 1. Tools and Prerequisites
 
-- [TrabbyPose/docker-compose.yml](TrabbyPose/docker-compose.yml)
-- Defines the `db`, `backend`, and `frontend` services.
-- Controls ports, environment variables, and service names inside the Docker network.
+Before starting, ensure you have the following tools installed:
+- SSH/File Client: **PuTTY** (or native terminal SSH) https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html, **WinSCP** (for easy file transfers) https://winscp.net/eng/download.php#google_vignette
+- Runtimes: **Python** 3.10+ https://www.python.org/downloads/, **Git** https://git-scm.com/downloads
+- Container Engine: **Docker** & Docker Compose https://www.docker.com/
 
-### Backend image
+### 2. Environment Configuration
 
-- [TrabbyPose/backend/Dockerfile](TrabbyPose/backend/Dockerfile)
-- Builds the Django image.
-- Installs Python dependencies from `requirements.txt`.
+**A. Root Configuration** (TrabbyPose/.env)
 
-### Frontend image
+generate secret key:
 
-- [TrabbyPose/frontend/Dockerfile](TrabbyPose/frontend/Dockerfile)
-- Builds the Astro image.
-- Installs Node dependencies from `package.json`.
-
-### Backend environment file
-
-- [TrabbyPose/backend/.env](TrabbyPose/backend/.env)
-- Stores Django runtime config, database credentials, and CORS hosts.
-
-### Frontend environment file
-
-- [TrabbyPose/frontend/.env](TrabbyPose/frontend/.env)
-- Stores the backend base URL used by Astro SSR and the browser.
-
-### Django settings
-
-- [TrabbyPose/backend/project/settings.py](TrabbyPose/backend/project/settings.py)
-- Reads `.env`, sets `ALLOWED_HOSTS`, CORS values, and database settings.
-
-### Django URL routing
-
-- [TrabbyPose/backend/project/urls.py](TrabbyPose/backend/project/urls.py)
-- [TrabbyPose/backend/api/urls.py](TrabbyPose/backend/api/urls.py)
-- Exposes `/api/` endpoints to the frontend.
-
-### Frontend API helper
-
-- [TrabbyPose/frontend/src/services/insightsAPI.js](TrabbyPose/frontend/src/services/insightsAPI.js)
-- Uses `PUBLIC_API_URL` to reach the backend API.
-
-### Astro server config
-
-- [TrabbyPose/frontend/astro.config.mjs](TrabbyPose/frontend/astro.config.mjs)
-- Controls the dev server host/port and allowed hosts.
-
-## 2. Current Ports
-
-### Container ports
-
-- Postgres: `5432`
-- Backend: `8313`
-- Frontend: `8312`
-
-### Host ports used in compose
-
-- Postgres: `5434 -> 5432`
-- Backend: `8313 -> 8313`
-- Frontend: `8312 -> 8312`
-
-## 3. What Must Be In `.env`
-
-### Files You Need To Create Manually
-
-If you are setting up the project from scratch, these are the files you should create or fill in:
-
-- [TrabbyPose/backend/.env](TrabbyPose/backend/.env)
-- [TrabbyPose/frontend/.env](TrabbyPose/frontend/.env)
-
-If you are starting from a fresh clone, the Docker and app files already exist:
-
-- [TrabbyPose/docker-compose.yml](TrabbyPose/docker-compose.yml)
-- [TrabbyPose/backend/Dockerfile](TrabbyPose/backend/Dockerfile)
-- [TrabbyPose/frontend/Dockerfile](TrabbyPose/frontend/Dockerfile)
-
-Files that are generated later by commands:
-
-- `backend/api/migrations/*.py` from `python manage.py makemigrations`
-- database tables from `python manage.py migrate`
-- seed data from `python manage.py seed`
-
-### Backend `.env`
-
-Required values for local Docker development:
+```bash
+python3 -c "import secrets; print(secrets.token_urlsafe(50))"
+```
 
 ```env
-SECRET_KEY=your-secret-key
-DEBUG=True
-DB_NAME=trabbydb
-DB_USER=trabbypose_user
-DB_PASSWORD=your-password
+SECRET_KEY=yoursecretkey
+DEBUG=False
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
 DB_HOST=db
 DB_PORT=5432
-ALLOWED_HOSTS=localhost,127.0.0.1,backend
-CORS_ORIGIN_LOCAL=http://localhost:8312
+ALLOWED_HOSTS=localhost,127.0.0.1,sandbox1.advancedthinkers.app,backend,api-san>
+CORS_ORIGIN_SANDBOX=https://sandbox1.advancedthinkers.app:8312
+CORS_ORIGIN_IP=http://165.22.107.245
+PUBLIC_API_URL=https://api-sandbox1.advancedthinkers.app
+INTERNAL_API_URL=http://backend:8313
 ```
 
-Important notes:
-
-- `ALLOWED_HOSTS` should contain hostnames or IPs only, not ports.
-- `DB_HOST=db` works inside Docker Compose.
-
-### Frontend `.env`
-
-Required values:
+**B. Backend Configuration** (TrabbyPose/backend/.env)
 
 ```env
-PUBLIC_API_URL=http://backend:8313
+SECRET_KEY=yoursecretkey
+DEBUG=False
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=db
+DB_PORT=5432
+ALLOWED_HOSTS=localhost,127.0.0.1,sandbox1.advancedthinkers.app,165.22.107.245:>
+CORS_ORIGIN_LOCAL=http://localhost:8312
+CORS_ORIGIN_SANDBOX=http://sandbox1.advancedthinkers.app:8312
 ```
 
-## 4. Step-By-Step Local Docker Commands
+**Frontend Configuration**
 
-### First-time setup
+```env
+PUBLIC_API_URL=http//:api-sandbox1.advancedthinkers.app:8313
+INTERNAL_API_URL=http://backend:8313
+```
 
-1. Start the database container:
+
+### 3. Remote Sandbox Server Deployment Workflow
+
+**Step 1: Connect to the Sandbox Server via PuTTY**
+
+- SSH: sandbox.advancedthinkers.app
+- UN: advancedthinkers-sandbox1
+- PW: EFGoeF1zfHgzjTqDMgDY
+
+```bash
+cd ~/htdocs/sandbox1.advancedthinkers.app/
+```
+
+**Step 2: Clone Codebase** (Only if first time deploying to server)
+
+To check if there is an existing codebase already:
+
+```bash
+cd ~/htdocs/sandbox1.advancedthinkers.app/Trabby-Pose-Generator/TrabbyPose
+```
+If there is an existing folder, no need to clone the repository, if there's no existing folder, then clone the repository.
+
+```bash
+git clone https://yourgithubrepo
+git pull origin main
+```
+
+**Step 3: Seed the Environment Configuration Files**
+
+Create the setup based on what you did on the Environment COnfiguration part
+
+```bash
+nano .env
+nano backend/.env
+nano frontend/.env
+```
+
+**Step 4: Database Engine Container**
 
 ```bash
 docker compose up -d db
 ```
 
-2. Create migrations if your models changed:
-
-```bash
-docker compose run --rm backend python manage.py makemigrations api
-```
-
-If Django asks for a temporary default because a new non-nullable field was added, that means there is already existing data in the database.
-
-3. Apply migrations:
+**Initialize Database Schema (Migrations)**
 
 ```bash
 docker compose run --rm backend python manage.py migrate
 ```
 
-4. Seed the database:
+**Step 6: Seed Data**
 
 ```bash
+docker compose run --rm backend python manage.py seed_assets
 docker compose run --rm backend python manage.py seed
 ```
 
-5. Start the backend and frontend containers:
+**Step 7: Launch Containers**
 
 ```bash
 docker compose up -d backend frontend
 ```
 
-### Daily start
+**Step 8: Verify Operations & Logs**
 
 ```bash
-docker compose up -d
-```
+# Check orchestration status
+docker compose ps
 
-### Rebuild from scratch
-
-```bash
-docker compose down -v
-docker compose up --build
-```
-
-### Useful extra commands
-
-```bash
-docker compose restart backend frontend
-docker compose down
+# View live application standard outputs
 docker compose logs -f backend
 docker compose logs -f frontend
 ```
 
-## 5. Files You Usually Need To Commit
 
-- `backend/api/migrations/*.py` when model changes require new migrations
-- `backend/project/settings.py` when host or CORS behavior changes
-- `docker-compose.yml` when service names, ports, or env wiring change
-- `frontend/src/services/insightsAPI.js` when API routing changes
-- `frontend/astro.config.mjs` when the frontend host allowlist changes
+### F4. Applying Ongoing Code Updates
 
-Do not commit actual secret values from `.env` files.
+When you want to apply changes that are committed to remote repository:
 
-## 6. Quick Checklist Before Running Locally
+```bash
+cd ~/htdocs/sandbox1.advancedthinkers.app/Trabby-Pose-Generator
 
-- Docker Desktop is running
-- `db` container is up
-- `backend/.env` points to `DB_HOST=db`
-- `frontend/.env` points to `PUBLIC_API_URL=http://backend:8313`
-- Migrations are applied
-- Seed data is loaded if you want test values in Insights
-- `docker compose logs -f backend` shows no `DisallowedHost` or database errors
+# 2. Pull production-ready changes
+git pull 
+
+# 3. Apply schema updates if backend models shifted
+docker compose run --rm backend python manage.py migrate
+
+# 4. Trigger container software rebuilding and recycle execution layers
+docker compose up --build -d backend frontend
+```
