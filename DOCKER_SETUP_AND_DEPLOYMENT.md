@@ -96,10 +96,10 @@ nano backend/.env
 nano frontend/.env
 ```
 
-**Step 4: Database Engine Container**
+**Step 4: Build Container**
 
 ```bash
-docker compose up -d db
+docker compose up -d --build
 ```
 
 **Initialize Database Schema (Migrations)**
@@ -108,20 +108,41 @@ docker compose up -d db
 docker compose run --rm backend python manage.py migrate
 ```
 
-**Step 6: Seed Data**
+**Step 6: Create Superuser**
 
 ```bash
-docker compose run --rm backend python manage.py seed_assets
-docker compose run --rm backend python manage.py seed
+docker compose run --rm backend python manage.py createsuperuser
 ```
 
-**Step 7: Launch Containers**
+**Step 7: Create admin user**
+```bash
+docker compose run --rm backend python manage.py shell
+
+from api.models import User
+from django.utils import timezone
+import hashlib
+
+User.objects.create(
+    user_name='your username',
+    password=hashlib.sha256('yourpassword'.encode()).hexdigest(),
+    email_address='your@example.com',
+    first_name='yourfn',
+    last_name='yourln',
+    is_permitted=1,
+    created_at=timezone.now(),
+    updated_at=timezone.now()
+)
+exit()
+```
+
+
+**Step 8: Launch Containers**
 
 ```bash
 docker compose up -d backend frontend
 ```
 
-**Step 8: Verify Operations & Logs**
+**Step 9: Verify Operations & Logs**
 
 ```bash
 # Check orchestration status
