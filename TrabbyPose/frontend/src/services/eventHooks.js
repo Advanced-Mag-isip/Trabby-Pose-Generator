@@ -1,5 +1,5 @@
 document.addEventListener("click", (event) => {
-  const button = event.target.closest("#download-btn");
+  const button = event.target.closest("#confirm-save-btn");
   if (!button) return;
   getPoseInfo(event);
 });
