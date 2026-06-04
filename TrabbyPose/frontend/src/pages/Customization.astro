@@ -667,6 +667,11 @@ Astro.response.headers.set('Expires', '0');
 <script is:inline>
  
   function setupCustomization() {
+    
+    downloadPreview();
+    randomize(); 
+    resetCanvas(); 
+  
 
     // Only run if we are actually on the customization page
     const categoryContainer = document.getElementById("category-container");
@@ -1130,9 +1135,27 @@ function downloadPreview() {
     });
 
     // Init Buttons
-    downloadPreview();
-    randomize();
-    resetCanvas();
+    const downloadBtn = document.querySelector('[aria-label="Download"]');
+    if (downloadBtn) {
+      const newDownloadBtn = downloadBtn.cloneNode(true);
+      downloadBtn.parentNode.replaceChild(newDownloadBtn, downloadBtn);
+      newDownloadBtn.addEventListener("click", downloadPreview);
+    }
+
+    const randomBtn = document.querySelector('[aria-label="Randomize"]');
+    if (randomBtn) {
+      const newRandomBtn = randomBtn.cloneNode(true);
+      randomBtn.parentNode.replaceChild(newRandomBtn, randomBtn);
+      newRandomBtn.addEventListener("click", randomize);
+    }
+
+    const deleteBtn = document.querySelector('[aria-label="Delete"]');
+    if (deleteBtn) {
+      const newDeleteBtn = deleteBtn.cloneNode(true);
+      deleteBtn.parentNode.replaceChild(newDeleteBtn, deleteBtn);
+      newDeleteBtn.addEventListener("click", resetCanvas);
+    }
+
 
     function resetCanvas(){
       const deleteBtn = document.getElementById("delete-btn");
