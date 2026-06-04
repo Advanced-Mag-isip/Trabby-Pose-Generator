@@ -110,7 +110,7 @@ Astro.response.headers.set('Expires', '0');
     <div id="deletion-modal" class="hidden">
             <div class="modal-content">
                 <h3>Clear Canvas?</h3>
-                <p>All assets will be removed</p>
+                <p>All assets will be removed?</p>
               <div class="modal-actions">
                   <button id="cancel-deletion-btn" class = "cancel-btn">Cancel</button>
                   <button id="confirm-deletion-btn" class = "confirm-btn">Yes</button>
@@ -665,13 +665,14 @@ Astro.response.headers.set('Expires', '0');
 </script>
 
 <script is:inline>
-  document.addEventListener('astro:page-load', () => {
+ 
+  function setupCustomization() {
+    document.addEventListener('astro:page-load', () => {
     downloadPreview();
     randomize(); 
     resetCanvas(); 
   });
 
-  function setupCustomization() {
     // Only run if we are actually on the customization page
     const categoryContainer = document.getElementById("category-container");
     const optionsContents = document.getElementById("options-contents");
@@ -1013,7 +1014,7 @@ function downloadPreview() {
   const cancelBtn = document.getElementById('cancel-randomize-btn');
   const confirmBtn = document.getElementById('confirm-randomize-btn');
 
-   if (randomizeBtn && modal && !randomBtn.dataset.listenerAttached) {
+   if (randomizeBtn && modal && !randomizeBtn.dataset.listenerAttached) {
         randomizeBtn.addEventListener('click', (e) => {
             e.preventDefault();
             modal.classList.add('show');
