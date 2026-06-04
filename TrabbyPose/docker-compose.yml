@@ -5,16 +5,12 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   backend:
     build: ./backend
-    command: python manage.py runserver 0.0.0.0:8313
-    volumes:
-      - ./backend:/app
+    command: gunicorn project.wsgi:application --bind 0.0.0.0:8313
     ports:
       - "8313:8313"
     environment:
@@ -25,20 +21,18 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - CORS_ORIGIN_LOCAL=${CORS_ORIGIN_LOCAL}
+      - CORS_ORIGIN_SANDBOX=${CORS_ORIGIN_SANDBOX}
+      - CORS_ORIGIN_IP=${CORS_ORIGIN_IP}
     depends_on:
       - db
 
   frontend:
-    build: ./frontend
-    command: npm run dev -- --host 0.0.0.0 --port 8312
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
     ports:
-      - "8312:8312"
-    environment:
-      - PUBLIC_API_URL=${PUBLIC_API_URL}
-      - INTERNAL_API_URL=${INTERNAL_API_URL}
+      - "80:80"
     depends_on:
       - backend
 
