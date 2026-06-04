@@ -58,100 +58,111 @@ PUBLIC_API_URL=http://backend:8313
 
 ## Step-By-Step Deployment
 
-### 1. Log in to the sandbox server
+**Step 1: Connect to the Sandbox Server via PuTTY**
 
-Connect with SSH or PuTTY.
-
-### 2. Install Docker if needed
-
-Make sure Docker and Docker Compose are available on the server.
-
-### 3. Clone or update the repository
+- SSH: sandbox.advancedthinkers.app
+- UN: advancedthinkers-sandbox1
+- PW: EFGoeF1zfHgzjTqDMgDY
 
 ```bash
-cd ~/htdocs/sandbox.xxxxxxxxxxxx/
-git clone https://your-github-repo-link .
-# or, if the repo already exists:
-# git pull origin main
+cd ~/htdocs/sandbox1.advancedthinkers.app/
 ```
 
-### 4. Create or update the env files
+**Step 2: Clone Codebase** (Only if first time deploying to server)
 
-Make sure the three env files above exist and contain the correct sandbox values.
-
-### 5. Start the database container
+To check if there is an existing codebase already:
 
 ```bash
-docker compose up -d db
+cd ~/htdocs/sandbox1.advancedthinkers.app/Trabby-Pose-Generator/TrabbyPose
+```
+If there is an existing folder, no need to clone the repository, if there's no existing folder, then clone the repository.
+
+```bash
+git clone https://yourgithubrepo
+git pull origin main
 ```
 
-### 6. Run migrations
+**Step 3: Seed the Environment Configuration Files**
+
+Create the setup based on what you did on the Environment COnfiguration part
+
+```bash
+nano .env
+nano backend/.env
+nano frontend/.env
+```
+
+**Step 4: Build Container**
+
+```bash
+docker compose up -d --build
+```
+
+**Initialize Database Schema (Migrations)**
 
 ```bash
 docker compose run --rm backend python manage.py migrate
 ```
 
-If this is the first time the database is being created, this applies the committed migration files to the new database.
-
-### 7. Seed the data
-
-Run the seed commands if you want the sandbox to include sample records:
+**Step 6: Create Superuser**
 
 ```bash
-docker compose run --rm backend python manage.py seed_assets
-docker compose run --rm backend python manage.py seed
+docker compose run --rm backend python manage.py createsuperuser
 ```
 
-### 8. Start the app containers
+**Step 7: Create admin user**
+```bash
+docker compose run --rm backend python manage.py shell
+
+from api.models import User
+from django.utils import timezone
+import hashlib
+
+User.objects.create(
+    user_name='your username',
+    password=hashlib.sha256('yourpassword'.encode()).hexdigest(),
+    email_address='your@example.com',
+    first_name='yourfn',
+    last_name='yourln',
+    is_permitted=1,
+    created_at=timezone.now(),
+    updated_at=timezone.now()
+)
+exit()
+```
+
+
+**Step 8: Launch Containers**
 
 ```bash
 docker compose up -d backend frontend
 ```
 
-### 9. Check the running containers
+**Step 9: Verify Operations & Logs**
 
 ```bash
+# Check orchestration status
 docker compose ps
-```
 
-### 10. Check the logs
-
-```bash
+# View live application standard outputs
 docker compose logs -f backend
 docker compose logs -f frontend
 ```
 
-## If You Change Code Later
 
-After you push new code to GitHub and pull it on the server:
+### F4. Applying Ongoing Code Updates
 
-1. Pull the latest changes.
-2. Run `docker compose run --rm backend python manage.py migrate` again if there are new migrations.
-3. Restart the services:
+When you want to apply changes that are committed to remote repository:
 
 ```bash
-docker compose restart backend frontend
+cd ~/htdocs/sandbox1.advancedthinkers.app/Trabby-Pose-Generator
+
+# 2. Pull production-ready changes
+git pull 
+
+# 3. Apply schema updates if backend models shifted
+docker compose run --rm backend python manage.py migrate
+
+# 4. Trigger container software rebuilding and recycle execution layers
+docker compose up --build -d backend frontend
 ```
-
-If you changed model fields, commit the migration files from [TrabbyPose/backend/api/migrations/](TrabbyPose/backend/api/migrations/) before deploying.
-
-## Common Files To Update
-
-These are the files you usually need to touch for sandbox Docker deployment:
-
-- [TrabbyPose/docker-compose.yml](TrabbyPose/docker-compose.yml) if you need different ports or env wiring
-- [TrabbyPose/.env](TrabbyPose/.env) for Compose-level variables
-- [TrabbyPose/backend/.env](TrabbyPose/backend/.env) for Django settings and CORS values
-- [TrabbyPose/frontend/.env](TrabbyPose/frontend/.env) for the backend URL
-- [TrabbyPose/backend/project/settings.py](TrabbyPose/backend/project/settings.py) for host and CORS behavior
-- [TrabbyPose/frontend/astro.config.mjs](TrabbyPose/frontend/astro.config.mjs) if the host allowlist changes
-- [TrabbyPose/frontend/src/lib/api.ts](TrabbyPose/frontend/src/lib/api.ts) if it still has a hardcoded fallback URL
-- [TrabbyPose/backend/api/migrations/](TrabbyPose/backend/api/migrations/) when the models change
-
-## Notes
-
-- Keep `DEBUG=False` on the sandbox server.
-- `PUBLIC_API_URL=http://backend:8313` works inside Docker Compose because the frontend container can reach the backend by service name.
-- If you get `DisallowedHost`, fix `ALLOWED_HOSTS` first.
-- If the frontend cannot reach the API, check `PUBLIC_API_URL` and the Astro allowlist.
-- If the database is empty, rerun the seed commands after migrations.
