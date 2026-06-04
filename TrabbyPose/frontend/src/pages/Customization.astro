@@ -667,11 +667,6 @@ Astro.response.headers.set('Expires', '0');
 <script is:inline>
  
   function setupCustomization() {
-    document.addEventListener('astro:page-load', () => {
-    downloadPreview();
-    randomize(); 
-    resetCanvas(); 
-  });
 
     // Only run if we are actually on the customization page
     const categoryContainer = document.getElementById("category-container");
@@ -918,10 +913,6 @@ function downloadPreview() {
     const cancelBtn = document.getElementById('cancel-save-btn');
     const confirmBtn = document.getElementById('confirm-save-btn');
 
-
-    
-
-    // 1. Show the modal when clicking the Download icon
     if (downloadBtn && modal && !downloadBtn.dataset.listenerAttached) {
         downloadBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -930,7 +921,6 @@ function downloadPreview() {
         downloadBtn.dataset.listenerAttached = "true";
     }
 
-    // 2. Hide the modal when clicking Cancel
     if (cancelBtn && modal && !cancelBtn.dataset.listenerAttached) {
         cancelBtn.addEventListener('click', () => {
             modal.classList.remove('show');
@@ -938,7 +928,6 @@ function downloadPreview() {
         cancelBtn.dataset.listenerAttached = "true";
     }
 
-    // 3. Process the Canvas and Download when clicking Confirm
     if (confirmBtn && modal && !confirmBtn.dataset.listenerAttached) {
         confirmBtn.addEventListener('click', async (e) => {
             e.preventDefault(); 
@@ -951,7 +940,6 @@ function downloadPreview() {
             const layers = Array.from(display.querySelectorAll(".preview-layer"))
                 .sort((a, b) => parseInt(a.style.zIndex || '0') - parseInt(b.style.zIndex || '0'));
 
-            // Assuming previewSelections is defined globally somewhere else in your script
             if (typeof previewSelections !== 'undefined') {
                 window.__PREVIEW_SELECTIONS__ = previewSelections;
             }
@@ -1142,27 +1130,9 @@ function downloadPreview() {
     });
 
     // Init Buttons
-    const downloadBtn = document.querySelector('[aria-label="Download"]');
-    if (downloadBtn) {
-      const newDownloadBtn = downloadBtn.cloneNode(true);
-      downloadBtn.parentNode.replaceChild(newDownloadBtn, downloadBtn);
-      newDownloadBtn.addEventListener("click", downloadPreview);
-    }
-
-    const randomBtn = document.querySelector('[aria-label="Randomize"]');
-    if (randomBtn) {
-      const newRandomBtn = randomBtn.cloneNode(true);
-      randomBtn.parentNode.replaceChild(newRandomBtn, randomBtn);
-      newRandomBtn.addEventListener("click", randomize);
-    }
-
-    const deleteBtn = document.querySelector('[aria-label="Delete"]');
-    if (deleteBtn) {
-      const newDeleteBtn = deleteBtn.cloneNode(true);
-      deleteBtn.parentNode.replaceChild(newDeleteBtn, deleteBtn);
-      newDeleteBtn.addEventListener("click", resetCanvas);
-    }
-
+    downloadPreview();
+    randomize();
+    resetCanvas();
 
     function resetCanvas(){
       const deleteBtn = document.getElementById("delete-btn");
