@@ -23,7 +23,7 @@ class Poses(models.Model):
     name_of_poses_generated = models.CharField(max_length=225)
     # is_predefined = models.BooleanField(default=False)
     configuration = models.JSONField(default=list)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(null=True, blank=False)
 
 class PoseSelection(models.Model):
     pose_selection_id = models.AutoField(primary_key=True)
@@ -32,7 +32,7 @@ class PoseSelection(models.Model):
         Poses,
         on_delete=models.CASCADE
     )
-    selected_at = models.DateTimeField(auto_now_add=True)
+    selected_at = models.DateTimeField(null=True, blank=False)
 #Export Model
 class Export(models.Model):
     export_id = models.AutoField(primary_key=True)
@@ -40,7 +40,7 @@ class Export(models.Model):
         Poses,
         on_delete=models.CASCADE
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(null=True, blank=False)
 
 # class PuppetPart(models.Model):
 #     """
