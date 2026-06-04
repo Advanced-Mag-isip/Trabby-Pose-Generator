@@ -69,8 +69,8 @@ Astro.response.headers.set('Expires', '0');
             <input type="text" placeholder="Image Name" />
           </div>
           <div class="action-buttons">
-            <button set:html={IconTrash} aria-label="Delete"></button>
-            <button set:html={IconRandom} aria-label="Randomize"></button>
+            <button id = "delete-btn" set:html={IconTrash} aria-label="Delete"></button>
+            <button id = "randomize-btn" set:html={IconRandom} aria-label="Randomize"></button>
             <button id="download-btn" set:html={IconDownload} aria-label="Download"></button>
           </div>
         </div>
@@ -107,6 +107,48 @@ Astro.response.headers.set('Expires', '0');
         </div>
       </div> 
     </div>
+    <div id="deletion-modal" class="hidden">
+            <div class="modal-content">
+                <h3>Clear Canvas?</h3>
+                <p>All assets will be removed</p>
+              <div class="modal-actions">
+                  <button id="cancel-deletion-btn" class = "cancel-btn">Cancel</button>
+                  <button id="confirm-deletion-btn" class = "confirm-btn">Yes</button>
+              </div>
+            </div>
+       </div>
+
+        <div id="save-modal" class="hidden">
+            <div class="modal-content">
+                <h3>Download configuration as a .png?</h3>
+                <p>A .png file will be downloaded to your device </p>
+            <div class="modal-actions">
+                <button id="cancel-save-btn" class = "cancel-btn">Cancel</button>
+                <button id="confirm-save-btn" class = "confirm-btn" >Yes</button>
+            </div>     
+          </div>
+        </div>
+
+        <div id="empty-modal" class="hidden">
+            <div class="modal-content">
+                <h3>Can't download from blank canvas</h3>
+                <p>Please select at least one asset before downloading</p>
+            <div class="modal-actions">
+                <button id="confirm-save-btn" class = "confirm-btn" >Ok</button>
+            </div>     
+          </div>
+        </div>
+
+        <div id="randomize-modal" class="hidden">
+            <div class="modal-content">
+                <h3>Randomize configuration?</h3>
+                <p>Current configuration will be replaced</p>
+            <div class="modal-actions">
+                <button id="cancel-randomize-btn" class = "cancel-btn">Cancel</button>
+                <button id="confirm-randomize-btn" class = "confirm-btn">Yes</button>
+            </div>
+           </div>
+      </div>
   </div>
 </Layout>
 
@@ -115,6 +157,71 @@ Astro.response.headers.set('Expires', '0');
 </script>
 
 <style>
+   .hidden {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+
+    #save-modal.show, #deletion-modal.show, #randomize-modal.show, #empty-modal.show{
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .modal-content {
+        background-color: var(--white, #ffffff);
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        max-width: 400px;
+        width: 90%;
+    }
+
+    .modal-content h3 {
+        margin-top: 0;
+        color: var(--blue, #000);
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .modal-actions button {
+        padding: 10px 20px;
+        border-radius: 2rem;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .cancel-btn {
+        background-color: var(--light-gray, #e0e0e0);
+        color: #333;
+    }
+
+    .confirm-btn {
+        background-color: var(--orange, #ff6b00);
+        color: white;
+    }
+
+
   .content-container {
     display: flex;
     flex-direction: row;
@@ -558,6 +665,12 @@ Astro.response.headers.set('Expires', '0');
 </script>
 
 <script is:inline>
+  document.addEventListener('astro:page-load', () => {
+    downloadPreview();
+    randomize(); 
+    resetCanvas(); 
+  });
+
   function setupCustomization() {
     // Only run if we are actually on the customization page
     const categoryContainer = document.getElementById("category-container");
@@ -798,106 +911,187 @@ Astro.response.headers.set('Expires', '0');
       });
     }
 
-    function downloadPreview() {
-      const display = document.querySelector(".character-preview-display");
-      const layers = Array.from(display.querySelectorAll(".preview-layer"))
-        .sort((a, b) => parseInt(a.style.zIndex) - parseInt(b.style.zIndex));
+function downloadPreview() {
+    const downloadBtn = document.getElementById("download-btn");
+    const modal = document.getElementById("save-modal");
+    const cancelBtn = document.getElementById('cancel-save-btn');
+    const confirmBtn = document.getElementById('confirm-save-btn');
 
-    window.__PREVIEW_SELECTIONS__ = previewSelections;
 
-      if (layers.length === 0) return;
+    
 
-      const refImg = layers[0];
-      const width = refImg.naturalWidth || 512;
-      const height = refImg.naturalHeight || 512;
-
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-
-      layers.forEach(img => {
-        ctx.drawImage(img, 0, 0, width, height);
-      });
-
-      const nameInput = document.querySelector(".character-preview-actions input");
-      const filename = nameInput?.value?.trim() || "trabby";
-
-      canvas.toBlob(blob => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${filename}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }, "image/png");
+    // 1. Show the modal when clicking the Download icon
+    if (downloadBtn && modal && !downloadBtn.dataset.listenerAttached) {
+        downloadBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.add('show');
+        });
+        downloadBtn.dataset.listenerAttached = "true";
     }
 
-    function randomize() {
-    const SPRITE_KEYS = Object.keys(window.__SPRITE_MAP__ || {});
-    // read the sprites actually loaded in the assetsd
-    const CUSTOM_ASSETS = {
-      "Head Position": SPRITE_KEYS.filter(k => k.startsWith("head-")),
-      "Face": SPRITE_KEYS.filter(k => k.startsWith("face-")),
-      "Limbs": SPRITE_KEYS.filter(k => k.startsWith("limbs-")),
-      "Torso Shape": SPRITE_KEYS.filter(k => k.startsWith("torso-")),
-      "Wearables": SPRITE_KEYS.filter(k => k.startsWith("acc-")),
-    };
-
-    const PRESET_BODIES = SPRITE_KEYS.filter(k => k.startsWith("body"));
-    const PRESET_EXPRESSIONS = SPRITE_KEYS.filter(k => k.startsWith("expression"));
-
-    function pick(arr) {
-      return arr[Math.floor(Math.random() * arr.length)];
+    // 2. Hide the modal when clicking Cancel
+    if (cancelBtn && modal && !cancelBtn.dataset.listenerAttached) {
+        cancelBtn.addEventListener('click', () => {
+            modal.classList.remove('show');
+        });
+        cancelBtn.dataset.listenerAttached = "true";
     }
 
-    // Randomly decide which combo type to use
-    const usePreset = Math.random() < 0.5;
+    // 3. Process the Canvas and Download when clicking Confirm
+    if (confirmBtn && modal && !confirmBtn.dataset.listenerAttached) {
+        confirmBtn.addEventListener('click', async (e) => {
+            e.preventDefault(); 
 
-    // Clear all current selections first
-    previewSelections = {};
-    recentCategorySelections = {};
+            const display = document.querySelector(".character-preview-display");
+            
+            // Safety check in case the DOM isn't ready
+            if (!display) return;
 
-    if (usePreset) {
-      // --- Preset path: one Body + one Expression ---
-      const bodyKey = pick(PRESET_BODIES);
-      const exprKey = pick(PRESET_EXPRESSIONS);
-      const bodyUrl = window.__SPRITE_MAP__[bodyKey];
-      const exprUrl = window.__SPRITE_MAP__[exprKey];
+            const layers = Array.from(display.querySelectorAll(".preview-layer"))
+                .sort((a, b) => parseInt(a.style.zIndex || '0') - parseInt(b.style.zIndex || '0'));
 
-      if (bodyUrl) { previewSelections["Body"] = { tab: "Presets", spriteUrl: bodyUrl  }; }
-      if (exprUrl) { previewSelections["Expressions"] = { tab: "Presets", spriteUrl: exprUrl  }; }
+            // Assuming previewSelections is defined globally somewhere else in your script
+            if (typeof previewSelections !== 'undefined') {
+                window.__PREVIEW_SELECTIONS__ = previewSelections;
+            }
 
-    } else {
-      const picks = {
-        "Head Position": { tab: "Head", assets: CUSTOM_ASSETS["Head Position"] },
-        "Face": { tab: "Head", assets: CUSTOM_ASSETS["Face"] },
-        "Limbs": { tab: "Limbs", assets: CUSTOM_ASSETS["Limbs"] },
-        "Torso Shape": { tab: "Torso", assets: CUSTOM_ASSETS["Torso Shape"] },
-        "Wearables": { tab: "Accessories", assets: CUSTOM_ASSETS["Wearables"] },
-      };
+            // If there's nothing to download, just close the modal
+            if (layers.length === 0) {
+                modal.classList.remove('show');
+                return; 
+            }
 
-      Object.entries(picks).forEach(([sub, { tab, assets }]) => {
-        if (!assets.length) return;
-        const key = pick(assets);
-        const url = window.__SPRITE_MAP__[key];
-        if (url) {
-          previewSelections[sub] = { tab, spriteUrl: url };
-          if (["Head Position", "Limbs", "Torso Shape", "Wearables"].includes(sub)) {
-            const tabKey = { "Head Position": "Head", "Limbs": "Limbs", "Torso Shape": "Torso", "Wearables": "Accessories" }[sub];
-            if (tabKey) recentCategorySelections[tabKey] = url;
-          }
-        }
-      });
+            const refImg = layers[0];
+            const width = refImg.naturalWidth || 512;
+            const height = refImg.naturalHeight || 512;
+
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+
+            layers.forEach(img => {
+                ctx.drawImage(img, 0, 0, width, height);
+            });
+
+            const nameInput = document.querySelector(".character-preview-actions input");
+            const filename = nameInput?.value?.trim() || "trabby";
+
+            canvas.toBlob(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `${filename}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+               
+                modal.classList.remove('show');
+            }, "image/png");
+        });
+        confirmBtn.dataset.listenerAttached = "true";
+    }
+}
+
+
+  function randomize() {
+  const SPRITE_KEYS = Object.keys(window.__SPRITE_MAP__ || {});
+  // read the sprites actually loaded in the assetsd
+  const CUSTOM_ASSETS = {
+    "Head Position": SPRITE_KEYS.filter(k => k.startsWith("head-")),
+    "Face": SPRITE_KEYS.filter(k => k.startsWith("face-")),
+    "Limbs": SPRITE_KEYS.filter(k => k.startsWith("limbs-")),
+    "Torso Shape": SPRITE_KEYS.filter(k => k.startsWith("torso-")),
+    "Wearables": SPRITE_KEYS.filter(k => k.startsWith("acc-")),
+  };
+
+  const PRESET_BODIES = SPRITE_KEYS.filter(k => k.startsWith("body"));
+  const PRESET_EXPRESSIONS = SPRITE_KEYS.filter(k => k.startsWith("expression"));
+
+  const randomizeBtn= document.getElementById("randomize-btn");
+  const modal = document.getElementById("randomize-modal");
+  const cancelBtn = document.getElementById('cancel-randomize-btn');
+  const confirmBtn = document.getElementById('confirm-randomize-btn');
+
+   if (randomizeBtn && modal && !randomBtn.dataset.listenerAttached) {
+        randomizeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.add('show');
+        });
+        randomizeBtn.dataset.listenerAttached = "true";
+  }
+
+  if (cancelBtn && modal && !cancelBtn.dataset.listenerAttached) {
+        cancelBtn.addEventListener('click', () => {
+            modal.classList.remove('show');
+        });
+        cancelBtn.dataset.listenerAttached = "true";
+  }
+
+
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+  
+  if (confirmBtn && modal && !confirmBtn.dataset.listenerAttached) {
+        confirmBtn.addEventListener('click', async (e) => {
+            e.preventDefault(); 
+
+              const usePreset = Math.random() < 0.5;
+
+              // Clear all current selections first
+              previewSelections = {};
+              recentCategorySelections = {};
+
+              if (usePreset) {
+                // --- Preset path: one Body + one Expression ---
+                const bodyKey = pick(PRESET_BODIES);
+                const exprKey = pick(PRESET_EXPRESSIONS);
+                const bodyUrl = window.__SPRITE_MAP__[bodyKey];
+                const exprUrl = window.__SPRITE_MAP__[exprKey];
+
+                if (bodyUrl) { previewSelections["Body"] = { tab: "Presets", spriteUrl: bodyUrl  }; }
+                if (exprUrl) { previewSelections["Expressions"] = { tab: "Presets", spriteUrl: exprUrl  }; }
+
+              } else {
+                const picks = {
+                  "Head Position": { tab: "Head", assets: CUSTOM_ASSETS["Head Position"] },
+                  "Face": { tab: "Head", assets: CUSTOM_ASSETS["Face"] },
+                  "Limbs": { tab: "Limbs", assets: CUSTOM_ASSETS["Limbs"] },
+                  "Torso Shape": { tab: "Torso", assets: CUSTOM_ASSETS["Torso Shape"] },
+                  "Wearables": { tab: "Accessories", assets: CUSTOM_ASSETS["Wearables"] },
+                };
+
+                Object.entries(picks).forEach(([sub, { tab, assets }]) => {
+                  if (!assets.length) return;
+                  const key = pick(assets);
+                  const url = window.__SPRITE_MAP__[key];
+                  if (url) {
+                    previewSelections[sub] = { tab, spriteUrl: url };
+                    if (["Head Position", "Limbs", "Torso Shape", "Wearables"].includes(sub)) {
+                      const tabKey = { "Head Position": "Head", "Limbs": "Limbs", "Torso Shape": "Torso", "Wearables": "Accessories" }[sub];
+                      if (tabKey) recentCategorySelections[tabKey] = url;
+                    }
+                  }
+                });
+              }
+
+                // Persist + re-render everything
+                sessionStorage.setItem('trabbySelections', JSON.stringify(previewSelections));
+                sessionStorage.setItem('trabbyRecentSelections', JSON.stringify(recentCategorySelections));
+
+                renderPreviewLayers();
+                renderOptions();
+                updateSummaryBoxes();
+
+                   
+                modal.classList.remove('show');
+        });
+        confirmBtn.dataset.listenerAttached = "true";
     }
 
-    // Persist + re-render everything
-    sessionStorage.setItem('trabbySelections', JSON.stringify(previewSelections));
-    sessionStorage.setItem('trabbyRecentSelections', JSON.stringify(recentCategorySelections));
+  // Randomly decide which combo type to use
 
-    renderPreviewLayers();
-    renderOptions();
-    updateSummaryBoxes();
   }
 
     // Event Listeners for Tabs
@@ -961,25 +1155,54 @@ Astro.response.headers.set('Expires', '0');
       newRandomBtn.addEventListener("click", randomize);
     }
 
-    const resetBtn = document.querySelector('[aria-label="Delete"]');
-    if (resetBtn) {
-      const newResetBtn = resetBtn.cloneNode(true);
-      resetBtn.parentNode.replaceChild(newResetBtn, resetBtn);
-      newResetBtn.addEventListener("click", () => {
-        const userConfirmed = window.confirm("Are you sure you want to clear your character? This cannot be undone.");
-        if (userConfirmed) {
-          previewSelections = {};
-          sessionStorage.removeItem('trabbySelections');
-          
-          recentCategorySelections = {};
-          sessionStorage.removeItem('trabbyRecentSelections');
-          updateSummaryBoxes();
-          
-          renderPreviewLayers();
-          renderOptions();
-        }
-      });
+    const deleteBtn = document.querySelector('[aria-label="Delete"]');
+    if (deleteBtn) {
+      const newDeleteBtn = deleteBtn.cloneNode(true);
+      deleteBtn.parentNode.replaceChild(newDeleteBtn, deleteBtn);
+      newDeleteBtn.addEventListener("click", resetCanvas);
     }
+
+
+    function resetCanvas(){
+      const deleteBtn = document.getElementById("delete-btn");
+      const modal = document.getElementById("deletion-modal");
+      const cancelBtn = document.getElementById('cancel-deletion-btn');
+      const confirmBtn = document.getElementById('confirm-deletion-btn');
+     
+       if (deleteBtn && modal && !deleteBtn.dataset.listenerAttached) {
+          deleteBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.add('show');
+        });
+        deleteBtn.dataset.listenerAttached = "true";
+      }
+
+       if (cancelBtn && modal && !cancelBtn.dataset.listenerAttached) {
+        cancelBtn.addEventListener('click', () => {
+            modal.classList.remove('show');
+        });
+        cancelBtn.dataset.listenerAttached = "true";
+      }
+
+       if (confirmBtn && !confirmBtn.dataset.listenerAttached) {
+        confirmBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            previewSelections = {};
+            sessionStorage.removeItem('trabbySelections');
+            
+            recentCategorySelections = {};
+            sessionStorage.removeItem('trabbyRecentSelections');
+            updateSummaryBoxes();
+            
+            renderPreviewLayers();
+            renderOptions();
+             modal.classList.remove('show');
+        });}
+
+
+    }
+    
     
     // Set initial visual active state for the default Head tab
     const firstTab = document.querySelectorAll(".options-tabs")[0];
