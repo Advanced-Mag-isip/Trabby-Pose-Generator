@@ -58,6 +58,17 @@ Astro.response.headers.set('Expires', '0');
       </div>
     </div>
   </div>
+
+  <!-- Feedback Modal -->
+  <div id="feedback-modal">
+    <div class="modal-content">
+      <h3 id="modal-title"></h3>
+      <p id="modal-message"></p>
+      <div class="modal-actions">
+        <button id="modal-ok-btn" class="confirm-btn">OK</button>
+      </div>
+    </div>
+  </div>
 </Layout>
 
 <style>
@@ -97,7 +108,7 @@ Astro.response.headers.set('Expires', '0');
     color: var(--white);
   }
 
-  .account-settings-content{
+  .account-settings-content {
     background-color: #FFFFFF50;
     color: var(--blue);
     border-radius: 12px;
@@ -171,7 +182,6 @@ Astro.response.headers.set('Expires', '0');
     font-weight: bold;
     border-radius: 12px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
     width: 100%;
     transition: all 0.3s ease;
   }
@@ -182,20 +192,74 @@ Astro.response.headers.set('Expires', '0');
     transform: scale(1.005);
   }
 
-  @keyframes slideFadeUp {
-    0% {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* Modal */
+  #feedback-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
   }
 
-  @keyframes simpleFadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+  #feedback-modal.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal-content {
+    background-color: var(--white, #ffffff);
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+  }
+
+  .modal-content h3 {
+    margin-top: 0;
+    color: var(--blue, #000);
+  }
+
+  .modal-content p {
+    color: #555;
+    font-family: 'Sora', sans-serif;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .confirm-btn {
+    background-color: var(--orange, #ff6b00);
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 2rem;
+    font-family: 'Sora', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .confirm-btn:hover {
+    background-color: var(--dark-orange);
+  }
+
+  @keyframes slideFadeUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 
   @media (max-width: 900px) {
@@ -203,5 +267,76 @@ Astro.response.headers.set('Expires', '0');
       flex-direction: column;
     }
   }
-
 </style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const saveBtn = document.getElementById('save-changes-btn');
+    const modal = document.getElementById('feedback-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalMessage = document.getElementById('modal-message');
+    const modalOkBtn = document.getElementById('modal-ok-btn');
+
+    if (!saveBtn || !modal || !modalTitle || !modalMessage || !modalOkBtn) return;
+    
+    function showModal(title, message) {
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      modal.classList.add('show');
+    }
+
+    modalOkBtn.addEventListener('click', () => {
+      modal.classList.remove('show');
+    });
+
+    saveBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+
+      const currentPassword = document.getElementById('current-password').value;
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        showModal('Missing Fields', 'Please fill in all fields.');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        showModal('Password Mismatch', 'New passwords do not match.');
+        return;
+      }
+
+      saveBtn.textContent = 'Saving...';
+      saveBtn.disabled = true;
+
+      try {
+        const BACKEND_URL = import.meta.env.PUBLIC_API_URL;
+        const response = await fetch(`${BACKEND_URL}/api/auth/change-password/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            current_password: currentPassword,
+            new_password: newPassword,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          showModal('Success', 'Password changed successfully!');
+          document.getElementById('current-password').value = '';
+          document.getElementById('new-password').value = '';
+          document.getElementById('confirm-password').value = '';
+        } else {
+          showModal('Error', data.error || 'Failed to change password.');
+        }
+      } catch (err) {
+        showModal('Network Error', 'Something went wrong. Please try again.');
+      } finally {
+        saveBtn.textContent = 'Save Changes';
+        saveBtn.disabled = false;
+      }
+    });
+  });
+</script>

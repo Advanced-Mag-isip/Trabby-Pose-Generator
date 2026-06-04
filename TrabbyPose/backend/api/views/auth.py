@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+import hashlib
 
 from api.models import User
 from api.auth_serializers import (
@@ -146,3 +147,24 @@ def refresh_token(request):
         
     except TokenError:
         return Response({'error': 'Token is invalid or expired.'}, status=status.HTTP_401_UNAUTHORIZED)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    user = request.user
+    current_password = request.data.get('current_password')
+    new_password = request.data.get('new_password')
+
+    if not current_password or not new_password:
+        return Response({'error': 'All fields are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Verify current password
+    hashed_current = hashlib.sha256(current_password.encode()).hexdigest()
+    if user.password != hashed_current:
+        return Response({'error': 'Current password is incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Save new password
+    user.password = hashlib.sha256(new_password.encode()).hexdigest()
+    user.save()
+
+    return Response({'message': 'Password changed successfully.'}, status=status.HTTP_200_OK)

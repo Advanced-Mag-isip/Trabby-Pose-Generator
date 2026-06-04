@@ -12,6 +12,10 @@ class User(models.Model):
     created_at = models.DateTimeField(null=True, blank=False)
     updated_at = models.DateTimeField(null=True, blank=False)
 
+    @property
+    def is_authenticated(self):
+        return True
+
 #Poses Model
 class Poses(models.Model):
     poses_id = models.AutoField(primary_key=True)

@@ -18,6 +18,7 @@ from api.views.auth import (
     logout_user,
     get_current_user,
     refresh_token,
+    change_password,
 )
 
 from api.views.poses.generation import (
@@ -65,6 +66,7 @@ urlpatterns = [
     path("auth/logout/", logout_user, name="logout"),
     path("auth/user/", get_current_user, name="current-user"),
     path("auth/token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    path("auth/change-password/", change_password, name="change-password"),
 
     # # Legacy test endpoint
     # # path("test/", views.test, name="test"),
