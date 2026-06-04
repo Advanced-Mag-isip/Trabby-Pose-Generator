@@ -1,82 +1,82 @@
-# """
-# Django Admin configuration for Puppet & Pose management models.
+"""
+Django Admin configuration for Puppet & Pose management models.
 
-# Provides a user-friendly interface for managing puppet parts, pose presets,
-# and their configurations in the Django admin panel.
-# """
-# import hashlib
-# from django.contrib import admin
-# from django.utils.html import format_html
-# from .models import (
-#     User,
-#     Poses,
-#     PoseSelection,
-#     Export,
-#     PuppetPart,
-#     PosePreset,
-#     PartConfiguration,
-# )
+Provides a user-friendly interface for managing puppet parts, pose presets,
+and their configurations in the Django admin panel.
+"""
+import hashlib
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import (
+    User,
+    Poses,
+    PoseSelection,
+    Export,
+    # PuppetPart,
+    # PosePreset,
+    # PartConfiguration,
+)
 
-# @admin.register(User)
-# class UserAdmin(admin.ModelAdmin):
-#     """Admin interface for User model."""
-#     list_display = ("user_name", "email_address", "first_name", "last_name", "is_permitted")
-#     list_filter = ("is_permitted", "created_at")
-#     search_fields = ("user_name", "email_address", "first_name", "last_name")
-#     readonly_fields = ("created_at", "updated_at")
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    """Admin interface for User model."""
+    list_display = ("user_name", "email_address", "first_name", "last_name", "is_permitted")
+    list_filter = ("is_permitted", "created_at")
+    search_fields = ("user_name", "email_address", "first_name", "last_name")
+    readonly_fields = ("created_at", "updated_at")
 
-#     def save_model(self, request, obj, form, change):
-#         """Intercepts saves to hash the password securely before hitting the database."""
-#         # Check if the 'password' field was changed or if this is a brand new user
-#         if 'password' in form.changed_data or not change:
-#             raw_password = obj.password
+    def save_model(self, request, obj, form, change):
+        """Intercepts saves to hash the password securely before hitting the database."""
+        # Check if the 'password' field was changed or if this is a brand new user
+        if 'password' in form.changed_data or not change:
+            raw_password = obj.password
             
-#             # SHA-256 hashes are exactly 64 characters long. 
-#             # We only hash it if a password exists and isn't already hashed.
-#             if raw_password and len(raw_password) != 64:
-#                 hashed_password = hashlib.sha256(raw_password.encode()).hexdigest()
-#                 obj.password = hashed_password
+            # SHA-256 hashes are exactly 64 characters long. 
+            # We only hash it if a password exists and isn't already hashed.
+            if raw_password and len(raw_password) != 64:
+                hashed_password = hashlib.sha256(raw_password.encode()).hexdigest()
+                obj.password = hashed_password
                 
-#         # Continue with the normal save process
-#         super().save_model(request, obj, form, change)
+        # Continue with the normal save process
+        super().save_model(request, obj, form, change)
 
 
-# @admin.register(Poses)
-# class PosesAdmin(admin.ModelAdmin):
-#     """Admin interface for Poses model."""
-#     list_display = ("name_of_poses_generated", "poses_fid", "created_at")
-#     list_filter = ("created_at",)
-#     search_fields = ("name_of_poses_generated",)
-#     readonly_fields = ("created_at",)
-#     fieldsets = (
-#         ("Pose Information", {
-#             "fields": ("poses_fid", "name_of_poses_generated")
-#         }),
-#         ("Configuration", {
-#             "fields": ("configuration",),
-#             "classes": ("collapse",)
-#         }),
-#         ("Metadata", {
-#             "fields": ("created_at",),
-#             "classes": ("collapse",)
-#         }),
-#     )
+@admin.register(Poses)
+class PosesAdmin(admin.ModelAdmin):
+    """Admin interface for Poses model."""
+    list_display = ("name_of_poses_generated", "poses_fid", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("name_of_poses_generated",)
+    readonly_fields = ("created_at",)
+    fieldsets = (
+        ("Pose Information", {
+            "fields": ("poses_fid", "name_of_poses_generated")
+        }),
+        ("Configuration", {
+            "fields": ("configuration",),
+            "classes": ("collapse",)
+        }),
+        ("Metadata", {
+            "fields": ("created_at",),
+            "classes": ("collapse",)
+        }),
+    )
 
 
-# @admin.register(PoseSelection)
-# class PoseSelectionAdmin(admin.ModelAdmin):
-#     """Admin interface for PoseSelection model."""
-#     list_display = ("pose_selection_id", "pose_selection_fid", "selected_at")
-#     list_filter = ("selected_at",)
-#     readonly_fields = ("selected_at",)
+@admin.register(PoseSelection)
+class PoseSelectionAdmin(admin.ModelAdmin):
+    """Admin interface for PoseSelection model."""
+    list_display = ("pose_selection_id", "pose_selection_fid", "selected_at")
+    list_filter = ("selected_at",)
+    readonly_fields = ("selected_at",)
 
 
-# @admin.register(Export)
-# class ExportAdmin(admin.ModelAdmin):
-#     """Admin interface for Export model."""
-#     list_display = ("export_id", "export_fid", "created_at")
-#     list_filter = ("created_at",)
-#     readonly_fields = ("created_at",)
+@admin.register(Export)
+class ExportAdmin(admin.ModelAdmin):
+    """Admin interface for Export model."""
+    list_display = ("export_id", "export_fid", "created_at")
+    list_filter = ("created_at",)
+    readonly_fields = ("created_at",)
 
 
 # @admin.register(PuppetPart)
